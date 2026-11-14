@@ -15,6 +15,7 @@ namespace bbm {
 namespace {
 
 constexpr size_t kMaxUrls = 200;          // per request
+constexpr int kLarge = 200;               // px: from here a picture goes to the front of the queue
 constexpr size_t kMaxBytes = 2u << 20;    // per picture
 constexpr size_t kTrimAbove = 3000, kTrimBy = 1000;   // files in the folder
 // The same desktop user agent as innertube/client.cpp.
@@ -108,7 +109,10 @@ std::map<std::string, std::string> Thumbs::request(const std::vector<std::string
         const auto [waiting, fresh] = pending_.try_emplace(sized);
         waiting->second.insert(u);
         if (fresh) {
-            queue_.emplace_back(u, size);
+            // A large picture is the one being looked at (Now Playing, a page's header): it does
+            // not wait behind a list's rows.
+            if (size >= kLarge) queue_.emplace_front(u, size);
+            else queue_.emplace_back(u, size);
             queued = true;
         }
     }
