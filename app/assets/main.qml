@@ -26,6 +26,14 @@ TabbedPane {
     }
 
     Menu.definition: MenuDefinition {
+        settingsAction: SettingsActionItem {
+            onTriggered: {
+                var sheet = settingsSheet.createObject();
+                if (sheet) {
+                    sheet.show();
+                }
+            }
+        }
         actions: [
             ActionItem {
                 title: "Stop"
@@ -126,7 +134,15 @@ TabbedPane {
         engine.reply.connect(function (id, ok, result, code, message) {
             // Not for a dropped link: the bar at the top of each page says that.
             if (!ok && code != "disconnected") {
-                errorToast.body = message ? message : code;
+                // "network" covers both an unreachable service and an answer the engine could
+                // not read: the engine's own words say which.
+                errorToast.body = (code == "network" ? "YouTube Music: " : "") + (message ? message : code);
+                errorToast.show();
+            }
+        });
+        engine.event.connect(function (name, fields) {
+            if (name == "skipped") {
+                errorToast.body = fields.category == "music_offtopic" ? "Skipped a non-music part." : "Skipped: " + fields.category + ".";
                 errorToast.show();
             }
         });
@@ -140,6 +156,10 @@ TabbedPane {
         SystemToast {
             id: errorToast
             autoUpdateEnabled: true
+        },
+        ComponentDefinition {
+            id: settingsSheet
+            source: "SettingsSheet.qml"
         },
         SystemDialog {
             id: about
