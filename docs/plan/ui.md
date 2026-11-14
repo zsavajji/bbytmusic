@@ -2,7 +2,7 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.16; installed, **not yet
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.18; installed, **not yet
 seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.16, 2026-11-14)
+## What exists (0.1.0.18, 2026-11-14)
 
 ```
 app/
@@ -57,8 +57,8 @@ app/
 └── assets/
     ├── main.qml           TabbedPane with the tabs in the tab menu: Search (inline), Home,
     │                      Explore, Recent and Queue (each a Tab delegate, created when first
-    │                      opened); application menu: Stop, About; the error toast;
-    │                      `retire(page)`
+    │                      opened); application menu: Settings, Stop, About; the error toast
+    │                      (also "Skipped a non-music part."); `retire(page)`
     ├── SearchPage.qml     field, suggestions, segmented filter, results by kind with covers
     ├── AlbumPage.qml      an album or a playlist (read page by page): header row, tracks,
     │                      Play / Shuffle
@@ -71,6 +71,7 @@ app/
     ├── NowPlayingPage.qml the stock player's layout
     ├── TrackInfo.qml      the Properties sheet
     ├── EqSheet.qml        the equalizer's presets
+    ├── SettingsSheet.qml  what to skip in a track (SponsorBlock), a switch per kind
     ├── MiniPlayer.qml     the strip: state mark, title, progress line
     ├── ConnectionBar.qml  "the engine is not connected" + Retry
     └── images/            ic_*.png (81 px) and art_none*.png, drawn by scripts/gen-icons.py
@@ -152,6 +153,11 @@ From YTMusicWP's screens, what each of ours must be able to do:
 - **Explore and the equalizer were not in the brief either.** Explore is the plan's 3.4 in part
   (no moods and genres: that feed has another shape); the equalizer is 3.9, ten fixed presets,
   no sliders. The presets' gains are a first guess and nobody has heard them.
+- **SponsorBlock (3.8) is in, and off.** Turning a switch on makes the engine ask
+  sponsor.ajay.app about every track that starts, by the first four hex digits of the SHA-256
+  of its id (the service then answers for every video sharing them). That is a third party
+  learning roughly what is played: the user's call. A slow answer holds the engine's worker
+  for up to 10 s.
 
 ## Build, install, look
 
@@ -206,7 +212,7 @@ already bit here or will:
 
 ## What works on the phone, and what has not been tried
 
-**0.1.0.16 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
+**0.1.0.18 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
 while the user was away: the QML passes the lint and `lupdate`, the C++ compiles, the installer
 answered `result::success`, and 0.1.0.9's engine binary was run on the phone from a shell and
 driven from the Mac (search grouped by kind, `browse` of an album, covers written to `thumbs/`,
@@ -231,6 +237,8 @@ quit at start; the `check:` lines say which documents compile):
 8. An artist from Search: the header, Top songs, the shelves; Play.
 9. A playlist of more than 100 tracks (it fills in page by page); the equalizer from Now
    Playing's menu, by ear.
+10. Settings in the application menu (swipe down): the four switches; with "Non-music parts"
+    on, a music video with a talking intro (kJQP7kiw5Fk starts 21.8 s in) and the toast.
 
 By the user's report on 0.1.0.7 ("works, plays stops scrubs") and its logs: the engine starts
 with the app and connects; suggestions and search; a tap plays with a radio queue of 50; Now
@@ -268,7 +276,7 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 | 3.5 Item actions | play next, add to queue, start radio, go to artist/album, share | mostly there; "go to" needs 3.2 and 3.3 |
 | 3.6 History | **built, unseen:** the Recent tab; opening links from other apps (an invoke target) is not | there (`history`) |
 | 3.7 Region and language | a setting | `InnerTube::set_language` exists; **missing:** a command and a stored setting |
-| 3.8 SponsorBlock | a settings sheet | **missing** entirely |
+| 3.8 SponsorBlock | **built, unseen:** Settings, a switch per kind, off by default | there (`skip`, the `skipped` event); ran live on the Mac |
 | 3.9 Equalizer | **built, unseen, unheard:** a sheet of presets from Now Playing | there (`eq`); presets only, no bands to set |
 
 The renderers the missing `browse` pages return are parsed for search already
