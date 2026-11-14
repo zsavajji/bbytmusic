@@ -23,8 +23,10 @@ Container {
 
     Container {
         verticalAlignment: VerticalAlignment.Center
+        // Half the bar is always the text, the way into Now Playing: with two buttons at their
+        // preferred widths nothing was left of it (0.1.0.5).
         layoutProperties: StackLayoutProperties {
-            spaceQuota: 1
+            spaceQuota: 2
         }
         Label {
             text: player.title
@@ -42,7 +44,9 @@ Container {
     }
     Button {
         text: player.playing ? "Pause" : "Play"
-        preferredWidth: ui.du(18)
+        layoutProperties: StackLayoutProperties {
+            spaceQuota: 1
+        }
         verticalAlignment: VerticalAlignment.Center
         onClicked: {
             engine.request("toggle", {});
@@ -50,7 +54,9 @@ Container {
     }
     Button {
         text: "Next"
-        preferredWidth: ui.du(14)
+        layoutProperties: StackLayoutProperties {
+            spaceQuota: 1
+        }
         verticalAlignment: VerticalAlignment.Center
         onClicked: {
             engine.request("next", {});
