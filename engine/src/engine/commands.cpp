@@ -111,6 +111,7 @@ void Engine::add_commands() {
     server_.on("toggle", [this](Json) { return resume(true); });
     server_.on("seek", [this](Json req) {
         if (!req["ms"].is_number()) return bad("ms: a number is required");
+        log_info("seek to " + std::to_string(req["ms"].i64()) + " ms");
         player_->seek(std::max<int64_t>(0, req["ms"].i64()));
         return ok();
     });
@@ -118,6 +119,7 @@ void Engine::add_commands() {
         int i;
         Reply err;
         if (!index_field(req, "index", int(player_->queue().size()), i, err)) return err;
+        log_info("jump to " + std::to_string(i));
         player_->jump(i);
         return ok();
     });
@@ -185,6 +187,8 @@ Reply Engine::play(Json req) {
         if (!index_field(req, "index", int(items.size()), index, err)) return bad(err.message);
     }
     const bool radio = req["radio"].boolean(false) && items.size() == 1;
+    log_info("play " + std::to_string(items.size()) + " item(s), first " + items[size_t(index)].id + " \"" +
+             items[size_t(index)].title + "\"" + (radio ? ", with its radio" : ""));
     std::vector<Track> tracks;
     for (const Item &i : items) tracks.push_back(to_track(i));
     uint64_t gen;

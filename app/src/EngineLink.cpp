@@ -166,6 +166,8 @@ void EngineLink::handleLine(const QByteArray &line)
     if (json.hasError() || doc.type() != QVariant::Map)
         return;
     QVariantMap map = doc.toMap();
+    if (map.value("ev").toString() != "position")
+        uiLog("< " + QString::fromUtf8(line.left(220)).trimmed());
     if (map.contains("ev")) {
         const QString name = map.take("ev").toString();
         emit event(name, map);
@@ -197,6 +199,8 @@ void EngineLink::handleLine(const QByteArray &line)
 
 void EngineLink::writeLine(const QByteArray &json)
 {
+    if (!json.contains("\"cmd\":\"hello\""))
+        uiLog("> " + QString::fromUtf8(json.left(220)));
     m_socket.write(json + "\n");
 }
 

@@ -1,4 +1,6 @@
 // Engine: the player's events, out to the clients, the store and now-playing; the radio.
+#include <cstdio>
+#include <cstring>
 #include <set>
 
 #include "engine/engine.h"
@@ -8,6 +10,20 @@
 
 namespace bbm {
 
+// Who holds now-playing, from the service's own status object ("" off BB10).
+static std::string np_holder() {
+    std::string out;
+    if (FILE *f = std::fopen("/pps/services/multimedia/mediaplayer/status", "r")) {
+        char line[256];
+        while (std::fgets(line, sizeof line, f))
+            if (std::strncmp(line, "active_name", 11) == 0 || std::strncmp(line, "active_pid", 10) == 0) out += line;
+        std::fclose(f);
+    }
+    for (char &c : out)
+        if (c == '\n') c = ' ';
+    return out;
+}
+
 // The player thread: emit at once, keep the bookkeeping under mu_, post the slow work.
 void Engine::on_event(const PlayerEvent &e) {
     if (closing_) return;
@@ -16,6 +32,8 @@ void Engine::on_event(const PlayerEvent &e) {
         "\"position_ms\":" + std::to_string(s.position_ms) + ",\"duration_ms\":" + std::to_string(s.duration_ms);
     switch (e.kind) {
     case PlayerEvent::State: {
+        log_info(std::string("state ") + state_name(s.state) + ", index " + std::to_string(s.index) + ", " + s.track_id +
+                 " at " + std::to_string(s.position_ms) + " ms" + (s.error.empty() ? "" : ": " + s.error));
         server_.emit("state", std::string("\"state\":\"") + state_name(s.state) + "\",\"index\":" +
                                   std::to_string(s.index) + ",\"track_id\":" + json_quote(s.track_id) + "," + pos +
                                   ",\"error\":" + json_quote(s.error));
@@ -30,6 +48,7 @@ void Engine::on_event(const PlayerEvent &e) {
         break;
     }
     case PlayerEvent::Track: {
+        log_info("track " + std::to_string(s.index) + ": " + s.track_id);
         Item it;
         {
             std::lock_guard<std::mutex> lk(mu_);
@@ -124,6 +143,7 @@ void Engine::on_np_command(const std::string &c) {
     else if (c == "next") player_->next();
     else if (c == "prev") player_->previous();
     else if (c == "revoked") {
+        log_info("now-playing: taken by " + np_holder());
         np_revoked_ = true;
         player_->pause();
     }

@@ -6,6 +6,7 @@ Page {
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
     property bool setting: false
+    property bool moved: false
     property double holdUntil: 0
 
     function sync() {
@@ -83,26 +84,26 @@ Page {
             topMargin: ui.du(4)
             fromValue: 0
             toValue: Math.max(player.durationMs, 1)
-            // Dragging moves immediateValue; the finger letting go moves value.
-            onImmediateValueChanged: {
-                if (!page.setting) {
-                    page.dragging = true;
-                }
-            }
-            onValueChanged: {
-                if (!page.setting) {
-                    page.holdUntil = new Date().getTime() + 800;
-                    page.dragging = false;
-                    engine.request("seek", {
-                        "ms": Math.round(value)
-                    });
-                }
-            }
+            // A seek is sent for a finger only. The value also changes when the page sets it and
+            // when toValue moves with the track's length: seeking on valueChanged restarted the
+            // song each time this page opened (0.1.0.4).
             onTouch: {
-                // A finger up without a change of value (or a cancelled touch) ends the drag too.
-                if (event.touchType == TouchType.Up || event.touchType == TouchType.Cancel) {
-                    page.holdUntil = new Date().getTime() + 800;
+                if (event.touchType == TouchType.Down) {
+                    page.dragging = true;
+                    page.moved = false;
+                } else if (event.touchType == TouchType.Up || event.touchType == TouchType.Cancel) {
+                    if (page.dragging && page.moved) {
+                        page.holdUntil = new Date().getTime() + 800;
+                        engine.request("seek", {
+                            "ms": Math.round(slider.immediateValue)
+                        });
+                    }
                     page.dragging = false;
+                }
+            }
+            onImmediateValueChanged: {
+                if (page.dragging && !page.setting) {
+                    page.moved = true;
                 }
             }
         }

@@ -259,6 +259,7 @@ bool Server::dispatch(Conn &c, std::string_view line) {
         auto it = handlers_.find(cmd);
         if (it != handlers_.end()) h = it->second;
     }
+    log_info("cmd " + cmd);   // hello never comes here, so no token is logged
     Reply r;
     if (!h) {
         r = Reply::error("unknown", "unknown command: " + cmd);

@@ -234,7 +234,9 @@ static void read_ahead_is_bounded() {
     CHECK(wait_until([&] { return r->reads_for_test() >= 30; }));
     std::this_thread::sleep_for(std::chrono::milliseconds(1200));
     const double played_s = ms_since(t0) / 1000;
-    CHECK(r->reads_for_test() <= 31 + int(played_s) + 1);
+    // A loose bound on purpose: clusters are 981 ms, the clock is the wall's, and the count is
+    // read a moment after the time. The exact bound is the buffered time, two lines down.
+    CHECK(r->reads_for_test() <= 31 + int(played_s) + 4);
     CHECK(r->reads_for_test() >= 30);
     CHECK(r->buffered_ms_for_test() <= 31000);
     CHECK(r->buffered_ms_for_test() >= 28000);

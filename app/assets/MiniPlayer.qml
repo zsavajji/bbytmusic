@@ -48,6 +48,14 @@ Container {
             engine.request("toggle", {});
         }
     }
+    Button {
+        text: "Next"
+        preferredWidth: ui.du(14)
+        verticalAlignment: VerticalAlignment.Center
+        onClicked: {
+            engine.request("next", {});
+        }
+    }
 
     attachedObjects: ComponentDefinition {
         id: nowPlaying
