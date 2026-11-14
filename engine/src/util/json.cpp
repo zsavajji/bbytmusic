@@ -52,7 +52,11 @@ std::string_view Json::str() const {
 
 int64_t Json::i64(int64_t dflt) const {
     if (yyjson_is_int(v_)) return yyjson_is_sint(v_) ? yyjson_get_sint(v_) : static_cast<int64_t>(yyjson_get_uint(v_));
-    if (yyjson_is_real(v_)) return static_cast<int64_t>(yyjson_get_real(v_));
+    if (yyjson_is_real(v_)) {
+        const double d = yyjson_get_real(v_);
+        // outside int64 (and NaN) the cast is undefined: give the default
+        return d >= -9223372036854775808.0 && d < 9223372036854775808.0 ? static_cast<int64_t>(d) : dflt;
+    }
     if (yyjson_is_str(v_)) {
         const std::string s(str());  // NUL-terminated for strtoll
         char *end = nullptr;

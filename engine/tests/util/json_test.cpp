@@ -23,6 +23,13 @@ int main() {
     CHECK_EQ(j["n"].num(), 12345.0);
     CHECK_EQ(j["big"].i64(), int64_t(9007199254740993LL));
     CHECK_EQ(j["a"].i64(7), 7);
+    {   // found by the fuzzer: a real beyond int64 used to be an undefined cast
+        JsonDoc d2;
+        std::string e2;
+        CHECK(JsonDoc::parse("{\"x\":2.49222e+59,\"y\":-1e30}", d2, e2));
+        CHECK_EQ(d2.root()["x"].i64(5), 5);
+        CHECK_EQ(d2.root()["y"].i64(6), 6);
+    }
     CHECK_EQ(j["a"]["b"][0]["c"].i64(9), 9);      // non-numeric string
     CHECK(j["t"].boolean() && j["t"].is_bool());
     CHECK(!j["list"].boolean());
