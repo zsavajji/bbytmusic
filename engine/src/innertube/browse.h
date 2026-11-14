@@ -19,6 +19,9 @@ struct BrowsePage {
 
 // `id` is an album's browse id (MPRE...) a playlist's (VL...) an artist's (UC...) or a feed's (FE...).
 bool browse(InnerTube &, const std::string &id, BrowsePage &out, std::string &err);
+// The id `browse` asks for: a bare playlist id (PL…, OLAK…, RDCLAK…, as a search result's play
+// button carries it) gets the VL that makes it a page; anything else is left as it is.
+std::string browse_id(const std::string &id);
 // The parser, on a response already in hand.
 bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::string &err);
 // A feed's next shelves (`sections` and `continuation` only).

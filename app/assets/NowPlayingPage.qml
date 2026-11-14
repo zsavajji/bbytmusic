@@ -59,6 +59,19 @@ Page {
         navPane.push(p);
     }
 
+    function viewArtist() {
+        var id = player.track.artist_id;
+        if (! id || ! navPane) {
+            notice.body = "This artist has no page.";
+            notice.show();
+            return;
+        }
+        var p = shelfPage.createObject();
+        p.navPane = navPane;
+        p.browseId = id;
+        navPane.push(p);
+    }
+
     function showQueue() {
         if (navPane) {
             var p = queuePage.createObject();
@@ -69,12 +82,19 @@ Page {
     }
 
     // Called by main.qml when the page has been popped.
+    // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
             player.positionChanged.disconnect(page.sync);
+        } catch (e0) {
+        }
+        try {
             player.changed.disconnect(page.onPlayer);
+        } catch (e1) {
+        }
+        try {
             thumbs.ready.disconnect(page.onThumb);
-        } catch (e) {
+        } catch (e2) {
         }
     }
 
@@ -140,6 +160,14 @@ Page {
             }
             onTriggered: {
                 page.viewAlbum();
+            }
+        },
+        ActionItem {
+            title: "View Artist"
+            imageSource: "asset:///images/ic_artist.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                page.viewArtist();
             }
         },
         ActionItem {
@@ -352,6 +380,10 @@ Page {
         ComponentDefinition {
             id: queuePage
             source: "QueuePage.qml"
+        },
+        ComponentDefinition {
+            id: shelfPage
+            source: "ShelfPage.qml"
         },
         TrackInfo {
             id: info

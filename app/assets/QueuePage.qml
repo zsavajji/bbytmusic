@@ -1,4 +1,5 @@
 import bb.cascades 1.4
+import "queue.js" as Q
 
 // The queue as the engine has it: cover, title, artist and album, the playing row in red. A tap
 // jumps. Edit Order puts the list in the system's rearrange mode (drag a row by its grip);
@@ -13,6 +14,7 @@ Page {
     property bool editing: false
     property int moveFrom: -1
     property int moveTo: -1
+    property bool stale: false      // the engine's queue changed during a drag
 
     function esc(s) {
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -55,51 +57,41 @@ Page {
         }
     }
 
-    // The engine's queue. A full rebuild puts the list back at the playing row, so the small
-    // changes are applied in place: the same order (our own move, come back), a tail appended
-    // (the radio), one row gone (Remove).
-    function fill(result) {
-        var items = result.items ? result.items : [];
-        var old = tracks;
-        var n = old.length;
-        var same = 0;
-        while (same < n && same < items.length && old[same].id == items[same].id) {
-            same ++;
+    // The row the model shows as playing, or -1.
+    function currentRow() {
+        for (var m = 0; m < queueModel.size(); m ++) {
+            if (queueModel.value(m).current) {
+                return m;
+            }
         }
-        if (n > 0 && same == n && items.length >= n) {
-            var rows = [];
-            for (var i = n; i < items.length; i ++) {
-                rows.push(entry(items[i], false));
-            }
-            if (rows.length > 0) {
-                queueModel.append(rows);
-            }
-            tracks = items;
-            mark();
+        return -1;
+    }
+
+    // The engine's queue. A full rebuild puts the list back at the playing row, so the small
+    // changes are applied in place (queue.js: diff).
+    function fill(result) {
+        if (moveFrom >= 0) {
+            stale = true;       // not under the finger: dropped() asks again
             return;
         }
-        if (n > 1 && items.length == n - 1) {
-            var rest = true;
-            for (var k = same; k < items.length; k ++) {
-                if (old[k + 1].id != items[k].id) {
-                    rest = false;
-                    break;
-                }
-            }
-            if (rest) {
-                queueModel.removeAt(same);
-                tracks = items;
-                marked = -1;
-                for (var m = 0; m < queueModel.size(); m ++) {
-                    if (queueModel.value(m).current) {
-                        marked = m;
-                    }
-                }
-                mark();
-                return;
-            }
+        var items = result.items ? result.items : [];
+        var change = Q.diff(tracks, items);
+        if (change.op == "rebuild") {
+            rebuild(items);
+            return;
         }
-        rebuild(items);
+        if (change.op == "append") {
+            var rows = [];
+            for (var i = change.from; i < items.length; i ++) {
+                rows.push(entry(items[i], false));
+            }
+            queueModel.append(rows);
+        } else if (change.op == "remove") {
+            queueModel.removeAt(change.at);
+            marked = currentRow();
+        }
+        tracks = items;
+        mark();
     }
 
     function refresh() {
@@ -107,35 +99,50 @@ Page {
     }
 
     // The current track moved without the queue changing: re-mark two rows, keep the scroll.
+    // Not while a row is being dragged: the model is then ahead of `tracks`, and the drop
+    // calls here again.
     function mark() {
-        if (marked == player.index || tracks.length != queueModel.size()) {
+        if (moveFrom >= 0) {
+            return;
+        }
+        var items = tracks;
+        if (marked == player.index || items.length != queueModel.size()) {
             return;
         }
         var old = marked;
         marked = player.index;
-        if (old >= 0 && old < tracks.length) {
-            queueModel.replace(old, entry(tracks[old], false));
+        if (old >= 0 && old < items.length) {
+            queueModel.replace(old, entry(items[old], false));
         }
-        if (marked >= 0 && marked < tracks.length) {
-            queueModel.replace(marked, entry(tracks[marked], true));
+        if (marked >= 0 && marked < items.length) {
+            queueModel.replace(marked, entry(items[marked], true));
+        }
+    }
+
+    // The row was let go (or the drag was cut short: where it was left is where it stays): the
+    // same move in our copy and in the engine, then the playing row, which may have changed.
+    function dropped() {
+        var from = moveFrom;
+        moveFrom = -1;
+        if (from >= 0 && moveTo != from) {
+            moved(from, moveTo);
+            engine.request("queue_move", {
+                "from": from,
+                "to": moveTo
+            });
+        }
+        mark();
+        if (stale) {
+            stale = false;
+            refresh();
         }
     }
 
     // A row dragged from one place to another: the same move in our copy of the queue, so that
     // the engine's answer finds nothing to rebuild.
     function moved(from, to) {
-        var copy = [];
-        for (var i = 0; i < tracks.length; i ++) {
-            copy.push(tracks[i]);
-        }
-        var t = copy.splice(from, 1)[0];
-        copy.splice(to, 0, t);
-        tracks = copy;
-        for (var m = 0; m < queueModel.size(); m ++) {
-            if (queueModel.value(m).current) {
-                marked = m;
-            }
-        }
+        tracks = Q.moved(tracks, from, to);
+        marked = currentRow();
     }
 
     function setEditing(on) {
@@ -180,13 +187,23 @@ Page {
     }
 
     // Called by main.qml when the page has been popped.
+    // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
             engine.event.disconnect(page.onEvent);
+        } catch (e0) {
+        }
+        try {
             engine.reply.disconnect(page.onReply);
+        } catch (e1) {
+        }
+        try {
             thumbs.ready.disconnect(page.onThumb);
+        } catch (e2) {
+        }
+        try {
             player.changed.disconnect(page.mark);
-        } catch (e) {
+        } catch (e3) {
         }
     }
 
@@ -336,25 +353,14 @@ Page {
                     page.moveTo = event.toIndexPath[0];
                 }
                 onMoveEnded: {
-                    if (page.moveFrom >= 0 && page.moveTo != page.moveFrom) {
-                        page.moved(page.moveFrom, page.moveTo);
-                        engine.request("queue_move", {
-                            "from": page.moveFrom,
-                            "to": page.moveTo
-                        });
-                    }
-                    page.moveFrom = -1;
+                    page.dropped();
                 }
                 onMoveAborted: {
-                    // Where the row was left is where it stays: tell the engine the same.
-                    if (page.moveFrom >= 0 && page.moveTo != page.moveFrom) {
-                        page.moved(page.moveFrom, page.moveTo);
-                        engine.request("queue_move", {
-                            "from": page.moveFrom,
-                            "to": page.moveTo
-                        });
-                    }
-                    page.moveFrom = -1;
+                    page.dropped();
+                }
+                // Should the system leave rearrange mode by itself, the action says so.
+                onActiveChanged: {
+                    page.editing = active;
                 }
             }
 
@@ -372,7 +378,7 @@ Page {
                 }
                 engine.request("queue_move", {
                     "from": index,
-                    "to": index > cur ? cur + 1 : cur
+                    "to": Q.nextSlot(index, cur)
                 });
             }
 

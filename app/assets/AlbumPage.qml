@@ -32,9 +32,11 @@ Page {
     }
 
     function fill(result) {
+        // A local copy for the loop: reading the `tracks` property converts the whole list each time.
+        var items = result.items ? result.items : [];
         info = result;
         isAlbum = result.kind == "album";
-        tracks = result.items ? result.items : [];
+        tracks = items;
         var rows = [ {
                 "rowType": "head",
                 "title": result.title,
@@ -44,8 +46,8 @@ Page {
                 "thumbUrl": result.thumb ? result.thumb : "",
                 "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
             } ];
-        for (var i = 0; i < tracks.length; i ++) {
-            var t = tracks[i];
+        for (var i = 0; i < items.length; i ++) {
+            var t = items[i];
             var sub;
             if (isAlbum) {
                 // The album's artist is in the header: a row names its own only when it differs.
@@ -83,10 +85,7 @@ Page {
     }
 
     function shuffled() {
-        var copy = [];
-        for (var i = 0; i < tracks.length; i ++) {
-            copy.push(tracks[i]);
-        }
+        var copy = tracks;      // reading the property gives a fresh array
         for (var k = copy.length - 1; k > 0; k --) {
             var j = Math.floor(Math.random() * (k + 1));
             var t = copy[k];
@@ -94,6 +93,18 @@ Page {
             copy[j] = t;
         }
         return copy;
+    }
+
+    function viewArtist() {
+        if (! info || ! info.artist_id) {
+            notice.body = "This artist has no page.";
+            notice.show();
+            return;
+        }
+        var p = shelfPage.createObject();
+        p.navPane = navPane;
+        p.browseId = info.artist_id;
+        navPane.push(p);
     }
 
     function queueAdd(items, next) {
@@ -130,11 +141,15 @@ Page {
     }
 
     // Called by main.qml when the page has been popped.
+    // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
             engine.reply.disconnect(page.onReply);
+        } catch (e0) {
+        }
+        try {
             thumbs.ready.disconnect(page.onThumb);
-        } catch (e) {
+        } catch (e1) {
         }
     }
 
@@ -189,6 +204,14 @@ Page {
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
                 page.queueAdd(page.tracks, false);
+            }
+        },
+        ActionItem {
+            title: "View Artist"
+            imageSource: "asset:///images/ic_artist.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                page.viewArtist();
             }
         },
         InvokeActionItem {
@@ -406,8 +429,14 @@ Page {
         }
     }
 
-    attachedObjects: SystemToast {
-        id: notice
-        autoUpdateEnabled: true
-    }
+    attachedObjects: [
+        SystemToast {
+            id: notice
+            autoUpdateEnabled: true
+        },
+        ComponentDefinition {
+            id: shelfPage
+            source: "ShelfPage.qml"
+        }
+    ]
 }

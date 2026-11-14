@@ -69,9 +69,14 @@ Page {
     function open(item) {
         if (item.kind == "album" || item.kind == "playlist") {
             openBrowse(item.id);
+        } else if (item.kind == "artist") {
+            var p = shelfPage.createObject();
+            p.navPane = navPane;
+            p.browseId = item.id;
+            navPane.push(p);
         } else {
-            // Artist pages and stations come in a later step.
-            notice.body = item.kind == "artist" ? "Artist pages are not built yet." : "Not yet";
+            // A station: a later step.
+            notice.body = "Not yet";
             notice.show();
         }
     }
@@ -262,7 +267,7 @@ Page {
                 text: "Artists"
                 value: "artists"
             }
-            onSelectedIndexChanged: {
+            onSelectedValueChanged: {
                 if (page.query != "") {
                     page.runSearch(page.query);
                 }
@@ -436,6 +441,10 @@ Page {
         ComponentDefinition {
             id: albumPage
             source: "AlbumPage.qml"
+        },
+        ComponentDefinition {
+            id: shelfPage
+            source: "ShelfPage.qml"
         }
     ]
 }

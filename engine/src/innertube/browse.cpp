@@ -150,9 +150,16 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
     return true;
 }
 
+std::string browse_id(const std::string &id) {
+    for (const char *known : {"MPRE", "VL", "UC", "FE"})
+        if (id.rfind(known, 0) == 0) return id;
+    return "VL" + id;
+}
+
 bool browse(InnerTube &yt, const std::string &id, BrowsePage &out, std::string &err) {
+    const std::string page = browse_id(id);
     JsonDoc doc;
-    return yt.post("browse", "\"browseId\":" + json_quote(id), doc, err) && parse_browse(doc.root(), id, out, err);
+    return yt.post("browse", "\"browseId\":" + json_quote(page), doc, err) && parse_browse(doc.root(), page, out, err);
 }
 
 bool parse_browse_more(Json response, BrowsePage &out, std::string &err) {

@@ -87,13 +87,20 @@ void Thumbs::onEvent(QString name, QVariantMap fields)
         store(fields.value("url").toString(), fields.value("size").toInt(), fields.value("file").toString());
 }
 
-// A new engine has forgotten what it was asked: what is still unanswered may be asked again.
+// A new engine has forgotten what it was asked: what is still unanswered is asked again once
+// the link is back (the rows that wait for it will not call file() a second time).
 void Thumbs::onConnectedChanged()
 {
     if (m_engine->connected()) {
         flush();
-    } else {
-        m_asked.clear();
-        m_requests.clear();
+        return;
+    }
+    m_requests.clear();
+    foreach (const QString &key, m_asked) {
+        const int bar = key.indexOf('|');
+        const QString url = key.mid(bar + 1);
+        QStringList &list = m_pending[key.left(bar).toInt()];
+        if (!list.contains(url))
+            list.append(url);
     }
 }

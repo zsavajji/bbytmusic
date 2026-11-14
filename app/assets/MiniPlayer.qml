@@ -54,6 +54,7 @@ Container {
         horizontalAlignment: HorizontalAlignment.Left
         verticalAlignment: VerticalAlignment.Top
         preferredHeight: ui.px(4)
+        implicitLayoutAnimationsEnabled: false      // it changes four times a second
         preferredWidth: player.durationMs > 0 ? mini.stripWidth * player.positionMs / player.durationMs : 0
         background: Color.create("#ff0000")
     }

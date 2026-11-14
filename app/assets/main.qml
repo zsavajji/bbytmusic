@@ -3,7 +3,9 @@ import bb.system 1.2
 
 // The root. As in the stock music player the tabs live in the tab menu (bottom left), which
 // leaves each page's action bar to its own actions. Each tab is a NavigationPane: albums, the
-// queue and Now Playing are pushed on whichever is open.
+// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
+// Recent and Queue are loaded by a delegate when first opened, so a fault in one of them costs
+// that tab and not the app's start.
 TabbedPane {
     id: root
     showTabsOnActionBar: false
@@ -55,16 +57,29 @@ TabbedPane {
     }
 
     Tab {
+        title: "Home"
+        imageSource: "asset:///images/ic_home.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "HomeTab.qml"
+        }
+    }
+
+    Tab {
+        title: "Recent"
+        imageSource: "asset:///images/ic_recent.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "RecentTab.qml"
+        }
+    }
+
+    Tab {
         title: "Queue"
         imageSource: "asset:///images/ic_queue.png"
-        NavigationPane {
-            id: queueNav
-            QueuePage {
-                navPane: queueNav
-            }
-            onPopTransitionEnded: {
-                root.retire(page);
-            }
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "QueueTab.qml"
         }
     }
 

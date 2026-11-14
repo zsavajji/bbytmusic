@@ -135,5 +135,11 @@ int main() {
         CHECK(!parse_browse_more(empty.root(), more, err));
         CHECK_EQ(err, std::string("browse: no continuation in the response"));
     }
+    CHECK_EQ(browse_id("MPREb_W0LXV3Jg2OV"), "MPREb_W0LXV3Jg2OV");
+    CHECK_EQ(browse_id("VLPL123"), "VLPL123");
+    CHECK_EQ(browse_id("UCvMA46Xu1xApqZyXFIrnukw"), "UCvMA46Xu1xApqZyXFIrnukw");
+    CHECK_EQ(browse_id("FEmusic_home"), "FEmusic_home");
+    CHECK_EQ(browse_id("PL123"), "VLPL123");
+    CHECK_EQ(browse_id("OLAK5uy_x"), "VLOLAK5uy_x");
     return check_done();
 }
