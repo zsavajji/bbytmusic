@@ -1,6 +1,6 @@
 import bb.cascades 1.2
 
-// The bar at the bottom of a page: title, artist, Play/Pause; a tap on the text opens Now Playing
+// The bar at the bottom of a page: title, artist, a Play/Pause icon; a tap on the text opens Now Playing
 // on navPane. Hidden when nothing is loaded.
 Container {
     id: mini
@@ -23,10 +23,9 @@ Container {
 
     Container {
         verticalAlignment: VerticalAlignment.Center
-        // Half the bar is always the text, the way into Now Playing: with two buttons at their
-        // preferred widths nothing was left of it (0.1.0.5).
+        // The text takes all the bar but the icon: it is the way into Now Playing.
         layoutProperties: StackLayoutProperties {
-            spaceQuota: 2
+            spaceQuota: 1
         }
         Label {
             text: player.title
@@ -42,24 +41,14 @@ Container {
             }
         }
     }
-    Button {
-        text: player.playing ? "Pause" : "Play"
-        layoutProperties: StackLayoutProperties {
-            spaceQuota: 1
-        }
+    // One control, an icon: Play or Pause. Everything else is on Now Playing (the user, 0.1.0.6).
+    ImageButton {
+        defaultImageSource: player.playing ? "asset:///images/ic_pause.png" : "asset:///images/ic_play.png"
+        preferredWidth: ui.du(9)
+        preferredHeight: ui.du(9)
         verticalAlignment: VerticalAlignment.Center
         onClicked: {
             engine.request("toggle", {});
-        }
-    }
-    Button {
-        text: "Next"
-        layoutProperties: StackLayoutProperties {
-            spaceQuota: 1
-        }
-        verticalAlignment: VerticalAlignment.Center
-        onClicked: {
-            engine.request("next", {});
         }
     }
 
