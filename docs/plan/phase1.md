@@ -156,6 +156,16 @@ Marked here as they come up; each has what was done meanwhile.
 4. **Branch.** Phase 1 is on `phase1`; `master` has the plan and Phase 0. Nothing is pushed
    (there is no remote).
 
+5. **Which SQLite on the phone.** The engine links the phone's own (3.7.14.1 from 2012; it has
+   WAL) instead of compiling in a current amalgamation as PLAN.md §8 says. It works for what
+   the store does today and saves about 1 MB. Say if you want the amalgamation anyway.
+6. **Platform code pulled forward.** The BB10 speaker sink, the navigator connection and the
+   now-playing client (steps 2.2 and 2.9, engine side) were built during Phase 1 because a
+   sub-agent was free, and so was a first UI shell (2.3–2.8). Phase 1's own steps were not held
+   up by it.
+7. **`Item` could carry a type label and a year** ("Single", "EP", 1987). They are inside
+   `subtitle` today. Not added.
+
 ## Results
 
 ### 1.1a and 1.2 — skeleton, util, net (commit 72f3649, 2026-11-14)
