@@ -98,5 +98,42 @@ int main() {
         CHECK(!parse_browse(d.root(), "MPREb_x", p, e));
         CHECK(!e.empty());
     }
+    {   // A feed and its continuation
+        JsonDoc d;
+        BrowsePage p;
+        CHECK(load("browse_home.json", d) && parse_browse(d.root(), "FEmusic_home", p, err));
+        CHECK_EQ(p.kind, std::string("feed"));
+        CHECK_EQ(p.id, std::string("FEmusic_home"));
+        CHECK_EQ(p.sections.size(), size_t(3));
+        CHECK_EQ(p.sections.at(0).title, std::string("Featured playlists for you"));
+        CHECK_EQ(p.sections.at(1).title, std::string("New releases"));
+        CHECK_EQ(p.sections.at(2).title, std::string("Trending songs for you"));
+        CHECK(!p.continuation.empty());
+        CHECK_EQ(p.sections[1].items.at(0).kind, std::string("album"));
+        CHECK_EQ(p.sections[1].items.at(0).title, std::string("GIANNAGOLD"));
+        CHECK(!p.sections[2].items.empty());
+        for (const Item &it : p.sections[2].items) {
+            CHECK(it.kind == "song" || it.kind == "video");
+            CHECK(!it.artist.empty());
+        }
+        CHECK_EQ(p.sections[2].items[0].artist, std::string("Future"));
+        CHECK_EQ(p.sections[2].items[0].plays, std::string("6M plays"));
+
+        JsonDoc m;
+        BrowsePage more;
+        CHECK(load("browse_home_more.json", m) && parse_browse_more(m.root(), more, err));
+        CHECK_EQ(more.sections.size(), size_t(1));
+        CHECK_EQ(more.sections.at(0).title, std::string("Covers and remixes"));
+        CHECK_EQ(more.sections[0].items.size(), size_t(4));
+        CHECK_EQ(more.continuation, std::string(""));
+
+        JsonDoc empty;
+        std::string e;
+        CHECK(JsonDoc::parse("{}", empty, e));
+        CHECK(!parse_browse(empty.root(), "FEmusic_home", p, err));
+        CHECK_EQ(err, std::string("browse: no feed in the response"));
+        CHECK(!parse_browse_more(empty.root(), more, err));
+        CHECK_EQ(err, std::string("browse: no continuation in the response"));
+    }
     return check_done();
 }

@@ -126,6 +126,30 @@ int main() {
         CHECK(recent_history(db, 50, h, err));
         CHECK_EQ(h.size(), size_t(4));
     }
+    {  // the tracks played: each once, its latest time, newest first; unknown tracks left out
+        Db db;
+        CHECK(open_store(db, path, err));
+        CHECK(upsert_track(db, track("c", "Gamma"), err));
+        CHECK(add_history(db, "ghost", 900, 1, err));  // not in tracks
+        std::vector<PlayedTrack> p;
+        CHECK(recent_tracks(db, 10, p, err));
+        // a: 100, b: 300, c: 200, d: 300 (d is not a track here), ghost: 900
+        CHECK_EQ(p.size(), size_t(3));
+        CHECK_EQ(p[0].track.id, "b");
+        CHECK_EQ(p[0].played_at, 300);
+        CHECK_EQ(p[0].track.title, "Beta");
+        CHECK_EQ(p[1].track.id, "c");
+        CHECK_EQ(p[1].played_at, 200);
+        CHECK_EQ(p[2].track.id, "a");
+        CHECK_EQ(p[2].played_at, 100);
+        CHECK(add_history(db, "a", 250, 1, err));  // a again: once, at its latest
+        CHECK(recent_tracks(db, 10, p, err));
+        CHECK_EQ(p.size(), size_t(3));
+        CHECK_EQ(p[1].track.id, "a");
+        CHECK_EQ(p[1].played_at, 250);
+        CHECK(recent_tracks(db, 2, p, err));
+        CHECK_EQ(p.size(), size_t(2));
+    }
     {  // WAL: a second connection reads while the first has a write open
         Db w, r;
         CHECK(open_store(w, path, err));

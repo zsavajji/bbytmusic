@@ -269,7 +269,22 @@ int main() {
         const size_t mark = c.events.size();
         CHECK(parse(c.cmd("toggle"), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "playing"; }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 3000; }, 5000, mark) >= 0);
+        const size_t stopped = c.events.size();
         CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "stopped"; }, 5000, stopped) >= 0);
+
+        // history: the track just heard, first, once.
+        Json h = parse(c.cmd("history"), d)["result"];
+        CHECK_EQ(h["items"][0]["id"].string(), "b");
+        CHECK_EQ(h["items"][0]["title"].string(), "Tone B");
+        CHECK(h["items"][0]["played_at"].i64() > 0);
+        CHECK_EQ(h["items"].size(), size_t(2));   // b and a, each once
+        h = parse(c.cmd("history", "\"limit\":1"), d)["result"];
+        CHECK_EQ(h["items"].size(), size_t(1));
+        // a limit that is no number is the default; a negative one is the least, 1
+        CHECK_EQ(parse(c.cmd("history", "\"limit\":\"x\""), d)["result"]["items"].size(), size_t(2));
+        CHECK_EQ(parse(c.cmd("history", "\"limit\":-5"), d)["result"]["items"].size(), size_t(1));
     }
 
     // The history: a row per track left, with what was heard of it.

@@ -14,3 +14,14 @@ next_more.json        next            "continuation": the token of next_radio.js
 
 The service changes shape from time to time (search_all.json is the flat layout, one
 itemSectionRenderer per result; search_songs.json has a musicShelfRenderer). Re-record, do not edit.
+
+Added later the same day, the same way:
+search_albums.json    search          "query":"in the aeroplane over the sea","params":"EgWKAQIYAWoSEAQQAxAFEAoQEBAJEBUQDhAR"   (Albums)
+browse_album.json     browse          "browseId":"MPREb_W0LXV3Jg2OV"
+browse_playlist.json  browse          "browseId":"VLRDCLAK5uy_kVuz2Y7g6AUnbFdB2hLHo6EH8ieytGHbg"
+browse_artist.json    browse          "browseId":"UCvMA46Xu1xApqZyXFIrnukw"
+browse_home.json      browse          "browseId":"FEmusic_home"
+browse_home_more.json browse          "continuation": the token of browse_home.json's section list; this one needs the
+                                      first response's responseContext.visitorData as context.client.visitorData and as
+                                      the X-Goog-Visitor-Id header (without it the answer is empty)
+The home feed follows the requester's country whatever "gl" says.

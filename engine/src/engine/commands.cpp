@@ -1,11 +1,13 @@
 // Engine: the commands of docs/protocol.md. Each runs on the reader thread of its connection.
 #include <algorithm>
+#include <future>
 
 #include "engine/engine.h"
 #include "engine/item_json.h"
 #include "innertube/browse.h"
 #include "innertube/next.h"
 #include "innertube/search.h"
+#include "store/history_store.h"
 #include "store/settings.h"
 #include "stream/resolve.h"
 #include "util/log.h"
@@ -178,6 +180,37 @@ void Engine::add_commands() {
         if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e); }, err))
             return Reply::error("network", err);
         return ok(browse_page_json(page));
+    });
+    server_.on("browse_more", [this](Json req) {
+        if (!req["continuation"].is_string() || req["continuation"].str().empty()) return bad("continuation is required");
+        BrowsePage page;
+        std::string err;
+        const std::string c = req["continuation"].string();
+        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse_more(yt, c, page, e); }, err))
+            return Reply::error("network", err);
+        return ok(browse_more_json(page));
+    });
+    server_.on("history", [this](Json req) {
+        // a limit that is not a number is the default
+        const int n = int(std::clamp<int64_t>(req["limit"].is_number() ? req["limit"].i64() : 50, 1, 200));
+        struct Answer {
+            std::vector<PlayedTrack> rows;
+            std::string err;
+            bool ok = false;
+        };
+        auto answer = std::make_shared<Answer>();   // shared: the job may run after the wait gave up
+        auto done = std::make_shared<std::promise<void>>();
+        std::future<void> f = done->get_future();
+        post([this, n, answer, done] {   // the store is the worker's alone
+            answer->ok = db_ok_ && recent_tracks(db_, n, answer->rows, answer->err);
+            done->set_value();
+        });
+        if (!db_ok_ || f.wait_for(std::chrono::seconds(3)) != std::future_status::ready)
+            return Reply::error("internal", "the store is not available");
+        if (!answer->ok) return Reply::error("internal", "the store: " + answer->err);
+        std::string out = "{\"items\":[";
+        for (size_t i = 0; i < answer->rows.size(); i++) out += (i ? "," : "") + played_json(answer->rows[i]);
+        return ok(out + "]}");
     });
     server_.on("repeat", [this](Json req) {
         Repeat mode;

@@ -28,4 +28,19 @@ bool recent_history(Db &db, int n, std::vector<HistoryRow> &out, std::string &er
     return true;
 }
 
+bool recent_tracks(Db &db, int n, std::vector<PlayedTrack> &out, std::string &err) {
+    std::lock_guard<std::recursive_mutex> lk(db.mu());
+    out.clear();
+    Stmt s;
+    if (!s.prepare(db,
+                   (std::string("SELECT ") + kTrackColumns +
+                    ",MAX(h.played_at) AS last FROM history h JOIN tracks t ON t.id=h.track_id "
+                    "GROUP BY h.track_id ORDER BY last DESC,MAX(h.id) DESC LIMIT ?").c_str(),
+                   err))
+        return false;
+    s.bind(1, int64_t(n));
+    for (Step r; (r = s.step()) == Step::Row;) out.push_back({read_track(s, 0), s.i64(8)});
+    return true;
+}
+
 }  // namespace bbm

@@ -54,7 +54,17 @@ std::string browse_page_json(const BrowsePage &p) {
                       s("year", p.year) + s("thumb", p.thumb) + s("description", p.description) +
                       s("playlist_id", p.playlist_id) + "\"items\":[";
     for (size_t i = 0; i < p.items.size(); i++) out += (i ? "," : "") + item_json(p.items[i]);
-    return out + "],\"sections\":" + sections_json(p.sections) + "}";
+    return out + "],\"sections\":" + sections_json(p.sections) + ",\"continuation\":" + json_quote(p.continuation) + "}";
+}
+
+std::string browse_more_json(const BrowsePage &p) {
+    return "{\"sections\":" + sections_json(p.sections) + ",\"continuation\":" + json_quote(p.continuation) + "}";
+}
+
+std::string played_json(const PlayedTrack &t) {
+    std::string j = item_json(from_row(t.track));
+    j.pop_back();   // the closing brace
+    return j + ",\"played_at\":" + std::to_string(t.played_at) + "}";
 }
 
 bool playable(const Item &i) { return (i.kind == "song" || i.kind == "video") && !i.id.empty(); }

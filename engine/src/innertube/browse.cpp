@@ -6,6 +6,25 @@ namespace bbm {
 
 namespace {
 
+// A carousel shelf as a section; empty when it holds no item parse_item takes.
+SearchSection carousel_section(Json car) {
+    SearchSection s;
+    s.title = runs_text(car["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]);
+    for (Json r : car["contents"].items()) {
+        Item it;
+        if (parse_item(r, it)) s.items.push_back(std::move(it));
+    }
+    return s;
+}
+
+// The shelves of a feed's section list, and the token of the next ones.
+void read_feed(Json list, BrowsePage &p) {
+    for (Json c : list["contents"].items())
+        if (Json car = c["musicCarouselShelfRenderer"]; !car.is_null())
+            if (SearchSection s = carousel_section(car); !s.items.empty()) p.sections.push_back(std::move(s));
+    p.continuation = list["continuations"][0]["nextContinuationData"]["continuation"].string();
+}
+
 bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::string &err) {
     Json header = response["header"];
     Json h = header["musicImmersiveHeaderRenderer"];
@@ -40,12 +59,7 @@ bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::st
                 p.items.push_back(std::move(it));
             }
         } else if (Json car = c["musicCarouselShelfRenderer"]; !car.is_null()) {
-            SearchSection s;
-            s.title = runs_text(car["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]);
-            for (Json r : car["contents"].items()) {
-                Item it;
-                if (parse_item(r, it)) s.items.push_back(std::move(it));
-            }
+            SearchSection s = carousel_section(car);
             if (!s.items.empty()) p.sections.push_back(std::move(s));
         }
     }
@@ -58,6 +72,18 @@ bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::st
 bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::string &err) {
     out = BrowsePage{};
     if (id.rfind("UC", 0) == 0) return parse_artist(response, id, out, err);
+    if (id.rfind("FE", 0) == 0) {
+        Json list = response["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                            ["sectionListRenderer"];
+        if (list.is_null()) {
+            err = "browse: no feed in the response";
+            return false;
+        }
+        out.kind = "feed";
+        out.id = id;
+        read_feed(list, out);
+        return true;
+    }
     Json two = response["contents"]["twoColumnBrowseResultsRenderer"];
     Json h = two["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]
                 ["musicResponsiveHeaderRenderer"];
@@ -127,6 +153,23 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
 bool browse(InnerTube &yt, const std::string &id, BrowsePage &out, std::string &err) {
     JsonDoc doc;
     return yt.post("browse", "\"browseId\":" + json_quote(id), doc, err) && parse_browse(doc.root(), id, out, err);
+}
+
+bool parse_browse_more(Json response, BrowsePage &out, std::string &err) {
+    out = BrowsePage{};
+    Json list = response["continuationContents"]["sectionListContinuation"];
+    if (list.is_null()) {
+        err = "browse: no continuation in the response";
+        return false;
+    }
+    read_feed(list, out);
+    return true;
+}
+
+bool browse_more(InnerTube &yt, const std::string &continuation, BrowsePage &out, std::string &err) {
+    JsonDoc doc;
+    return yt.post("browse", "\"continuation\":" + json_quote(continuation), doc, err) &&
+           parse_browse_more(doc.root(), out, err);
 }
 
 }  // namespace bbm
