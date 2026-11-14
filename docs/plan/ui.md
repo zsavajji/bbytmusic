@@ -2,7 +2,7 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.24). The user first
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.25). The user first
 opened one, 0.1.0.19, that evening, and has been sending remarks since. Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.24, 2026-11-14)
+## What exists (0.1.0.25, 2026-11-14)
 
 ```
 app/
@@ -55,18 +55,19 @@ app/
 ├── tests/
 │   └── queue_test.js      `node app/tests/queue_test.js`: checks assets/queue.js
 └── assets/
-    ├── main.qml           TabbedPane with the tabs on the action bar: Home, Search (inline),
-    │                      Queue, Recent and Explore (the others each a Tab delegate, created
-    │                      when first opened; Home at start); application menu: Settings, Stop, About; the error toast
+    ├── main.qml           TabbedPane with three tabs on the action bar: Home (a Tab delegate,
+    │                      made at start), Search (inline), Queue (a delegate, made when first
+    │                      opened); application menu: Settings, Stop, About; the error toast
     │                      (also "Skipped a non-music part."); `retire(page)`
     ├── SearchPage.qml     field, suggestions, segmented filter, results by kind with covers
     ├── AlbumPage.qml      an album or a playlist (read page by page): header row, tracks,
     │                      Play / Shuffle
-    ├── ShelfPage.qml      a page of shelves: an artist, or a feed (Home, Explore; More)
-    ├── RecentPage.qml     the listening history
+    ├── ShelfPage.qml      a page of shelves: an artist, or a feed (Home, Explore; More); Home
+    │                      starts with the rows that open Recent and Explore
+    ├── RecentPage.qml     the listening history, pushed from Home
     ├── QueuePage.qml      the queue: covers, rearrange mode, Shuffle, Sort, Clear
     ├── queue.js           the Queue page's arithmetic (diff, move, the slot for Play Next)
-    ├── HomeTab.qml, ExploreTab.qml, RecentTab.qml, QueueTab.qml
+    ├── HomeTab.qml, QueueTab.qml
     │                      the NavigationPanes the delegates load
     ├── NowPlayingPage.qml the stock player's layout
     ├── TrackInfo.qml      the Properties sheet
@@ -115,7 +116,7 @@ Measured on the stock player (720 × 720, 9 px per du):
 | action bar | Back, Previous, Pause (Signature), Next, ⋮ | the same, as `ActionItem`s; the Signature colour is the theme's red |
 | ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, View Artist, Start Radio, Share, Equalizer (Off/On), Properties (favourites and playlists need an account, Phase 4) |
 | library: segmented control, rows with an 88 px cover at the left edge | | Search's filter is that control; rows are `StandardListItem`s with `imageSource` |
-| library action bar: tab menu, Shuffle (Signature), ⋮ | | not followed since 0.1.0.24: the user wanted the tabs on the bar and no Signature action there |
+| library action bar: tab menu, Shuffle (Signature), ⋮ | | not followed since 0.1.0.25: the user wanted the tabs on the bar and no Signature action there |
 | tabs in the tab menu, not on the bar | | `showTabsOnActionBar: true` (the user, see below) |
 
 From YTMusicWP's screens, what each of ours must be able to do:
@@ -160,11 +161,20 @@ and three more remarks:
 - "now the bottom bar is useless, can you add some contained actions on it? without the
   "main" one? like, what now are tabs could me moved on the bottom": the tabs are on the action
   bar (`showTabsOnActionBar: true`), in the order Home, Search, Queue, Recent, Explore (Home
-  first since 0.1.0.24: "home should be default no?"; it is the tab the app opens on); what
+  first since 0.1.0.25: "home should be default no?"; it is the tab the app opens on); what
   does not fit is in the tab menu at the bar's left. A tab's first page then has its actions in
   the action menu, so the Queue's Shuffle and Recent's Play All are ordinary actions, not
   Signature ones. Pushed pages keep theirs (an album's and an artist's Play, Now Playing's
   Play/Pause). This undoes "tabs in the tab menu, as the stock player" above.
+- From a screenshot of the Queue tab on 0.1.0.23 (`debug/shots/IMG_20261114_204703.png`: the
+  bar held the tab menu's button, Home, Search, Queue and ⋮): "i don't like the fact that the
+  tabs shuffle around", then "it's either you keep the bottom bar always the same or you go
+  back to the other layout on the slideout". With five tabs the two that did not fit lived in
+  the tab menu and took another's place on the bar when chosen. Since 0.1.0.25 there are
+  **three tabs, Home, Search and Queue**, which is what the Q10's bar shows beside ⋮, so the bar
+  never changes. **Recent and Explore open from two rows at the top of Home** (pushed pages:
+  Recent's Play All is then on its own bar). Do not add a fourth tab without seeing that it
+  fits on the bar on every tab's first page, with and without ⋮.
 - "the stop button should not be present in the quick menu in the player, why is it
   necessary?": it is not; gone from Now Playing's menu. Stop is still in the application menu
   (swipe down), where it has been since 0.1.0.4; not asked about.
@@ -244,7 +254,7 @@ already bit here or will:
 documents compiled on the phone (the `check:` lines), the restored queue came back paused, Home,
 Explore and Queue opened, a drag in Edit Order reached the engine as `queue_move`, 140 covers
 were fetched, and neither log has an error. What they said is under "What the user decided".
-They then looked at 0.1.0.20 (a screenshot of the queue) and sent four more remarks; **0.1.0.24,
+They then looked at 0.1.0.20 (a screenshot of the queue) and sent four more remarks; **0.1.0.25,
 with all of it, is installed and not yet reported on.** The search, the album and
 artist pages, Now Playing, Recent, the equalizer, Settings and SponsorBlock have not been
 reported on (nothing was played in that session). The engine's additions ran live on the Mac

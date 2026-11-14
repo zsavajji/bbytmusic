@@ -2,12 +2,15 @@ import bb.cascades 1.4
 import bb.system 1.2
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
-// bar of a tab's first page was all but empty); what does not fit goes to the tab menu at the
-// bar's left, so the order is by use, Home first: it is the tab the app opens on (the user). A tab's first page then has its actions in the action
-// menu; a pushed page has the bar to itself. Each tab is a NavigationPane: albums, the
-// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
-// Recent and Queue are loaded by a delegate when first opened, so a fault in one of them costs
-// that tab and not the app's start.
+// bar of a tab's first page was all but empty), and there are three, Home, Search and Queue,
+// because three is what the Q10's bar shows beside the action menu: with five, the ones that
+// did not fit lived in the tab menu and took another's place on the bar when chosen ("i don't
+// like the fact that the tabs shuffle around"). Recent and Explore open from the top of Home.
+// A tab's first page has its actions in the action menu; a pushed page has the bar to itself.
+// Home is first: it is the tab the app opens on. Each tab is a NavigationPane: albums, the
+// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home and
+// Queue are loaded by a delegate, so a fault in one of them costs that tab and not the app's
+// start.
 TabbedPane {
     id: root
     showTabsOnActionBar: true
@@ -93,38 +96,6 @@ TabbedPane {
         delegate: Delegate {
             source: "QueueTab.qml"
             // A file that does not load leaves the tab empty: say why.
-            onErrorMessageChanged: {
-                root.delegateFailed(errorMessage);
-            }
-        }
-    }
-
-    Tab {
-        id: recentTab
-        title: "Recent"
-        imageSource: "asset:///images/ic_recent.png"
-        // The history is read when the tab is chosen (and when its page is first made).
-        onTriggered: {
-            if (recentTab.delegate.object && recentTab.delegate.object.refresh) {
-                recentTab.delegate.object.refresh();
-            }
-        }
-        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
-        delegate: Delegate {
-            source: "RecentTab.qml"
-            // A file that does not load leaves the tab empty: say why.
-            onErrorMessageChanged: {
-                root.delegateFailed(errorMessage);
-            }
-        }
-    }
-
-    Tab {
-        title: "Explore"
-        imageSource: "asset:///images/ic_explore.png"
-        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
-        delegate: Delegate {
-            source: "ExploreTab.qml"
             onErrorMessageChanged: {
                 root.delegateFailed(errorMessage);
             }

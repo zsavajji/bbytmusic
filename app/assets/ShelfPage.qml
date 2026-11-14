@@ -108,6 +108,23 @@ Page {
                 "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
             });
         }
+        if (browseId == "FEmusic_home") {
+            // What were tabs of their own until the bar could not hold them (main.qml).
+            rows.push({
+                "rowType": "link",
+                "title": "Recently played",
+                "subtitle": "What you listened to, the latest first",
+                "image": "asset:///images/ic_recent.png",
+                "target": "recent"
+            });
+            rows.push({
+                "rowType": "link",
+                "title": "Explore",
+                "subtitle": "New releases, trending, new videos",
+                "image": "asset:///images/ic_explore.png",
+                "target": "FEmusic_explore"
+            });
+        }
         if (top.length > 0) {
             rows.push({
                 "rowType": "header",
@@ -156,6 +173,15 @@ Page {
         }
         p.navPane = navPane;
         p.browseId = item.id;
+        navPane.push(p);
+    }
+
+    function openLink(target) {
+        var p = target == "recent" ? recentPage.createObject() : artistPage.createObject();
+        p.navPane = navPane;
+        if (target != "recent") {
+            p.browseId = target;
+        }
         navPane.push(p);
     }
 
@@ -386,6 +412,14 @@ Page {
                     StandardListItem {
                         title: ListItemData.title
                     }
+                },
+                ListItemComponent {
+                    type: "link"
+                    StandardListItem {
+                        title: ListItemData.title
+                        description: ListItemData.subtitle
+                        imageSource: ListItemData.image
+                    }
                 }
             ]
 
@@ -401,6 +435,8 @@ Page {
                     page.open(entry.item);
                 } else if (entry.rowType == "more") {
                     page.more();
+                } else if (entry.rowType == "link") {
+                    page.openLink(entry.target);
                 }
             }
         }
@@ -422,6 +458,10 @@ Page {
         ComponentDefinition {
             id: artistPage
             source: "ShelfPage.qml"
+        },
+        ComponentDefinition {
+            id: recentPage
+            source: "RecentPage.qml"
         },
         InvokeActionItem {
             id: shareAction

@@ -2,8 +2,8 @@ import bb.cascades 1.4
 import bb.system 1.2
 
 // What was listened to, the latest first, from the engine's own history (`history`): the
-// "Recently Played" of YTMusicWP's library, with no account needed. A tap plays the track with
-// its radio; Play (the Signature action) plays the list as it stands.
+// "Recently Played" of YTMusicWP's library, with no account needed. Pushed from the top of Home.
+// A tap plays the track with its radio; Play All plays the list as it stands.
 Page {
     id: page
     property variant navPane
@@ -72,8 +72,8 @@ Page {
         }
     }
 
-    // The list is read when the tab is chosen (main.qml), not at every track: it would jump
-    // back to its top under a finger. And once the engine is back after a drop.
+    // The list is read when the page is made, not at every track: it would jump back to its top
+    // under a finger. And once the engine is back after a drop.
     function onEvent(name, fields) {
         if (name == "status") {
             page.refresh();
@@ -93,6 +93,23 @@ Page {
         }
     }
 
+    // Called by the NavigationPane when the page has been popped. One try each: a disconnect
+    // that throws must not leave the others connected.
+    function cleanup() {
+        try {
+            engine.reply.disconnect(page.onReply);
+        } catch (e0) {
+        }
+        try {
+            engine.event.disconnect(page.onEvent);
+        } catch (e1) {
+        }
+        try {
+            thumbs.ready.disconnect(page.onThumb);
+        } catch (e2) {
+        }
+    }
+
     onCreationCompleted: {
         engine.reply.connect(page.onReply);
         engine.event.connect(page.onEvent);
@@ -107,7 +124,6 @@ Page {
         ActionItem {
             title: "Play All"
             imageSource: "asset:///images/ic_play.png"
-            // In the action menu: this page is a tab's first, and its bar holds the tabs.
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
                 if (page.tracks.length > 0) {
