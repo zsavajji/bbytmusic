@@ -58,7 +58,9 @@ std::string browse_page_json(const BrowsePage &p) {
 }
 
 std::string browse_more_json(const BrowsePage &p) {
-    return "{\"sections\":" + sections_json(p.sections) + ",\"continuation\":" + json_quote(p.continuation) + "}";
+    std::string out = "{\"items\":[";
+    for (size_t i = 0; i < p.items.size(); i++) out += (i ? "," : "") + item_json(p.items[i]);
+    return out + "],\"sections\":" + sections_json(p.sections) + ",\"continuation\":" + json_quote(p.continuation) + "}";
 }
 
 std::string played_json(const PlayedTrack &t) {

@@ -25,6 +25,14 @@ void read_feed(Json list, BrowsePage &p) {
     p.continuation = list["continuations"][0]["nextContinuationData"]["continuation"].string();
 }
 
+// The token of the trailing continuationItemRenderer of a playlist's rows ("" when the list ends).
+std::string rows_continuation(Json rows) {
+    for (Json r : rows.items())
+        if (Json t = r["continuationItemRenderer"]["continuationEndpoint"]["continuationCommand"]["token"]; t.is_string())
+            return t.string();
+    return "";
+}
+
 bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::string &err) {
     Json header = response["header"];
     Json h = header["musicImmersiveHeaderRenderer"];
@@ -142,6 +150,7 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
         }
         p.items.push_back(std::move(it));
     }
+    if (!album) p.continuation = rows_continuation(shelf["contents"]);
     if (p.items.empty()) {
         err = "browse: no tracks in the response";
         return false;
@@ -165,12 +174,23 @@ bool browse(InnerTube &yt, const std::string &id, BrowsePage &out, std::string &
 bool parse_browse_more(Json response, BrowsePage &out, std::string &err) {
     out = BrowsePage{};
     Json list = response["continuationContents"]["sectionListContinuation"];
-    if (list.is_null()) {
-        err = "browse: no continuation in the response";
-        return false;
+    if (!list.is_null()) {
+        read_feed(list, out);
+        return true;
     }
-    read_feed(list, out);
-    return true;
+    // a playlist's next tracks
+    for (Json a : response["onResponseReceivedActions"].items()) {
+        Json rows = a["appendContinuationItemsAction"]["continuationItems"];
+        if (rows.is_null()) continue;
+        for (Json r : rows.items()) {
+            Item it;
+            if (parse_item(r, it) && (it.kind == "song" || it.kind == "video")) out.items.push_back(std::move(it));
+        }
+        out.continuation = rows_continuation(rows);
+        return true;
+    }
+    err = "browse: no continuation in the response";
+    return false;
 }
 
 bool browse_more(InnerTube &yt, const std::string &continuation, BrowsePage &out, std::string &err) {

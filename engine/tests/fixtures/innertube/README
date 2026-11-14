@@ -24,4 +24,6 @@ browse_home.json      browse          "browseId":"FEmusic_home"
 browse_home_more.json browse          "continuation": the token of browse_home.json's section list; this one needs the
                                       first response's responseContext.visitorData as context.client.visitorData and as
                                       the X-Goog-Visitor-Id header (without it the answer is empty)
+browse_playlist_more.json browse      "continuation": the token of browse_playlist.json's last row (a continuationItemRenderer),
+                                      with that response's visitorData as above
 The home feed follows the requester's country whatever "gl" says.

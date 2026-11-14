@@ -62,6 +62,18 @@ int main() {
         CHECK_EQ(p.items[0].artist, std::string("Dua Lipa"));
         CHECK_EQ(p.items[0].duration_s, 225);
         CHECK(!p.items[0].thumb.empty());
+        CHECK(!p.continuation.empty());
+
+        JsonDoc m;
+        BrowsePage more;
+        CHECK(load("browse_playlist_more.json", m) && parse_browse_more(m.root(), more, err));
+        CHECK_EQ(more.items.size(), size_t(3));
+        CHECK_EQ(more.items.at(0).title, std::string("Screwzooo (feat. Willlean Wiz)"));
+        CHECK_EQ(more.items[0].artist, std::string("ESG"));
+        CHECK(more.items[0].kind == "song" || more.items[0].kind == "video");
+        CHECK(!more.items[0].thumb.empty());
+        CHECK_EQ(more.continuation, std::string(""));
+        CHECK(more.sections.empty());
     }
     {   // An artist
         JsonDoc d;
@@ -126,6 +138,7 @@ int main() {
         CHECK_EQ(more.sections.at(0).title, std::string("Covers and remixes"));
         CHECK_EQ(more.sections[0].items.size(), size_t(4));
         CHECK_EQ(more.continuation, std::string(""));
+        CHECK(more.items.empty());
 
         JsonDoc empty;
         std::string e;
