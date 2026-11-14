@@ -1,0 +1,16 @@
+Recorded 2026-11-14, anonymously (curl, no cookie, no sign-in), from https://music.youtube.com/youtubei/v1/<endpoint>?prettyPrint=false
+Headers: Content-Type: application/json, Origin: https://music.youtube.com, a desktop Chrome User-Agent.
+Every body starts with
+  "context":{"client":{"clientName":"WEB_REMIX","clientVersion":"1.20260707.12.00","hl":"en","gl":"US"}}
+followed by the fields below. No visitorData was sent. The responses carry no account data.
+
+search_all.json       search          "query":"never gonna give you up"
+search_songs.json     search          same query, "params":"EgWKAQIIAWoSEAQQAxAFEAoQEBAJEBUQDhAR"   (Songs)
+search_more.json      search          "continuation": the token of search_songs.json's Songs shelf
+search_explicit.json  search          "query":"eminem lose yourself", Songs params as above (has explicit badges)
+suggestions.json      music/get_search_suggestions   "input":"never gon"
+next_radio.json       next            "videoId":"dQw4w9WgXcQ","playlistId":"RDAMVMdQw4w9WgXcQ","isAudioOnly":true
+next_more.json        next            "continuation": the token of next_radio.json's queue,"isAudioOnly":true
+
+The service changes shape from time to time (search_all.json is the flat layout, one
+itemSectionRenderer per result; search_songs.json has a musicShelfRenderer). Re-record, do not edit.
