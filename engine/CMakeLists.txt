@@ -62,7 +62,7 @@ else()
 endif()
 
 # ---- one library per module -----------------------------------------------------------------
-set(BBM_MODULES util net proto stream media audio innertube player store server)
+set(BBM_MODULES util net proto stream media audio innertube player store platform server)
 set(deps_util)
 set(deps_net util)
 set(deps_proto)
@@ -72,7 +72,8 @@ set(deps_audio util)
 set(deps_innertube net util)
 set(deps_player stream media audio)
 set(deps_store util)
-set(deps_server util net proto stream media audio innertube player store)
+set(deps_platform util)   # BB10 only: its sources are empty on the host (#ifdef __QNX__)
+set(deps_server util net proto stream media audio innertube player store platform)
 
 set(YYJSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/yyjson)
 
@@ -104,6 +105,10 @@ foreach(m ${BBM_MODULES})
     target_link_libraries(net ${vis} bbm_curl)
   elseif(m STREQUAL "media")
     target_link_libraries(media ${vis} bbm_opus)
+  elseif(m STREQUAL "audio" AND BBM_BB10)
+    target_link_libraries(audio ${vis} -lasound -laudio_manager)   # qsa_sink; neither exports an unwinder
+  elseif(m STREQUAL "platform" AND BBM_BB10)
+    target_link_libraries(platform ${vis} -lbps)
   elseif(m STREQUAL "store")
     if(TARGET SQLite3::SQLite3)
       target_link_libraries(store ${vis} SQLite3::SQLite3)
@@ -117,6 +122,12 @@ endforeach()
 add_executable(bbmusicd src/main.cpp)
 target_compile_definitions(bbmusicd PRIVATE BBM_VERSION="${PROJECT_VERSION}")
 target_link_libraries(bbmusicd PRIVATE server)
+
+# The phone's own probe: the real media, audio and platform modules, run from a shell on the Q10.
+if(BBM_BB10 AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tools/bb10_probe.cpp)
+  add_executable(bb10_probe tools/bb10_probe.cpp)
+  target_link_libraries(bb10_probe PRIVATE media audio platform util)
+endif()
 
 # ---- tests: tests/<module>/*_test.cpp, one program each ------------------------------------
 if(NOT BBM_BB10)
