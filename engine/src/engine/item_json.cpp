@@ -31,15 +31,20 @@ std::string item_json(const Item &i) {
            ",\"explicit\":" + (i.is_explicit ? "true" : "false") + "}";
 }
 
-std::string search_page_json(const SearchPage &p) {
-    std::string out = "{\"sections\":[";
-    for (size_t k = 0; k < p.sections.size(); k++) {
+// [{"title":...,"items":[Item...]},...]
+static std::string sections_json(const std::vector<SearchSection> &sections) {
+    std::string out = "[";
+    for (size_t k = 0; k < sections.size(); k++) {
         if (k) out += ",";
-        out += "{\"title\":" + json_quote(p.sections[k].title) + ",\"items\":[";
-        for (size_t j = 0; j < p.sections[k].items.size(); j++) out += (j ? "," : "") + item_json(p.sections[k].items[j]);
+        out += "{\"title\":" + json_quote(sections[k].title) + ",\"items\":[";
+        for (size_t j = 0; j < sections[k].items.size(); j++) out += (j ? "," : "") + item_json(sections[k].items[j]);
         out += "]}";
     }
-    return out + "],\"continuation\":" + json_quote(p.continuation) + "}";
+    return out + "]";
+}
+
+std::string search_page_json(const SearchPage &p) {
+    return "{\"sections\":" + sections_json(p.sections) + ",\"continuation\":" + json_quote(p.continuation) + "}";
 }
 
 std::string browse_page_json(const BrowsePage &p) {
@@ -49,7 +54,7 @@ std::string browse_page_json(const BrowsePage &p) {
                       s("year", p.year) + s("thumb", p.thumb) + s("description", p.description) +
                       s("playlist_id", p.playlist_id) + "\"items\":[";
     for (size_t i = 0; i < p.items.size(); i++) out += (i ? "," : "") + item_json(p.items[i]);
-    return out + "]}";
+    return out + "],\"sections\":" + sections_json(p.sections) + "}";
 }
 
 bool playable(const Item &i) { return (i.kind == "song" || i.kind == "video") && !i.id.empty(); }

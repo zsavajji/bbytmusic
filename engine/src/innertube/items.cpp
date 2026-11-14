@@ -146,6 +146,15 @@ bool parse_responsive(Json r, Item &out) {
     if (out.duration_s == 0)
         out.duration_s = parse_duration(
             runs_text(r["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]));
+    if (out.album.empty())   // an artist's top songs carry their album in the fourth column
+        for (Json run : col(3)["runs"].items()) {
+            Json be = run["navigationEndpoint"]["browseEndpoint"];
+            if (page_type(be) == "MUSIC_PAGE_TYPE_ALBUM") {
+                out.album = run["text"].string();
+                out.album_id = be["browseId"].string();
+                break;
+            }
+        }
     return true;
 }
 

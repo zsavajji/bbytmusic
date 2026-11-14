@@ -56,11 +56,39 @@ int main() {
         CHECK_EQ(p.title, std::string("Billion Views Club - Pop"));
         CHECK_EQ(p.artist, std::string("YouTube Music"));
         CHECK(!p.playlist_id.empty());
+        CHECK(p.sections.empty());
         CHECK(p.items.size() >= 90);
         CHECK_EQ(p.items.at(0).title, std::string("New Rules"));
         CHECK_EQ(p.items[0].artist, std::string("Dua Lipa"));
         CHECK_EQ(p.items[0].duration_s, 225);
         CHECK(!p.items[0].thumb.empty());
+    }
+    {   // An artist
+        JsonDoc d;
+        BrowsePage p;
+        CHECK(load("browse_artist.json", d) && parse_browse(d.root(), "UCvMA46Xu1xApqZyXFIrnukw", p, err));
+        CHECK_EQ(p.kind, std::string("artist"));
+        CHECK_EQ(p.title, std::string("Neutral Milk Hotel"));
+        CHECK_EQ(p.subtitle, std::string("42.5K subscribers"));
+        CHECK(!p.thumb.empty());
+        CHECK(p.description.rfind("Neutral Milk Hotel was an American band", 0) == 0);
+        CHECK_EQ(p.items.size(), size_t(5));
+        const Item &t = p.items.at(0);
+        CHECK_EQ(t.title, std::string("In The Aeroplane Over The Sea"));
+        CHECK_EQ(t.kind, std::string("song"));
+        CHECK_EQ(t.plays, std::string("15M plays"));
+        CHECK_EQ(t.album, std::string("In The Aeroplane Over The Sea"));
+        CHECK(t.album_id.rfind("MPRE", 0) == 0);
+        CHECK_EQ(t.artist, std::string("Neutral Milk Hotel"));
+        const char *want[] = {"Albums", "Singles & EPs", "Videos", "Featured on", "Fans might also like"};
+        CHECK_EQ(p.sections.size(), size_t(5));
+        for (size_t i = 0; i < p.sections.size() && i < 5; i++) CHECK_EQ(p.sections[i].title, std::string(want[i]));
+        const Item &a = p.sections.at(0).items.at(0);
+        CHECK_EQ(a.kind, std::string("album"));
+        CHECK_EQ(a.title, std::string("Ferris Wheel on Fire"));
+        CHECK_EQ(a.year, std::string("2023"));
+        for (const Item &i : p.sections.at(3).items) CHECK_EQ(i.kind, std::string("playlist"));
+        for (const Item &i : p.sections.at(4).items) CHECK_EQ(i.kind, std::string("artist"));
     }
     {   // Nothing to show
         JsonDoc d;

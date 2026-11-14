@@ -4,8 +4,60 @@
 
 namespace bbm {
 
+namespace {
+
+bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::string &err) {
+    Json header = response["header"];
+    Json h = header["musicImmersiveHeaderRenderer"];
+    if (h.is_null()) h = header["musicVisualHeaderRenderer"];
+    BrowsePage p;
+    p.kind = "artist";
+    p.id = id;
+    p.title = runs_text(h["title"]);
+    if (p.title.empty()) {
+        err = "browse: no artist in the response";
+        return false;
+    }
+    const std::string subs = runs_text(h["subscriptionButton"]["subscribeButtonRenderer"]["subscriberCountText"]);
+    if (!subs.empty()) p.subtitle = subs + " subscribers";
+    Json thumb = h["thumbnail"];
+    if (thumb.is_null()) thumb = h["foregroundThumbnail"];
+    p.thumb = pick_thumb(thumb);
+    p.description = runs_text(h["description"]);
+    bool top_done = false;
+    for (Json c : response["contents"]["singleColumnBrowseResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
+                          ["sectionListRenderer"]["contents"].items()) {
+        if (Json shelf = c["musicShelfRenderer"]; !shelf.is_null()) {
+            if (top_done) continue;   // only the first shelf is the top songs
+            top_done = true;
+            for (Json r : shelf["contents"].items()) {
+                Item it;
+                if (!parse_item(r, it) || (it.kind != "song" && it.kind != "video")) continue;
+                if (it.artist.empty()) {
+                    it.artist = p.title;
+                    it.artist_id = id;
+                }
+                p.items.push_back(std::move(it));
+            }
+        } else if (Json car = c["musicCarouselShelfRenderer"]; !car.is_null()) {
+            SearchSection s;
+            s.title = runs_text(car["header"]["musicCarouselShelfBasicHeaderRenderer"]["title"]);
+            for (Json r : car["contents"].items()) {
+                Item it;
+                if (parse_item(r, it)) s.items.push_back(std::move(it));
+            }
+            if (!s.items.empty()) p.sections.push_back(std::move(s));
+        }
+    }
+    out = std::move(p);
+    return true;
+}
+
+}  // namespace
+
 bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::string &err) {
     out = BrowsePage{};
+    if (id.rfind("UC", 0) == 0) return parse_artist(response, id, out, err);
     Json two = response["contents"]["twoColumnBrowseResultsRenderer"];
     Json h = two["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]
                 ["musicResponsiveHeaderRenderer"];
