@@ -245,3 +245,40 @@ an album or artist shows "Not yet"; "Play next" and "Add to queue"; the Queue ta
 playing track, a tap jumps, Remove and Play next keep the order; Now Playing shows a moving
 scrubber and a drag seeks; Space, N and P on Queue and Now Playing; Stop and About in the
 menu; reopening mid-song shows the right track and position; with Wi-Fi off an error toast.
+
+### 1.10 — cache (87a02a8), the wiring (2a41f7f), 1.14 — fuzzing (e97015a)
+
+In the commit messages. The live test on the Mac: search, play with a radio of 50, the
+position past 3 s, a seek to 60 s followed, next, and a second engine over the same folder
+playing the song from the cache with no media request.
+
+### On the Q10, 2026-11-14: from first install to "works, plays stops scrubs"
+
+| Build | What happened |
+|---|---|
+| 0.1.0.2 | The UI with a placeholder engine: the pages load, "the engine is not connected". Installed without saying clearly that nothing could work yet. |
+| 0.1.0.3 | The real engine exited 80 ms after launch: the navigator passes a headless entry point two arguments of its own and `main` took them for a usage error. Not caught from a shell, where it was started by hand. |
+| 0.1.0.4 | Connected, searched, played. Opening Now Playing restarted the song (the slider sent a seek on every `valueChanged`). Neither side logged commands, so the rest of the session could not be reconstructed. |
+| 0.1.0.5 | The slider seeks for a finger only; both sides log every command, state and track. A Next button added to the mini-player left no room for the title, the way into the player. |
+| 0.1.0.6 | The title keeps half the bar. |
+| 0.1.0.7 | The mini-player is the title and one Play/Pause icon, as the user asked. Their verdict: "works, plays stops scrubs". |
+
+Before any install the engine ran on the phone from a root shell with `--null`, driven from the
+Mac through `ssh -L`: search in 0.6 s, play with radio, `playing` 1.0 s after `play` for a song
+not in the cache, a seek followed. That run found the one phone-only bug in the store: SQLite
+3.7.14 has no `ON CONFLICT … DO UPDATE` (fixed with `INSERT OR REPLACE`).
+
+The engine's log of the 0.1.0.7 session: the queue came back paused at 20 s after the restart,
+`play` reached `playing` in 0.17 s from the cache, four toggles and a seek were answered, one
+underrun line, no error, 5.4 MB in the cache.
+
+Open:
+
+- "first play request did not pass, second worked" (0.1.0.4): the speaker was opened for both,
+  5 s apart, with no error. Not seen since; the logs would show it now.
+- The overlay's buttons through the engine's own now-playing client have no log line yet in a
+  user session; one revoke was logged in 0.1.0.4 with nothing to say who took it (0.1.0.5 logs
+  that).
+- An underrun line follows some resumes and seeks. Whether it is audible is not known.
+- Everything in "Decisions waiting for the user", and the differences from `docs/protocol.md`
+  listed in the wiring's commit, which the document should be brought in line with.
