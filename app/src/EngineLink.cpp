@@ -166,7 +166,9 @@ void EngineLink::handleLine(const QByteArray &line)
     if (json.hasError() || doc.type() != QVariant::Map)
         return;
     QVariantMap map = doc.toMap();
-    if (map.value("ev").toString() != "position")
+    // Not the positions (one a second) nor the thumbnails (one per row of a list).
+    const QString ev = map.value("ev").toString();
+    if (ev != "position" && ev != "thumb")
         uiLog("< " + QString::fromUtf8(line.left(220)).trimmed());
     if (map.contains("ev")) {
         const QString name = map.take("ev").toString();

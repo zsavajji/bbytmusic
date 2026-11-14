@@ -1,9 +1,10 @@
-import bb.cascades 1.2
+import bb.cascades 1.4
 import bb.system 1.2
 import bbmusic 1.0
 
-// The search field (focused when the page shows), suggestions while typing, a filter, the results
-// grouped by the engine's section titles, and the mini-player.
+// The search field (focused when the page shows), suggestions while typing, the stock player's
+// segmented control as the filter, and the results under a header per kind (Songs, Albums, ...),
+// each row with its cover. A song plays with its radio; an album or a playlist opens its page.
 Page {
     id: page
     property variant navPane
@@ -24,15 +25,79 @@ Page {
         focusTimer.start();
     }
 
+    function art(url) {
+        var f = url ? thumbs.file(url, 120) : "";
+        return f != "" ? f : "asset:///images/art_none.png";
+    }
+
+    // What a row says under its title. A song or a video: artist, album, plays (its header
+    // already says what it is). The others: YouTube's own line, "Album • Artist • 1998".
+    function about(item, playable) {
+        if (! playable || ! item.artist) {
+            return item.subtitle ? item.subtitle : (item.artist ? item.artist : "");
+        }
+        var parts = [ item.artist ];
+        if (item.album) {
+            parts.push(item.album);
+        }
+        if (item.plays) {
+            parts.push(item.plays);
+        }
+        return parts.join(" \u2022 ");
+    }
+
     function makeRow(item) {
         var playable = item.kind == "song" || item.kind == "video";
         return {
             "rowType": playable ? "playable" : "other",
             "title": item.title,
-            "subtitle": item.subtitle ? item.subtitle : (item.artist ? item.artist : ""),
+            "subtitle": about(item, playable),
             "durationText": playable && item.duration_s > 0 ? player.fmt(item.duration_s * 1000) : "",
+            "thumbUrl": item.thumb ? item.thumb : "",
+            "image": art(item.thumb),
             "item": item
         };
+    }
+
+    function openBrowse(id) {
+        var p = albumPage.createObject();
+        p.navPane = navPane;
+        p.browseId = id;
+        navPane.push(p);
+    }
+
+    function open(item) {
+        if (item.kind == "album" || item.kind == "playlist") {
+            openBrowse(item.id);
+        } else {
+            // Artist pages and stations come in a later step.
+            notice.body = item.kind == "artist" ? "Artist pages are not built yet." : "Not yet";
+            notice.show();
+        }
+    }
+
+    function viewAlbum(item) {
+        if (item.album_id) {
+            openBrowse(item.album_id);
+        } else {
+            notice.body = "This track has no album page.";
+            notice.show();
+        }
+    }
+
+    // ponytail: every row is looked at for each thumbnail that arrives; an index by url if a
+    // long result list ever stutters.
+    function onThumb(url, size, file) {
+        if (size != 120) {
+            return;
+        }
+        for (var i = 0; i < resultModel.size(); i ++) {
+            var row = resultModel.value(i);
+            if (row.thumbUrl == url && row.image != file) {
+                row.image = file;
+                resultModel.replace(i, row);
+            }
+        }
     }
 
     // Appends a search or search_more result; "More" goes last when there is a continuation.
@@ -76,7 +141,7 @@ Page {
         query = text;
         searchId = engine.request("search", {
             "q": text,
-            "filter": filterDrop.selectedValue
+            "filter": filter.selectedValue
         });
         busy = searchId != "";
         if (! busy) {
@@ -148,6 +213,7 @@ Page {
 
     onCreationCompleted: {
         engine.reply.connect(page.handleReply);
+        thumbs.ready.connect(page.onThumb);
         page.focusField();
     }
 
@@ -174,40 +240,31 @@ Page {
                     page.runSearch(text);
                 }
             }
-            DropDown {
-                id: filterDrop
-                title: "Show"
-                options: [
-                    Option {
-                        text: "All"
-                        value: "all"
-                        selected: true
-                    },
-                    Option {
-                        text: "Songs"
-                        value: "songs"
-                    },
-                    Option {
-                        text: "Videos"
-                        value: "videos"
-                    },
-                    Option {
-                        text: "Albums"
-                        value: "albums"
-                    },
-                    Option {
-                        text: "Artists"
-                        value: "artists"
-                    },
-                    Option {
-                        text: "Playlists"
-                        value: "playlists"
-                    }
-                ]
-                onSelectedIndexChanged: {
-                    if (page.query != "") {
-                        page.runSearch(page.query);
-                    }
+        }
+        // All first, then the most used (the stock player's own control). Videos and playlists
+        // show under All.
+        SegmentedControl {
+            id: filter
+            Option {
+                text: "All"
+                value: "all"
+                selected: true
+            }
+            Option {
+                text: "Songs"
+                value: "songs"
+            }
+            Option {
+                text: "Albums"
+                value: "albums"
+            }
+            Option {
+                text: "Artists"
+                value: "artists"
+            }
+            onSelectedIndexChanged: {
+                if (page.query != "") {
+                    page.runSearch(page.query);
                 }
             }
         }
@@ -263,6 +320,9 @@ Page {
                     "next": next
                 });
             }
+            function viewAlbum(indexPath) {
+                page.viewAlbum(dataModel.data(indexPath).item);
+            }
 
             function itemType(data, indexPath) {
                 return data.rowType;
@@ -282,19 +342,30 @@ Page {
                         title: ListItemData.title
                         description: ListItemData.subtitle
                         status: ListItemData.durationText
+                        imageSource: ListItemData.image
                         contextActions: [
                             ActionSet {
                                 title: ListItemData.title
+                                subtitle: ListItemData.subtitle
                                 ActionItem {
-                                    title: "Play next"
+                                    title: "Play Next"
+                                    imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to queue"
+                                    title: "Add to Queue"
+                                    imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "View Album"
+                                    imageSource: "asset:///images/ic_album.png"
+                                    onTriggered: {
+                                        song.ListItem.view.viewAlbum(song.ListItem.indexPath);
                                     }
                                 }
                             }
@@ -306,6 +377,7 @@ Page {
                     StandardListItem {
                         title: ListItemData.title
                         description: ListItemData.subtitle
+                        imageSource: ListItemData.image
                     }
                 },
                 ListItemComponent {
@@ -327,9 +399,7 @@ Page {
                 } else if (entry.rowType == "more") {
                     page.searchMore();
                 } else if (entry.rowType == "other") {
-                    // Albums, artists and playlists come in a later step.
-                    notice.body = "Not yet";
-                    notice.show();
+                    page.open(entry.item);
                 }
             }
         }
@@ -362,6 +432,10 @@ Page {
         SystemToast {
             id: notice
             autoUpdateEnabled: true
+        },
+        ComponentDefinition {
+            id: albumPage
+            source: "AlbumPage.qml"
         }
     ]
 }

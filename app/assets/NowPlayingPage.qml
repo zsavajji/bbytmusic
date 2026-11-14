@@ -1,8 +1,15 @@
-import bb.cascades 1.2
+import bb.cascades 1.4
+import bb.system 1.2
 
-// Title, artist, album, a scrubber, the times and Previous / Play-Pause / Next.
+// Now Playing, laid out as the stock BB10 player (measured from its screenshots on the Q10):
+// title and artist, a row with the album and the Repeat and Shuffle icons, the artwork with the
+// scrubber lying over its lower edge, and Previous / Play-Pause / Next on the action bar with
+// Play-Pause as the Signature action. What YTMusicWP's player adds is in the action menu: the
+// queue, the album, the track's radio, Share, Properties.
 Page {
     id: page
+    property variant navPane
+    property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
     property bool setting: false
@@ -18,11 +25,83 @@ Page {
         setting = false;
     }
 
+    function refreshArt() {
+        artFile = thumbs.file(player.thumb, 544);
+    }
+
+    function onThumb(url, size, file) {
+        if (size == 544 && url == player.thumb) {
+            artFile = file;
+        }
+    }
+
+    function onPlayer() {
+        refreshArt();
+        sync();
+    }
+
+    function cycleRepeat() {
+        engine.request("repeat", {
+            "mode": player.repeat == "off" ? "all" : (player.repeat == "all" ? "one" : "off")
+        });
+    }
+
+    function viewAlbum() {
+        var id = player.track.album_id;
+        if (! id || ! navPane) {
+            notice.body = "This track has no album page.";
+            notice.show();
+            return;
+        }
+        var p = albumPage.createObject();
+        p.navPane = navPane;
+        p.browseId = id;
+        navPane.push(p);
+    }
+
+    function showQueue() {
+        if (navPane) {
+            var p = queuePage.createObject();
+            p.navPane = navPane;
+            p.pushed = true;
+            navPane.push(p);
+        }
+    }
+
+    // Called by main.qml when the page has been popped.
+    function cleanup() {
+        try {
+            player.positionChanged.disconnect(page.sync);
+            player.changed.disconnect(page.onPlayer);
+            thumbs.ready.disconnect(page.onThumb);
+        } catch (e) {
+        }
+    }
+
+    onCreationCompleted: {
+        player.positionChanged.connect(page.sync);
+        player.changed.connect(page.onPlayer);
+        thumbs.ready.connect(page.onThumb);
+        page.onPlayer();
+    }
+
+    // Letter shortcuts are safe here: no text field on this page.
     actions: [
-        // Letter shortcuts are safe here: no text field on this page.
+        ActionItem {
+            title: "Previous"
+            imageSource: "asset:///images/ic_previous.png"
+            ActionBar.placement: ActionBarPlacement.OnBar
+            shortcuts: Shortcut {
+                key: "P"
+            }
+            onTriggered: {
+                engine.request("prev", {});
+            }
+        },
         ActionItem {
             title: player.playing ? "Pause" : "Play"
-            ActionBar.placement: ActionBarPlacement.InOverflow
+            imageSource: player.playing ? "asset:///images/ic_pause.png" : "asset:///images/ic_play.png"
+            ActionBar.placement: ActionBarPlacement.Signature
             shortcuts: Shortcut {
                 key: "Space"
             }
@@ -32,7 +111,8 @@ Page {
         },
         ActionItem {
             title: "Next"
-            ActionBar.placement: ActionBarPlacement.InOverflow
+            imageSource: "asset:///images/ic_next.png"
+            ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
                 key: "N"
             }
@@ -41,13 +121,68 @@ Page {
             }
         },
         ActionItem {
-            title: "Previous"
+            title: "Queue"
+            imageSource: "asset:///images/ic_queue.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
-                key: "P"
+                key: "Q"
             }
             onTriggered: {
-                engine.request("prev", {});
+                page.showQueue();
+            }
+        },
+        ActionItem {
+            title: "View Album"
+            imageSource: "asset:///images/ic_album.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            shortcuts: Shortcut {
+                key: "A"
+            }
+            onTriggered: {
+                page.viewAlbum();
+            }
+        },
+        ActionItem {
+            title: "Start Radio"
+            imageSource: "asset:///images/ic_radio.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                if (player.track.id) {
+                    engine.request("play", {
+                        "items": [ player.track ],
+                        "index": 0,
+                        "radio": true
+                    });
+                }
+            }
+        },
+        InvokeActionItem {
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            query {
+                mimeType: "text/plain"
+                invokeActionId: "bb.action.SHARE"
+            }
+            onTriggered: {
+                data = "https://music.youtube.com/watch?v=" + player.track.id;
+            }
+        },
+        ActionItem {
+            title: "Properties"
+            imageSource: "asset:///images/ic_info.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            shortcuts: Shortcut {
+                key: "I"
+            }
+            onTriggered: {
+                info.show(player.track);
+            }
+        },
+        ActionItem {
+            title: "Stop"
+            imageSource: "asset:///images/ic_stop.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                engine.request("stop", {});
             }
         }
     ]
@@ -55,108 +190,175 @@ Page {
     Container {
         layout: StackLayout {
         }
-        leftPadding: ui.du(2)
-        rightPadding: ui.du(2)
-        topPadding: ui.du(2)
+        background: Color.Black
 
-        Label {
-            text: player.title
-            multiline: true
-            textStyle.base: SystemDefaults.TextStyles.BigText
-        }
-        Label {
-            text: player.artist
-            textStyle.base: SystemDefaults.TextStyles.SubtitleText
-        }
-        Label {
-            text: player.album
-            visible: player.album != ""
-            textStyle.base: SystemDefaults.TextStyles.SmallText
-        }
-        Label {
-            text: player.state == "loading" ? "Loading..." : player.error
-            visible: text != ""
-            textStyle.base: SystemDefaults.TextStyles.SmallText
-        }
-
-        Slider {
-            id: slider
-            topMargin: ui.du(4)
-            fromValue: 0
-            toValue: Math.max(player.durationMs, 1)
-            // A seek is sent for a finger only. The value also changes when the page sets it and
-            // when toValue moves with the track's length: seeking on valueChanged restarted the
-            // song each time this page opened (0.1.0.4).
-            onTouch: {
-                if (event.touchType == TouchType.Down) {
-                    page.dragging = true;
-                    page.moved = false;
-                } else if (event.touchType == TouchType.Up || event.touchType == TouchType.Cancel) {
-                    if (page.dragging && page.moved) {
-                        page.holdUntil = new Date().getTime() + 800;
-                        engine.request("seek", {
-                            "ms": Math.round(slider.immediateValue)
-                        });
-                    }
-                    page.dragging = false;
-                }
+        // Title and artist: 10 du on the Q10.
+        Container {
+            leftPadding: ui.du(2)
+            rightPadding: ui.du(2)
+            topPadding: ui.du(0.5)
+            bottomPadding: ui.du(0.5)
+            Label {
+                text: player.title
+                textStyle.fontSize: FontSize.Large
+                textStyle.color: Color.White
+                bottomMargin: 0
             }
-            onImmediateValueChanged: {
-                if (page.dragging && !page.setting) {
-                    page.moved = true;
-                }
+            Label {
+                text: player.state == "loading" ? "Loading..." : player.artist
+                textStyle.fontSize: FontSize.Small
+                textStyle.color: Color.create("#969696")
+                topMargin: 0
             }
         }
         Container {
+            horizontalAlignment: HorizontalAlignment.Fill
+            preferredHeight: ui.px(2)
+            background: Color.create("#323232")
+        }
+        // The album, and the two modes at the right as in the stock player.
+        Container {
+            leftPadding: ui.du(2)
+            rightPadding: ui.du(1)
+            preferredHeight: ui.du(9.5)
             layout: StackLayout {
                 orientation: LayoutOrientation.LeftToRight
             }
             Label {
-                text: player.fmt(page.dragging ? slider.immediateValue : player.positionMs)
-                textStyle.base: SystemDefaults.TextStyles.SmallText
+                text: player.album
+                textStyle.fontSize: FontSize.Large
+                textStyle.color: Color.White
+                verticalAlignment: VerticalAlignment.Center
                 layoutProperties: StackLayoutProperties {
                     spaceQuota: 1
                 }
+                gestureHandlers: TapHandler {
+                    onTapped: {
+                        page.viewAlbum();
+                    }
+                }
             }
-            Label {
-                text: player.fmt(player.durationMs)
-                textStyle.base: SystemDefaults.TextStyles.SmallText
+            ImageButton {
+                defaultImageSource: player.repeat == "one" ? "asset:///images/ic_repeat_one.png" : "asset:///images/ic_repeat.png"
+                opacity: player.repeat == "off" ? 0.4 : 1.0
+                preferredWidth: ui.du(8)
+                preferredHeight: ui.du(8)
+                verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    page.cycleRepeat();
+                }
+            }
+            // Shuffles what is still to come, once; it is not a mode (the queue shows the order).
+            ImageButton {
+                defaultImageSource: "asset:///images/ic_shuffle.png"
+                preferredWidth: ui.du(8)
+                preferredHeight: ui.du(8)
+                verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    engine.request("queue_shuffle", {});
+                    notice.body = "Shuffled what comes next.";
+                    notice.show();
+                }
             }
         }
 
+        // The artwork fills what is left; the scrubber lies over its lower edge.
         Container {
-            topMargin: ui.du(4)
-            layout: StackLayout {
-                orientation: LayoutOrientation.LeftToRight
+            layout: DockLayout {
             }
-            horizontalAlignment: HorizontalAlignment.Center
-            Button {
-                text: "Previous"
-                preferredWidth: ui.du(24)
-                onClicked: {
-                    engine.request("prev", {});
+            background: Color.create("#262626")
+            horizontalAlignment: HorizontalAlignment.Fill
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 1
+            }
+            ImageView {
+                imageSource: page.artFile != "" ? page.artFile : "asset:///images/art_none_large.png"
+                scalingMethod: ScalingMethod.AspectFill
+                loadEffect: ImageViewLoadEffect.None
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+            }
+            ActivityIndicator {
+                running: player.state == "loading"
+                visible: player.state == "loading"
+                horizontalAlignment: HorizontalAlignment.Center
+                verticalAlignment: VerticalAlignment.Center
+                preferredWidth: ui.du(12)
+                preferredHeight: ui.du(12)
+            }
+            Container {
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Bottom
+                background: Color.create("#b0000000")
+                leftPadding: ui.du(2)
+                rightPadding: ui.du(2)
+                topPadding: ui.du(1)
+                bottomPadding: ui.du(1.5)
+                Slider {
+                    id: slider
+                    fromValue: 0
+                    toValue: Math.max(player.durationMs, 1)
+                    // A seek is sent for a finger only. The value also changes when the page sets it and
+                    // when toValue moves with the track's length: seeking on valueChanged restarted the
+                    // song each time this page opened (0.1.0.4).
+                    onTouch: {
+                        if (event.touchType == TouchType.Down) {
+                            page.dragging = true;
+                            page.moved = false;
+                        } else if (event.touchType == TouchType.Up || event.touchType == TouchType.Cancel) {
+                            if (page.dragging && page.moved) {
+                                page.holdUntil = new Date().getTime() + 800;
+                                engine.request("seek", {
+                                    "ms": Math.round(slider.immediateValue)
+                                });
+                            }
+                            page.dragging = false;
+                        }
+                    }
+                    onImmediateValueChanged: {
+                        if (page.dragging && ! page.setting) {
+                            page.moved = true;
+                        }
+                    }
                 }
-            }
-            Button {
-                text: player.playing ? "Pause" : "Play"
-                preferredWidth: ui.du(24)
-                onClicked: {
-                    engine.request("toggle", {});
-                }
-            }
-            Button {
-                text: "Next"
-                preferredWidth: ui.du(24)
-                onClicked: {
-                    engine.request("next", {});
+                Container {
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    Label {
+                        text: player.fmt(page.dragging ? slider.immediateValue : player.positionMs)
+                        textStyle.fontSize: FontSize.XSmall
+                        textStyle.color: Color.White
+                        layoutProperties: StackLayoutProperties {
+                            spaceQuota: 1
+                        }
+                    }
+                    // What is left, as the stock player counts it.
+                    Label {
+                        text: "-" + player.fmt(Math.max(0, player.durationMs - (page.dragging ? slider.immediateValue : player.positionMs)))
+                        textStyle.fontSize: FontSize.XSmall
+                        textStyle.color: Color.create("#969696")
+                    }
                 }
             }
         }
     }
 
-    onCreationCompleted: {
-        player.positionChanged.connect(page.sync);
-        player.changed.connect(page.sync);
-        page.sync();
-    }
+    attachedObjects: [
+        ComponentDefinition {
+            id: albumPage
+            source: "AlbumPage.qml"
+        },
+        ComponentDefinition {
+            id: queuePage
+            source: "QueuePage.qml"
+        },
+        TrackInfo {
+            id: info
+        },
+        SystemToast {
+            id: notice
+            autoUpdateEnabled: true
+        }
+    ]
 }

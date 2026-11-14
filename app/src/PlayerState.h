@@ -25,6 +25,11 @@ class PlayerState : public QObject
     Q_PROPERTY(int durationMs READ durationMs NOTIFY changed)
     Q_PROPERTY(QString error READ error NOTIFY changed)
     Q_PROPERTY(int queueLength READ queueLength NOTIFY changed)
+    // "off", "all" or "one".
+    Q_PROPERTY(QString repeat READ repeat NOTIFY changed)
+    // The current track as the engine gave it (docs/protocol.md, Item): id, album_id, thumb, ...
+    Q_PROPERTY(QVariantMap track READ track NOTIFY changed)
+    Q_PROPERTY(QString thumb READ thumb NOTIFY changed)
 public:
     explicit PlayerState(QObject *parent = 0);
 
@@ -39,6 +44,9 @@ public:
     int durationMs() const { return m_durationMs; }
     QString error() const { return m_error; }
     int queueLength() const { return m_queueLength; }
+    QString repeat() const { return m_repeat; }
+    QVariantMap track() const { return m_track; }
+    QString thumb() const { return m_track.value("thumb").toString(); }
 
     // 215000 -> "3:35", 3725000 -> "1:02:05".
     Q_INVOKABLE QString fmt(int ms) const;
@@ -61,7 +69,8 @@ private:
 
     QString m_state;
     int m_index;
-    QString m_title, m_artist, m_album, m_error;
+    QString m_title, m_artist, m_album, m_error, m_repeat;
+    QVariantMap m_track;
     int m_positionMs, m_durationMs, m_queueLength;
     QTimer m_tick;
     QElapsedTimer m_clock;

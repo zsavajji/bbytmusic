@@ -1,21 +1,33 @@
-import bb.cascades 1.2
+import bb.cascades 1.4
 import bb.system 1.2
 
-// The root: Search and Queue, each a NavigationPane (Now Playing is pushed on whichever is open).
+// The root. As in the stock music player the tabs live in the tab menu (bottom left), which
+// leaves each page's action bar to its own actions. Each tab is a NavigationPane: albums, the
+// queue and Now Playing are pushed on whichever is open.
 TabbedPane {
     id: root
-    showTabsOnActionBar: true
+    showTabsOnActionBar: false
+
+    // A page that was pushed is done with: let it drop its signal connections, then free it.
+    function retire(page) {
+        if (page.cleanup) {
+            page.cleanup();
+        }
+        page.destroy();
+    }
 
     Menu.definition: MenuDefinition {
         actions: [
             ActionItem {
                 title: "Stop"
+                imageSource: "asset:///images/ic_stop.png"
                 onTriggered: {
                     engine.request("stop", {});
                 }
             },
             ActionItem {
                 title: "About"
+                imageSource: "asset:///images/ic_info.png"
                 onTriggered: {
                     about.show();
                 }
@@ -25,6 +37,7 @@ TabbedPane {
 
     Tab {
         title: "Search"
+        imageSource: "asset:///images/ic_search.png"
         // Back on this tab: type straight away.
         onTriggered: {
             searchPage.focusField();
@@ -36,20 +49,21 @@ TabbedPane {
                 navPane: searchNav
             }
             onPopTransitionEnded: {
-                page.destroy();
+                root.retire(page);
             }
         }
     }
 
     Tab {
         title: "Queue"
+        imageSource: "asset:///images/ic_queue.png"
         NavigationPane {
             id: queueNav
             QueuePage {
                 navPane: queueNav
             }
             onPopTransitionEnded: {
-                page.destroy();
+                root.retire(page);
             }
         }
     }

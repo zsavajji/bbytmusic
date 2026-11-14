@@ -1,4 +1,4 @@
-import bb.cascades 1.2
+import bb.cascades 1.4
 
 // Shown at the top of a page while the engine is not connected.
 Container {

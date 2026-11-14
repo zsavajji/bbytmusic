@@ -1,59 +1,78 @@
-import bb.cascades 1.2
+import bb.cascades 1.4
 
-// The bar at the bottom of a page: title, artist, a Play/Pause icon; a tap on the text opens Now Playing
-// on navPane. Hidden when nothing is loaded.
+// The strip at the bottom of a page: whether it plays, the title on one line, and a line that
+// shows how far the track is. A tap opens Now Playing on navPane, where every control is (the
+// user, 2026-11-14: "reduced to a strip with just the title to reserve more space"). Hidden when
+// nothing is loaded.
 Container {
     id: mini
     property variant navPane
+    property int stripWidth: 720
     visible: player.loaded
-    layout: StackLayout {
-        orientation: LayoutOrientation.LeftToRight
+    horizontalAlignment: HorizontalAlignment.Fill
+    preferredHeight: ui.du(6)
+    background: Color.create("#262626")
+    layout: DockLayout {
     }
-    background: Color.create("#282828")
-    leftPadding: ui.du(1.5)
-    rightPadding: ui.du(1)
-    topPadding: ui.du(1)
-    bottomPadding: ui.du(1)
 
     function open() {
         if (navPane) {
-            navPane.push(nowPlaying.createObject());
+            var p = nowPlaying.createObject();
+            p.navPane = navPane;
+            navPane.push(p);
         }
     }
 
     Container {
+        horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Center
-        // The text takes all the bar but the icon: it is the way into Now Playing.
-        layoutProperties: StackLayoutProperties {
-            spaceQuota: 1
+        leftPadding: ui.du(1)
+        rightPadding: ui.du(2)
+        layout: StackLayout {
+            orientation: LayoutOrientation.LeftToRight
+        }
+        // Not a button: it says what the player is doing.
+        ImageView {
+            imageSource: player.playing ? "asset:///images/ic_play.png" : "asset:///images/ic_pause.png"
+            preferredWidth: ui.du(4)
+            preferredHeight: ui.du(4)
+            verticalAlignment: VerticalAlignment.Center
+            loadEffect: ImageViewLoadEffect.None
         }
         Label {
             text: player.title
-            textStyle.base: SystemDefaults.TextStyles.PrimaryText
-        }
-        Label {
-            text: player.artist
+            verticalAlignment: VerticalAlignment.Center
             textStyle.base: SystemDefaults.TextStyles.SmallText
-        }
-        gestureHandlers: TapHandler {
-            onTapped: {
-                mini.open();
+            textStyle.color: Color.White
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 1
             }
         }
     }
-    // One control, an icon: Play or Pause. Everything else is on Now Playing (the user, 0.1.0.6).
-    ImageButton {
-        defaultImageSource: player.playing ? "asset:///images/ic_pause.png" : "asset:///images/ic_play.png"
-        preferredWidth: ui.du(9)
-        preferredHeight: ui.du(9)
-        verticalAlignment: VerticalAlignment.Center
-        onClicked: {
-            engine.request("toggle", {});
+    // How far the track is: YouTube's red line along the top edge.
+    Container {
+        horizontalAlignment: HorizontalAlignment.Left
+        verticalAlignment: VerticalAlignment.Top
+        preferredHeight: ui.px(4)
+        preferredWidth: player.durationMs > 0 ? mini.stripWidth * player.positionMs / player.durationMs : 0
+        background: Color.create("#ff0000")
+    }
+
+    gestureHandlers: TapHandler {
+        onTapped: {
+            mini.open();
         }
     }
 
-    attachedObjects: ComponentDefinition {
-        id: nowPlaying
-        source: "NowPlayingPage.qml"
-    }
+    attachedObjects: [
+        ComponentDefinition {
+            id: nowPlaying
+            source: "NowPlayingPage.qml"
+        },
+        LayoutUpdateHandler {
+            onLayoutFrameChanged: {
+                mini.stripWidth = layoutFrame.width;
+            }
+        }
+    ]
 }

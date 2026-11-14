@@ -6,6 +6,7 @@
 
 #include "EngineLink.h"
 #include "PlayerState.h"
+#include "Thumbs.h"
 #include "UiLog.h"
 
 using namespace bb::cascades;
@@ -17,6 +18,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 
     EngineLink engine(&app);
     PlayerState player(&app);
+    Thumbs thumbs(&engine, &app);
     QObject::connect(&engine, SIGNAL(event(QString,QVariantMap)),
                      &player, SLOT(onEvent(QString,QVariantMap)));
 
@@ -31,6 +33,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     }
     document->setContextProperty("engine", &engine);
     document->setContextProperty("player", &player);
+    document->setContextProperty("thumbs", &thumbs);
     AbstractPane *root = document->createRootObject<AbstractPane>();
     if (!root) {
         uiLog("QML: no root object");

@@ -51,5 +51,6 @@
     <permission>run_when_backgrounded</permission>
     <permission>play_audio</permission>
     <env var="LD_LIBRARY_PATH" value="app/native/lib:/usr/lib/qt4/lib"/>
-    <env var="CASCADES_THEME" value="dark"/>
+    <!-- Dark for the Q10's OLED; YouTube's red as the primary colour (the Signature action, selections). -->
+    <env var="CASCADES_THEME" value="dark?primaryColor=0xFF0000&amp;primaryBase=0xCC0000"/>
 </qnx>

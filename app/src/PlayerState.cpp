@@ -4,6 +4,7 @@ PlayerState::PlayerState(QObject *parent)
     : QObject(parent)
     , m_state("stopped")
     , m_index(-1)
+    , m_repeat("off")
     , m_positionMs(0)
     , m_durationMs(0)
     , m_queueLength(0)
@@ -47,6 +48,7 @@ void PlayerState::setPosition(const QVariantMap &fields)
 
 void PlayerState::setTrack(const QVariantMap &track)
 {
+    m_track = track;
     m_title = track["title"].toString();
     m_artist = track["artist"].toString();
     m_album = track["album"].toString();
@@ -67,6 +69,8 @@ void PlayerState::onEvent(QString name, QVariantMap f)
             else
                 setTrack(QVariantMap());
             m_queueLength = f["queue_len"].toInt();
+            if (f.contains("repeat"))
+                m_repeat = f["repeat"].toString();
         }
         setPosition(f);
     } else if (name == "track") {
@@ -82,6 +86,8 @@ void PlayerState::onEvent(QString name, QVariantMap f)
     } else if (name == "queue") {
         m_queueLength = f["len"].toInt();
         m_index = f["index"].toInt();
+    } else if (name == "mode") {
+        m_repeat = f["repeat"].toString();
     } else if (name == "error") {
         emit errorOccurred(f["message"].toString());
         return;
