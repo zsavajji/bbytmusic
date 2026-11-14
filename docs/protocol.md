@@ -36,8 +36,45 @@ file changes with it.
 
 ## Commands
 
-Filled in as the commands land.
+Every reply is `{"@":id,"ok":true,"result":{…}}` or an error. An **Item** is what a search or a
+queue returns for one thing: `{"kind":"song|video|album|artist|playlist|station","id":"…",
+"title":"…","subtitle":"…","thumb":"https://…","artist":"…","album":"…","artist_id":"…",
+"album_id":"…","playlist_id":"…","params":"…","duration_s":214,"explicit":false}`. For a song or
+a video `id` is the video id; for the others a browse id. A **Track** is an Item in the queue:
+the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thumb`,
+`duration_s`.
+
+| `cmd` | Fields | `result` |
+|---|---|---|
+| `status` | | `{"version":"…","state":"stopped\|loading\|playing\|paused","index":0,"track":Track or null,"position_ms":0,"duration_ms":0,"queue_len":0,"error":""}` |
+| `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists` | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
+| `search_more` | `continuation` | as `search` |
+| `suggest` | `q` | `{"suggestions":["…"]}` |
+| `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and one song, the engine appends that song's radio, and goes on appending as the queue runs low. |
+| `pause`, `resume`, `toggle`, `stop`, `next`, `prev` | | `{}` |
+| `seek` | `ms` | `{}` |
+| `jump` | `index` | `{}` |
+| `queue` | | `{"items":[Track],"index":0}` |
+| `queue_add` | `items`: [Item], `next` (default false: at the end) | `{}` |
+| `queue_remove` | `index` | `{}` |
+| `queue_move` | `from`, `to` | `{}` |
+| `quit` | | `{}`, then the engine exits |
+
+Only songs and videos can be played or queued; an Item of another kind gets `code`
+`bad_request`. Error codes beyond the framing's: `network` (YouTube could not be reached or
+answered with an error), `not_found`, `bad_request`.
+
+Commands answer at once: `play`, `seek` and the rest are acknowledged before the sound changes,
+and what happens next comes as events.
 
 ## Events
 
-Filled in as the events land.
+| `ev` | Fields | When |
+|---|---|---|
+| `state` | `state`, `index`, `track_id`, `position_ms`, `duration_ms`, `error` | on every change of state |
+| `track` | `index`, `track`: Track | the current track changed, also at a gapless boundary |
+| `position` | `position_ms`, `duration_ms` | about once a second while playing |
+| `queue` | `len`, `index` | the queue's content changed; ask `queue` for it |
+| `error` | `message`, `track_id` | a track could not be played; the player has moved on |
+
+A UI that connects late sends `status` and `queue` and is then up to date.
