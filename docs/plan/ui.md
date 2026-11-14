@@ -2,8 +2,8 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9, then 0.1.0.10; installed,
-**not yet seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.16; installed, **not yet
+seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
 
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.10, 2026-11-14)
+## What exists (0.1.0.16, 2026-11-14)
 
 ```
 app/
@@ -35,16 +35,19 @@ app/
 ├── bbmusic.pro            a plain executable, Qt 4.8 + Cascades
 ├── src/
 │   ├── main.cpp           registers QTimer as `Timer` (import bbmusic 1.0); context properties
-│   │                      `engine`, `player` and `thumbs`
+│   │                      `engine`, `player` and `thumbs`; with data/check-qml present it
+│   │                      compiles every QML document at start and logs the result
 │   ├── EngineLink.h/.cpp  starts the engine, reads data/engine.json, connects on loopback, says
 │   │                      hello with the token; `engine.request(cmd, fields)` returns the id;
 │   │                      signals `reply(id, ok, result, errorCode, errorMessage)` and
 │   │                      `event(name, fields)`; reconnects by itself; after hello it sends
 │   │                      `status` and `queue` and re-emits their replies as the events
-│   │                      `status` and `queue_snapshot`
+│   │                      `status` and `queue_snapshot`; a request in flight when the link
+│   │                      drops gets a failed reply with the code `disconnected`
 │   ├── PlayerState.h/.cpp properties for QML: state, playing, loaded, index, title, artist,
 │   │                      album, positionMs (advanced by a timer between events), durationMs,
-│   │                      error, queueLength, repeat, track (the whole Item), thumb; `fmt(ms)`
+│   │                      error, queueLength, repeat, eq, track (the whole Item), thumb;
+│   │                      `fmt(ms)`
 │   ├── Thumbs.h/.cpp      covers: `thumbs.file(url, size)` gives "file://…" or "" and asks the
 │   │                      engine (one `thumbs` command per turn of the event loop);
 │   │                      `ready(url, size, file)` when one lands
@@ -53,17 +56,21 @@ app/
 │   └── queue_test.js      `node app/tests/queue_test.js`: checks assets/queue.js
 └── assets/
     ├── main.qml           TabbedPane with the tabs in the tab menu: Search (inline), Home,
-    │                      Recent and Queue (each a Tab delegate, created when first opened);
-    │                      application menu: Stop, About; the error toast; `retire(page)`
+    │                      Explore, Recent and Queue (each a Tab delegate, created when first
+    │                      opened); application menu: Stop, About; the error toast;
+    │                      `retire(page)`
     ├── SearchPage.qml     field, suggestions, segmented filter, results by kind with covers
-    ├── AlbumPage.qml      an album or a playlist: header row, tracks, Play / Shuffle
-    ├── ShelfPage.qml      a page of shelves: an artist, or a feed (Home, with More)
+    ├── AlbumPage.qml      an album or a playlist (read page by page): header row, tracks,
+    │                      Play / Shuffle
+    ├── ShelfPage.qml      a page of shelves: an artist, or a feed (Home, Explore; More)
     ├── RecentPage.qml     the listening history
     ├── QueuePage.qml      the queue: covers, rearrange mode, Shuffle, Sort, Clear
     ├── queue.js           the Queue page's arithmetic (diff, move, the slot for Play Next)
-    ├── HomeTab.qml, RecentTab.qml, QueueTab.qml   the NavigationPanes the delegates load
+    ├── HomeTab.qml, ExploreTab.qml, RecentTab.qml, QueueTab.qml
+    │                      the NavigationPanes the delegates load
     ├── NowPlayingPage.qml the stock player's layout
     ├── TrackInfo.qml      the Properties sheet
+    ├── EqSheet.qml        the equalizer's presets
     ├── MiniPlayer.qml     the strip: state mark, title, progress line
     ├── ConnectionBar.qml  "the engine is not connected" + Retry
     └── images/            ic_*.png (81 px) and art_none*.png, drawn by scripts/gen-icons.py
@@ -73,6 +80,13 @@ app/
 `ConnectionBar.qml`. Everything else is created on demand (a Tab delegate or
 `ComponentDefinition.createObject()`): a fault costs that page, not the app. Keep it that way
 for new tabs and pages.
+
+**The app checks its own QML.** While `data/check-qml` exists in the app's data folder (it does
+now: `touch` it over ssh), every start compiles all the QML documents and writes
+`check: ok X.qml` or `check: FAIL X.qml: <error>` to `bbmusic-ui.log`. It finds what the
+compiler finds, not what a binding does when it runs. Read it after the user's first launch;
+remove the file when the pages have been seen (it costs start-up time). It cannot be run from a
+shell: `bb::cascades::Application` crashes there and `QmlDocument` aborts without one.
 
 No file is over 450 lines; keep each under about 500, one page or class per file (the user's
 rule).
@@ -98,7 +112,7 @@ Measured on the stock player (720 × 720, 9 px per du):
 | artwork | y 178–612, placeholder a black note on #262626 | fills what is left, `AspectFill`; `art_none_large.png` |
 | scrubber band over the artwork's lower edge | y 485–612, black at about 70 % | a Container #b0000000, the Slider, elapsed left and "-5:54" right |
 | action bar | Back, Previous, Pause (Signature), Next, ⋮ | the same, as `ActionItem`s; the Signature colour is the theme's red |
-| ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, Start Radio, Share, Properties, Stop (the rest needs an account, Phase 4, or the equalizer, 3.9) |
+| ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, View Artist, Start Radio, Share, Equalizer (Off/On), Properties, Stop (favourites and playlists need an account, Phase 4) |
 | library: segmented control, rows with an 88 px cover at the left edge | | Search's filter is that control; rows are `StandardListItem`s with `imageSource` |
 | library action bar: tab menu, Shuffle (Signature), ⋮ | | the Queue page: tab menu, Edit Order, Shuffle (Signature), ⋮ |
 | tabs in the tab menu, not on the bar | | `showTabsOnActionBar: false` |
@@ -133,8 +147,11 @@ From YTMusicWP's screens, what each of ours must be able to do:
   Home and Library screens; each is one tab, loaded on demand, and one line of `main.qml` to
   remove. Without an account Home is four or five shelves that follow the country (quick picks,
   featured playlists, new releases, trending).
-- **The tab order**: Search first (it is where an anonymous user starts), then Home, Recent,
-  Queue.
+- **The tab order**: Search first (it is where an anonymous user starts), then Home, Explore,
+  Recent, Queue.
+- **Explore and the equalizer were not in the brief either.** Explore is the plan's 3.4 in part
+  (no moods and genres: that feed has another shape); the equalizer is 3.9, ten fixed presets,
+  no sliders. The presets' gains are a first guess and nobody has heard them.
 
 ## Build, install, look
 
@@ -189,16 +206,18 @@ already bit here or will:
 
 ## What works on the phone, and what has not been tried
 
-**0.1.0.10 is installed and nobody has opened it** (nor 0.1.0.9 before it). Both were built
+**0.1.0.16 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
 while the user was away: the QML passes the lint and `lupdate`, the C++ compiles, the installer
 answered `result::success`, and 0.1.0.9's engine binary was run on the phone from a shell and
 driven from the Mac (search grouped by kind, `browse` of an album, covers written to `thumbs/`,
-`play`, `repeat`, `queue_sort`, `queue_shuffle`, `queue_clear`); 0.1.0.10's additions (artist,
-home feed, `browse_more`, `history`) ran live on the Mac only. Two read-only reviews by a
-sub-agent went over the QML for run-time faults; the first found nothing fatal and nine
-behavioural points, all fixed in 0.1.0.10. Not one page of the UI has been seen. First
+`play`, `repeat`, `queue_sort`, `queue_shuffle`, `queue_clear`); the later additions (artist,
+home and explore feeds, `browse_more` for feeds and playlists, `history`) ran live on the Mac
+only, and the equalizer only in its tests. Two read-only reviews by a sub-agent went over the
+QML for run-time faults (the second ran the doubtful QML1 constructs on the NDK's own x86 Qt
+4.8): neither found anything fatal; their fifteen behavioural points are fixed. Not one page
+of the UI has been seen. First
 things to look at, in this order, with `bbmusic-ui.log` open (a `QML:` line there means the app
-quit at start):
+quit at start; the `check:` lines say which documents compile):
 
 1. The app starts; the tab menu shows Search and Queue; the theme is red.
 2. Search: the segmented control; covers arrive in the rows; headers per kind.
@@ -207,9 +226,11 @@ quit at start):
 5. Queue: covers; the playing row in red (it is HTML in a `StandardListItem`: if the row shows
    markup, drop it for a plain title); Edit Order and a drag; Sort; Clear.
 6. Properties; Share; View Album and View Artist from the player.
-7. The tab menu's Home, Recent and Queue: each is created when first chosen. An empty tab
-   means its file failed to load; `slog2info | grep -i qml` on the phone says why.
+7. The tab menu's Home, Explore, Recent and Queue: each is created when first chosen. A tab
+   whose file fails to load shows a toast with the error and stays on the page before.
 8. An artist from Search: the header, Top songs, the shelves; Play.
+9. A playlist of more than 100 tracks (it fills in page by page); the equalizer from Now
+   Playing's menu, by ear.
 
 By the user's report on 0.1.0.7 ("works, plays stops scrubs") and its logs: the engine starts
 with the app and connects; suggestions and search; a tap plays with a radio queue of 50; Now
@@ -241,13 +262,14 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 | 2.11 Resume and errors | what the pages show while loading, with no network, for an unplayable track | events are there; check the wording of `error` messages |
 | 2.12 Measure | — | memory, CPU, battery per hour, tap-to-sound |
 | 3.1 Home | **built, unseen:** a tab of shelves (`ShelfPage`), More | there (`browse` of `FEmusic_home`, `browse_more`); the mood chips are not read |
-| 3.2 Album, playlist | **built, unseen:** one page for both; a playlist's first 100 tracks only | there (`browse`); a playlist's continuation is missing |
+| 3.2 Album, playlist | **built, unseen:** one page for both; a long playlist page by page | there (`browse`, `browse_more`) |
 | 3.3 Artist | **built, unseen:** `ShelfPage`; opens from Search, an album, Now Playing | there (`browse` of `UC…`); "more" of a shelf (all albums, all songs) is missing |
-| 3.4 Explore | charts, moods and genres | **missing** |
+| 3.4 Explore | **built, unseen:** a tab on `FEmusic_explore`; charts, moods and genres are not | `FEmusic_charts` and `FEmusic_new_releases` parse too; `FEmusic_moods_and_genres` comes back empty (another renderer) |
 | 3.5 Item actions | play next, add to queue, start radio, go to artist/album, share | mostly there; "go to" needs 3.2 and 3.3 |
 | 3.6 History | **built, unseen:** the Recent tab; opening links from other apps (an invoke target) is not | there (`history`) |
 | 3.7 Region and language | a setting | `InnerTube::set_language` exists; **missing:** a command and a stored setting |
-| 3.8 SponsorBlock, 3.9 Equalizer | settings sheets | **missing** entirely |
+| 3.8 SponsorBlock | a settings sheet | **missing** entirely |
+| 3.9 Equalizer | **built, unseen, unheard:** a sheet of presets from Now Playing | there (`eq`); presets only, no bands to set |
 
 The renderers the missing `browse` pages return are parsed for search already
 (`engine/src/innertube/items.cpp`); YTMusicWP's `InnerTubeClient.Browse.cs` is the map for the

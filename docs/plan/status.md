@@ -11,11 +11,11 @@ fetches it by DASH ranges (SABR built and tested as the fallback), decodes Opus 
 through libasound, keeps a radio queue going, caches what it played, restores the queue after a
 restart, and holds the system's now-playing controls itself. On top of that, built from the
 user's screenshots while they were away and **installed but never opened**: the UI after the
-stock BB10 player, 0.1.0.10 (covers everywhere, an album page, an artist page, Home and Recent
-tabs, the queue with rearrange, shuffle and sort, the stock Now Playing layout, the mini-player
-as a strip), and in the engine `browse` (album, playlist, artist, the home feed),
-`browse_more`, `history`, the thumbnail cache, `queue_clear`, `queue_shuffle`, `queue_sort` and
-`repeat`. [ui.md](ui.md) lists what to look at first and the decisions the
+stock BB10 player, 0.1.0.16 (covers everywhere, an album page, an artist page, Home, Explore
+and Recent tabs, the queue with rearrange, shuffle and sort, the stock Now Playing layout, the
+mini-player as a strip, an equalizer), and in the engine `browse` (album, playlist, artist,
+feeds), `browse_more`, `history`, the thumbnail cache, `queue_clear`, `queue_shuffle`,
+`queue_sort`, `repeat` and `eq`. [ui.md](ui.md) lists what to look at first and the decisions the
 user should confirm.
 
 ## Where everything is
@@ -46,7 +46,7 @@ nothing is pushed. One commit per step, with what was run and what was not in th
   (2.5), the Now Playing redesign (2.6), the strip (2.7), the queue's reorder, shuffle and sort
   (2.8), Home (3.1), the album and playlist page (3.2), the artist page (3.3), most of the item
   actions (3.5: play next, add to queue, start radio, view album, view artist, share), the
-  history page (3.6, as the Recent tab).
+  history page (3.6, as the Recent tab), Explore in part (3.4), the equalizer with presets (3.9).
 
 ## Next
 
@@ -54,9 +54,8 @@ nothing is pushed. One commit per step, with what was run and what was not in th
    the phone". Expect a round of fixes; nothing in it has been seen.
 2. Phase 2's remaining steps: artwork in the system's overlay (2.9, `albumArtwork`), the Active
    Frame (2.10), loading and error states (2.11), measurements (2.12).
-3. Phase 3's rest: explore (3.4), opening links from other apps (3.6), region and language
-   (3.7), a playlist's continuation past 100 tracks, "more" of an artist's shelf. Each needs the
-   engine first. Then SponsorBlock and the equalizer.
+3. Phase 3's rest: charts and moods (3.4), opening links from other apps (3.6), region and
+   language (3.7), "more" of an artist's shelf, SponsorBlock (3.8). Each needs the engine first.
 4. Phase 4, the account: gate 0.7 (WebView sign-in) has to be run first, with the user.
 
 ## Open
