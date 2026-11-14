@@ -1,0 +1,5 @@
+build/
+gateapp/app/assets/cacert.pem
+gateapp/app/assets/test.webm
+.assets.index
+.DS_Store

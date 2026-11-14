@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<qnx xmlns="http://www.qnx.com/schemas/application/1.0">
+    <!-- The Phase 0 gate app (PLAN.md §9, gates 0.3-0.6): a minimal UI and a headless test engine.
+         Not the real app: a different id, so it installs beside BBMusic and uninstalls cleanly. -->
+    <id>com.zsavajji.bbmusic.gate</id>
+    <name>BBMusic Gate</name>
+    <versionNumber>0.0.1</versionNumber>
+    <!-- Overwritten at packaging by -buildIdFile (scripts/build-gate.sh). -->
+    <buildId>1</buildId>
+    <description>Phase 0 gates for BBMusic.</description>
+    <author>zsavajji</author>
+
+    <initialWindow>
+        <autoOrients>false</autoOrients>
+        <aspectRatio>portrait</aspectRatio>
+        <systemChrome>none</systemChrome>
+    </initialWindow>
+
+    <configuration name="Device-Release">
+        <platformArchitecture>armle-v7</platformArchitecture>
+        <asset entryPointId="BBMusicGate" path="../../build/gate-ui/app/bbmusic-gate" entry="true" type="Qnx/Elf">bbmusic-gate</asset>
+        <asset entryPointId="BBMusicGateService" path="../../build/bbmusicd-gate" type="Qnx/Elf">bbmusicd-gate</asset>
+    </configuration>
+
+    <entryPoint id="BBMusicGate">
+        <name>BBMusic Gate</name>
+    </entryPoint>
+    <!-- The engine, headless, as HyperBerry's: a memory class (else the heap is capped at 3 MB)
+         and no stop when the UI is swiped away. Not started at boot. -->
+    <entryPoint id="BBMusicGateService">
+        <name>BBMusic Gate Engine</name>
+        <entryPointType>Qnx/Elf</entryPointType>
+        <permission system="true">_sys_run_headless</permission>
+        <permission system="true">_sys_headless_nostop</permission>
+        <permission system="true">_sys_headless_xlarge</permission>
+    </entryPoint>
+
+    <invoke-target id="com.zsavajji.bbmusic.gate.service">
+        <invoke-target-type>application.headless</invoke-target-type>
+        <entry-point-id>BBMusicGateService</entry-point-id>
+        <filter>
+            <action>com.zsavajji.bbmusic.gate.START</action>
+            <mime-type>*</mime-type>
+            <property var="uris" value="data://local"/>
+        </filter>
+    </invoke-target>
+
+    <!-- QML, cacert.pem and test.webm (scripts/build-gate.sh fetches and makes the last two):
+         app/native/assets. -->
+    <asset path="assets">assets</asset>
+
+    <permission system="true">run_native</permission>
+    <permission>access_internet</permission>
+    <permission>run_when_backgrounded</permission>
+    <permission>play_audio</permission>
+    <env var="LD_LIBRARY_PATH" value="app/native/lib:/usr/lib/qt4/lib"/>
+    <env var="CASCADES_THEME" value="dark"/>
+</qnx>
