@@ -110,7 +110,20 @@ bool CachedSource::read(int index, Segment &out, std::string &err) {
     if (!inner_ && !open_inner(err)) return false;
     cache_.fetches++;
     Segment seg;
-    if (!inner_->read(index, seg, err)) return false;   // a failed read is not kept
+    if (!inner_->read(index, seg, err)) {   // a failed read is not kept
+        if (cancelled_) return false;
+        // A stream's url lasts some hours and a pause can last longer: ask for the stream again,
+        // once, before giving the track up. (A dead network fails here a second time.)
+        log_warn("cache: " + key_ + ": " + err + "; resolving again");
+        {
+            std::lock_guard<std::mutex> lk(m_);
+            inner_.reset();
+        }
+        err.clear();
+        if (!open_inner(err)) return false;
+        cache_.fetches++;
+        if (!inner_->read(index, seg, err)) return false;
+    }
     if (int64_t(seg.bytes.size()) == r.size) cache_.put_segment(key_, index, seg.bytes);
     out = std::move(seg);
     return true;

@@ -22,13 +22,15 @@ namespace {
 struct Fake {
     webm_fixture::File file = webm_fixture::make({0, 10000, 20000, 30000}, {1000, 900, 1100, 700}, 38000.0);
     int made = 0, opens = 0, cancels = 0, fail_at = -1;
+    int stale_at = -1;   // this segment fails on every Source made before `stale_until` (an expired url)
+    int stale_until = 0;
     std::vector<int> reads;
     int64_t length() const { return int64_t(file.whole().size()); }
 };
 
 class FakeSource : public Source {
 public:
-    explicit FakeSource(Fake &f) : f_(f) {}
+    explicit FakeSource(Fake &f) : f_(f), born_(f.made) {}
     bool open(std::string &err) override {
         f_.opens++;
         init_ = f_.file.head;
@@ -41,6 +43,7 @@ public:
     bool read(int i, Segment &out, std::string &err) override {
         f_.reads.push_back(i);
         if (i == f_.fail_at) { err = "read failed (test)"; return false; }
+        if (i == f_.stale_at && born_ < f_.stale_until) { err = "HTTP 403 (test)"; return false; }
         out.index = i;
         out.start_ms = idx_.segments[size_t(i)].start_ms;
         out.duration_ms = idx_.segments[size_t(i)].duration_ms;
@@ -51,6 +54,7 @@ public:
 
 private:
     Fake &f_;
+    int born_;   // f.made when this Source was made
     std::vector<uint8_t> init_;
     WebmIndex idx_;
 };
@@ -151,6 +155,29 @@ int main() {
         f.reads.clear();
         CHECK(play(c, f, "vidB", {0, 1, 2, 3}));
         CHECK_EQ(f.made, 0);
+    }
+
+    // A read that fails on an old stream (its url expired during a pause) is tried again on a
+    // stream resolved anew, once; the track plays on and the segment is kept.
+    {
+        const std::string dir = temp_dir();
+        SegmentCache c(dir, big);
+        Fake f;
+        f.stale_at = 2;
+        f.stale_until = 2;   // the first Source made (made == 1) is stale for segment 2
+        CHECK(play(c, f, "vidS", {0, 1, 2, 3}));
+        CHECK_EQ(f.made, 2);
+        CHECK((f.reads == std::vector<int>{0, 1, 2, 2, 3}));
+        f.made = 0;
+        f.reads.clear();
+        CHECK(play(c, f, "vidS", {0, 1, 2, 3}));   // all of it from the disk now
+        CHECK_EQ(f.made, 0);
+        // Stale twice over: the second failure is the track's.
+        Fake g;
+        g.stale_at = 1;
+        g.stale_until = 99;
+        CHECK(!play(c, g, "vidT", {0, 1}));
+        CHECK_EQ(g.made, 2);
     }
 
     // A truncated segment, a truncated init and a corrupt meta are noticed and fetched again.
