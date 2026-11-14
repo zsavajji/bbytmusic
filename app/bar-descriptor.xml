@@ -7,6 +7,11 @@
     <buildId>1</buildId>
     <description>A YouTube Music client.</description>
     <author>zsavajji</author>
+    <!-- 90 x 90, the Q10's size; drawn by scripts/gen-icons.py. -->
+    <icon>
+        <image>icon.png</image>
+    </icon>
+    <asset path="icon.png">icon.png</asset>
 
     <initialWindow>
         <autoOrients>false</autoOrients>

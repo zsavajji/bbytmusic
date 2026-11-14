@@ -58,6 +58,21 @@ def minus(a, b):
     return lambda x, y: a(x, y) and not b(x, y)
 
 
+def both(a, b):
+    return lambda x, y: a(x, y) and b(x, y)
+
+
+def rrect(x0, y0, x1, y1, r):   # a rectangle with round corners
+    def f(x, y):
+        dx, dy = max(x0 + r - x, 0, x - x1 + r), max(y0 + r - y, 0, y - y1 + r)
+        return x0 <= x <= x1 and y0 <= y <= y1 and dx * dx + dy * dy <= r * r
+    return f
+
+
+def moved(shape, ox, oy, s):   # shape drawn at scale s with its origin at (ox, oy)
+    return lambda x, y: shape((x - ox) / s, (y - oy) / s)
+
+
 def path(points, w):
     return any_of(*[seg(*points[i], *points[i + 1], w) for i in range(len(points) - 1)])
 
@@ -158,6 +173,40 @@ def placeholder(path, size):   # the stock player's: a dark note on a dark grey 
     bg, fg = 0x26, 0x00
     write_png(path, size, [[(bg + (fg - bg) * a // 255,) * 3 + (255,) for a in row] for row in raster(size, NOTE)])
 
+
+# The launcher icon: a white globe and note on a red tile, YouTube's red darkening downwards.
+GX, GY, GR, GW = 0.455, 0.42, 0.27, 0.05   # GX: the gap round the stem meets the meridian
+GLOBE = any_of(ring(GX, GY, GR, GW), both(circle(GX, GY, GR), any_of(
+    minus(ellipse(GX, GY, 0.12 + GW / 2, GR), ellipse(GX, GY, 0.12 - GW / 2, GR - GW / 2)),
+    seg(GX, GY - GR, GX, GY + GR, GW),
+    *[seg(GX - GR, GY + k * GR, GX + GR, GY + k * GR, GW) for k in (-0.5, 0, 0.5)])))
+NOTE_BIG = moved(NOTE, 0.336, 0.266, 0.70)
+HALO = any_of(*[moved(NOTE, 0.336 + d * math.cos(a), 0.266 + d * math.sin(a), 0.70)   # a red gap
+                for d in (0.02, 0.04) for a in [k * math.pi / 8 for k in range(16)]])  # note to globe
+TILE = rrect(0.03, 0.03, 0.97, 0.97, 0.20)
+APP_FG = any_of(NOTE_BIG, minus(GLOBE, HALO))
+
+
+def app_icon(path, size):
+    pixels = []
+    for py in range(size):
+        row = []
+        for px in range(size):
+            n, rgb = 0, [0, 0, 0]
+            for i in range(SS):
+                for j in range(SS):
+                    x, y = (px + (i + 0.5) / SS) / size, (py + (j + 0.5) / SS) / size
+                    if not TILE(x, y):
+                        continue
+                    n += 1
+                    c = (255, 255, 255) if APP_FG(x, y) else (255 - int(60 * y), int(40 * (1 - y)), int(40 * (1 - y)))
+                    rgb = [s + v for s, v in zip(rgb, c)]
+            row.append(tuple(v // n for v in rgb) + (n * 255 // (SS * SS),) if n else (0, 0, 0, 0))
+        pixels.append(row)
+    write_png(path, size, pixels)
+
+
+app_icon(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "icon.png"), 90)   # Q10 size
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "assets", "images")
 os.makedirs(out, exist_ok=True)
