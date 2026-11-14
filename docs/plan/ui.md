@@ -2,7 +2,7 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.18; installed, **not yet
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.19; installed, **not yet
 seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.18, 2026-11-14)
+## What exists (0.1.0.19, 2026-11-14)
 
 ```
 app/
@@ -215,7 +215,7 @@ already bit here or will:
 
 ## What works on the phone, and what has not been tried
 
-**0.1.0.18 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
+**0.1.0.19 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
 while the user was away: the QML passes the lint and `lupdate`, the C++ compiles, the installer
 answered `result::success`, and 0.1.0.9's engine binary was run on the phone from a shell and
 driven from the Mac (search grouped by kind, `browse` of an album, covers written to `thumbs/`,

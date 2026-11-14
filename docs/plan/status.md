@@ -11,7 +11,7 @@ fetches it by DASH ranges (SABR built and tested as the fallback), decodes Opus 
 through libasound, keeps a radio queue going, caches what it played, restores the queue after a
 restart, and holds the system's now-playing controls itself. On top of that, built from the
 user's screenshots while they were away and **installed but never opened**: the UI after the
-stock BB10 player, 0.1.0.18 (covers everywhere, an album page, an artist page, Home, Explore
+stock BB10 player, 0.1.0.19 (covers everywhere, an album page, an artist page, Home, Explore
 and Recent tabs, the queue with rearrange, shuffle and sort, the stock Now Playing layout, the
 mini-player as a strip, an equalizer, Settings for SponsorBlock), and in the engine `browse` (album, playlist, artist,
 feeds), `browse_more`, `history`, the thumbnail cache, `queue_clear`, `queue_shuffle`,
