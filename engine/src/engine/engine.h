@@ -23,6 +23,7 @@
 #include "innertube/client.h"
 #include "innertube/items.h"
 #include "platform/now_playing.h"
+#include "engine/thumbs.h"
 #include "player/player.h"
 #include "server/server.h"
 #include "store/db.h"
@@ -115,6 +116,7 @@ private:
     std::thread worker_;
     std::atomic<bool> closing_{false};
 
+    std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_
     std::unique_ptr<Player> player_;   // last: its threads call into everything above
 };
 

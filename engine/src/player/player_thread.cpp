@@ -173,7 +173,7 @@ void Player::report_error(std::unique_lock<std::mutex> &lk, const std::string &m
     st_.error = msg;
     ++failures_;
     emit(lk, PlayerEvent::Error);
-    if (failures_ >= 3 || queue_.next_index() < 0) do_stop(lk);
+    if (failures_ >= 3 || queue_.auto_next_index() < 0) do_stop(lk);
 }
 
 void Player::step(std::unique_lock<std::mutex> &lk) {
@@ -220,14 +220,14 @@ void Player::on_chunk(std::unique_lock<std::mutex> &lk, FeedChunk &c) {
     }
     case FeedChunk::End:
         if (c.serial == skip_serial_) { skip_serial_ = 0; break; }
-        if (queue_.next_index() < 0) do_stop(lk);   // the queue is over; else the next Begin follows
+        if (queue_.auto_next_index() < 0) do_stop(lk);   // the queue is over; else the next Begin follows
         break;
     case FeedChunk::Fail:
         if (c.serial == skip_serial_) { skip_serial_ = 0; break; }
         cur_serial_ = c.serial;
         feed_.set_playing(c.serial);
-        if (!c.began && !awaiting_begin_ && queue_.next_index() >= 0) {   // the next track would not open
-            queue_.jump(queue_.next_index());
+        if (!c.began && !awaiting_begin_ && queue_.auto_next_index() >= 0) {   // the next track would not open
+            queue_.jump(queue_.auto_next_index());
             st_.track_id = c.track.id;
             st_.position_ms = 0;
         }
@@ -243,7 +243,7 @@ void Player::begin_track(std::unique_lock<std::mutex> &lk, const FeedChunk &c) {
     cur_serial_ = c.serial;
     feed_.set_playing(c.serial);
     if (crossing) {
-        if (queue_.next_index() >= 0) queue_.jump(queue_.next_index());
+        if (queue_.auto_next_index() >= 0) queue_.jump(queue_.auto_next_index());
         st_.track_id = c.track.id;
         st_.position_ms = 0;
         announce_ = true;   // the Track event waits for the first sample

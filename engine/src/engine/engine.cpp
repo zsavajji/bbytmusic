@@ -9,6 +9,7 @@
 #include "store/history_store.h"
 #include "store/queue_store.h"
 #include "store/schema.h"
+#include "store/settings.h"
 #include "stream/cached_source.h"
 #include "stream/resolve.h"
 #include "util/log.h"
@@ -31,6 +32,7 @@ Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/c
 Engine::~Engine() {
     closing_ = true;
     stop();
+    thumbs_.reset();   // after the connections are gone; joins its fetch thread, whose ready() emits
     {
         std::lock_guard<std::mutex> lk(wq_mu_);
         worker_quit_ = true;
@@ -50,6 +52,11 @@ bool Engine::start(std::string &err) {
     } else {
         db_ok_ = true;
     }
+    thumbs_ = std::make_unique<Thumbs>(opt_.data_dir + "/thumbs", [this](const std::string &url, int size, const std::string &file) {
+        if (!closing_)
+            server_.emit("thumb", "\"url\":" + json_quote(url) + ",\"size\":" + std::to_string(size) + ",\"file\":" +
+                                      json_quote(file));
+    });
     player_->set_listener([this](const PlayerEvent &e) { on_event(e); });
     restore();
     add_commands();
@@ -143,6 +150,7 @@ Item Engine::item_for(const Track &t) {
 // The queue as it was at the last stop, paused where it was.
 void Engine::restore() {
     if (!db_ok_) return;
+    if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
     std::vector<QueueRow> rows;
     QueueState st;
     std::string err;

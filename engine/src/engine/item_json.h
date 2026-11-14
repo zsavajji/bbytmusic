@@ -1,8 +1,10 @@
 // The JSON of docs/protocol.md: items, tracks, states; and the requests' items read back.
 #pragma once
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "innertube/browse.h"
 #include "innertube/items.h"
 #include "innertube/search.h"
 #include "player/player.h"
@@ -14,10 +16,14 @@ namespace bbm {
 
 // "stopped" "loading" "playing" "paused"
 const char *state_name(PlayState);
+// "off" "all" "one"
+const char *repeat_name(Repeat);
+bool parse_repeat(std::string_view, Repeat &);
 
 // The protocol's Item: as innertube's to_json(), but the flag is "explicit".
 std::string item_json(const Item &);
 std::string search_page_json(const SearchPage &);
+std::string browse_page_json(const BrowsePage &);
 
 // A request's "items": every element an object with a kind and an id. False with `why` otherwise,
 // or when one is of a kind that cannot be played (only songs and videos can).

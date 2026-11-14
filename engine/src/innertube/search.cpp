@@ -1,5 +1,7 @@
 #include "innertube/search.h"
 
+#include <algorithm>
+
 namespace bbm {
 namespace {
 
@@ -24,7 +26,7 @@ void push_if_any(SearchPage &out, SearchSection &&sec) {
 
 // One entry of sectionListRenderer.contents. Shelves ("Songs") are sections of their own; the
 // flat layout YouTube sometimes serves wraps each result in an itemSectionRenderer, and those
-// are gathered into a single "Results" section.
+// (with a top result's own list) are gathered into one list that parse_search() groups by kind.
 void parse_section(Json c, SearchPage &out, SearchSection &flat) {
     if (Json shelf = c["musicShelfRenderer"]; !shelf.is_null()) {
         SearchSection sec{runs_text(shelf["title"]), {}};
@@ -35,13 +37,26 @@ void parse_section(Json c, SearchPage &out, SearchSection &flat) {
         SearchSection sec{"Top result", {}};
         Item top;
         if (parse_item(c, top)) sec.items.push_back(std::move(top));
-        add_items(card["contents"], sec);
         push_if_any(out, std::move(sec));
+        add_items(card["contents"], flat);
     } else if (Json is = c["itemSectionRenderer"]; !is.is_null()) {
         add_items(is["contents"], flat);
     } else if (Json cont = c["continuationItemRenderer"]; !cont.is_null()) {
         if (out.continuation.empty())
             out.continuation = cont["continuationEndpoint"]["continuationCommand"]["token"].string();
+    }
+}
+
+// The flat list as sections of one kind each, in order; the empty ones are left out.
+void group_by_kind(SearchSection &flat, SearchPage &out) {
+    static const std::pair<const char *, std::vector<const char *>> groups[] = {
+        {"Songs", {"song"}}, {"Albums", {"album"}}, {"Artists", {"artist"}},
+        {"Videos", {"video"}}, {"Playlists", {"playlist", "station"}}};
+    for (const auto &[title, kinds] : groups) {
+        SearchSection sec{title, {}};
+        for (Item &it : flat.items)
+            if (std::find(kinds.begin(), kinds.end(), it.kind) != kinds.end()) sec.items.push_back(it);
+        push_if_any(out, std::move(sec));
     }
 }
 
@@ -65,7 +80,7 @@ bool parse_search(Json response, SearchPage &out, std::string &err) {
     out = SearchPage{};
     Json sl = response["contents"]["tabbedSearchResultsRenderer"]["tabs"][0]["tabRenderer"]["content"]
                       ["sectionListRenderer"];
-    SearchSection flat{"Results", {}};
+    SearchSection flat;
     if (!sl.is_null()) {
         for (Json c : sl["contents"].items()) parse_section(c, out, flat);
     } else if (Json cc = response["continuationContents"]; !cc.is_null()) {
@@ -78,7 +93,7 @@ bool parse_search(Json response, SearchPage &out, std::string &err) {
         err = "search: no results in the response";
         return false;
     }
-    push_if_any(out, std::move(flat));
+    group_by_kind(flat, out);
     return true;
 }
 

@@ -63,6 +63,11 @@ public:
     void enqueue(std::vector<Track> tracks, bool play_next);
     void remove(int index);
     void move(int from, int to);
+    void clear_others();   // the current track stays and plays on
+    void shuffle();        // what follows the current track
+    void sort(QueueSort by, bool desc);
+    void set_repeat(Repeat r);   // no Queue event
+    Repeat repeat() const;
 
     PlayerStatus status() const;
     std::vector<Track> queue() const;
@@ -100,6 +105,7 @@ private:
     bool interrupted() const { return req_.load || req_.seek || req_.stop || quit_; }
     PlayerStatus snapshot() const;
     void queue_changed();
+    void sync_successor();
     void load_index(int index, int64_t ms);
     std::optional<Track> successor() const;
 

@@ -13,6 +13,7 @@ struct Item {
     std::string id;          // videoId, or a browse id for the other kinds
     std::string title, subtitle, thumb;   // subtitle: "Artist • Album" as YouTube gives it
     std::string artist, album, artist_id, album_id, playlist_id, params;
+    std::string plays, year;   // YouTube's own text ("15M plays", "9.2M views"); an album's year
     int duration_s = 0; bool is_explicit = false;
 };
 
@@ -28,7 +29,9 @@ bool parse_item(Json renderer_parent, Item &out);
 // number and is_explicit as a bool.
 std::string to_json(const Item &);
 
-// ---- helpers, shared with search.cpp and next.cpp ----
+// ---- helpers, shared with search.cpp, next.cpp and browse.cpp ----
+// The largest thumbnail not wider than 544 px; if every one is wider, the narrowest.
+std::string pick_thumb(Json holder);
 // The concatenated text of a {"runs":[{"text":..}]} (or {"simpleText":..}) object.
 std::string runs_text(Json text_obj);
 // "3:34" -> 214, "1:02:03" -> 3723; 0 if the text is not a duration.

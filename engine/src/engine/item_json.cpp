@@ -11,12 +11,23 @@ const char *state_name(PlayState s) {
     }
 }
 
+const char *repeat_name(Repeat r) { return r == Repeat::All ? "all" : r == Repeat::One ? "one" : "off"; }
+
+bool parse_repeat(std::string_view s, Repeat &out) {
+    for (Repeat r : {Repeat::Off, Repeat::All, Repeat::One})
+        if (s == repeat_name(r)) {
+            out = r;
+            return true;
+        }
+    return false;
+}
+
 std::string item_json(const Item &i) {
     auto s = [](const char *k, const std::string &v) { return std::string("\"") + k + "\":" + json_quote(v); };
     return "{" + s("kind", i.kind) + "," + s("id", i.id) + "," + s("title", i.title) + "," + s("subtitle", i.subtitle) +
            "," + s("thumb", i.thumb) + "," + s("artist", i.artist) + "," + s("album", i.album) + "," +
            s("artist_id", i.artist_id) + "," + s("album_id", i.album_id) + "," + s("playlist_id", i.playlist_id) +
-           "," + s("params", i.params) + ",\"duration_s\":" + std::to_string(i.duration_s) +
+           "," + s("params", i.params) + "," + s("plays", i.plays) + "," + s("year", i.year) + ",\"duration_s\":" + std::to_string(i.duration_s) +
            ",\"explicit\":" + (i.is_explicit ? "true" : "false") + "}";
 }
 
@@ -29,6 +40,16 @@ std::string search_page_json(const SearchPage &p) {
         out += "]}";
     }
     return out + "],\"continuation\":" + json_quote(p.continuation) + "}";
+}
+
+std::string browse_page_json(const BrowsePage &p) {
+    auto s = [](const char *k, const std::string &v) { return std::string("\"") + k + "\":" + json_quote(v) + ","; };
+    std::string out = "{" + s("kind", p.kind) + s("id", p.id) + s("title", p.title) + s("subtitle", p.subtitle) +
+                      s("second_subtitle", p.second_subtitle) + s("artist", p.artist) + s("artist_id", p.artist_id) +
+                      s("year", p.year) + s("thumb", p.thumb) + s("description", p.description) +
+                      s("playlist_id", p.playlist_id) + "\"items\":[";
+    for (size_t i = 0; i < p.items.size(); i++) out += (i ? "," : "") + item_json(p.items[i]);
+    return out + "]}";
 }
 
 bool playable(const Item &i) { return (i.kind == "song" || i.kind == "video") && !i.id.empty(); }
@@ -52,6 +73,8 @@ bool parse_items(Json array, std::vector<Item> &out, std::string &why) {
         i.album_id = j["album_id"].string();
         i.playlist_id = j["playlist_id"].string();
         i.params = j["params"].string();
+        i.plays = j["plays"].string();
+        i.year = j["year"].string();
         i.duration_s = int(j["duration_s"].i64());
         i.is_explicit = j["explicit"].boolean(j["is_explicit"].boolean());
         if (!playable(i)) {

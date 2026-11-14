@@ -167,6 +167,47 @@ int main() {
         CHECK_EQ(q["index"].i64(), 0);
         CHECK_EQ(parse(c.cmd("queue_remove", "\"index\":2"), d)["error"]["code"].string(), "not_found");
 
+        // queue_sort, queue_shuffle, queue_clear: each followed by a queue event; `a` plays on.
+        CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"song\",\"id\":\"c\",\"title\":\"tone C\"}]"), d)["ok"].boolean());
+        mark = c.events.size();
+        CHECK(parse(c.cmd("queue_sort", "\"by\":\"title\",\"desc\":true"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["index"].i64() == 2; }, 5000, mark) >= 0);
+        q = parse(c.cmd("queue"), d)["result"];
+        CHECK_EQ(ids(q["items"]), "cba");
+        CHECK_EQ(q["index"].i64(), 2);
+        CHECK_EQ(parse(c.cmd("queue_sort", "\"by\":\"size\""), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("queue_sort"), d)["error"]["code"].string(), "bad_request");
+        mark = c.events.size();
+        CHECK(parse(c.cmd("queue_sort", "\"by\":\"title\""), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["index"].i64() == 0; }, 5000, mark) >= 0);
+        CHECK_EQ(ids(parse(c.cmd("queue"), d)["result"]["items"]), "abc");
+        mark = c.events.size();
+        CHECK(parse(c.cmd("queue_shuffle"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue"); }, 5000, mark) >= 0);
+        q = parse(c.cmd("queue"), d)["result"];
+        CHECK_EQ(q["items"][0]["id"].string(), "a");
+        CHECK_EQ(q["items"].size(), size_t(3));
+        mark = c.events.size();
+        CHECK(parse(c.cmd("queue_clear"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["len"].i64() == 1; }, 5000, mark) >= 0);
+        q = parse(c.cmd("queue"), d)["result"];
+        CHECK_EQ(ids(q["items"]), "a");
+        CHECK_EQ(q["index"].i64(), 0);
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["state"].string(), "playing");
+        CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"video\",\"id\":\"b\",\"title\":\"Tone B\",\"duration_s\":8}]"), d)["ok"].boolean());
+        CHECK_EQ(parse(c.cmd("browse"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("browse", "\"id\":\"\""), d)["error"]["code"].string(), "bad_request");
+
+        CHECK_EQ(parse(c.cmd("thumbs"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("thumbs", "\"urls\":[1]"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("thumbs", "\"urls\":[\"ftp://x/y\"]"), d)["result"]["files"].size(), size_t(0));
+        CHECK_EQ(parse(c.cmd("repeat", "\"mode\":\"twice\""), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["repeat"].string(), "off");
+        mark = c.events.size();
+        CHECK(parse(c.cmd("repeat", "\"mode\":\"all\""), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all"; }, 5000, mark) >= 0);
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["repeat"].string(), "all");
+
         // seek: the position follows.
         mark = c.events.size();
         CHECK(parse(c.cmd("seek", "\"ms\":6000"), d)["ok"].boolean());
@@ -219,6 +260,7 @@ int main() {
         CHECK_EQ(s["queue_len"].i64(), 2);
         CHECK_EQ(s["track"]["id"].string(), "b");
         CHECK_EQ(s["track"]["title"].string(), "Tone B");
+        CHECK_EQ(s["repeat"].string(), "all");   // kept across the restart
         CHECK(s["position_ms"].i64() >= 2000);
         Json q = parse(c.cmd("queue"), d)["result"];
         CHECK_EQ(ids(q["items"]), "ab");

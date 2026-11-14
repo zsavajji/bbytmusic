@@ -3,8 +3,10 @@
 
 #include "engine/engine.h"
 #include "engine/item_json.h"
+#include "innertube/browse.h"
 #include "innertube/next.h"
 #include "innertube/search.h"
+#include "store/settings.h"
 #include "stream/resolve.h"
 #include "util/log.h"
 
@@ -149,6 +151,61 @@ void Engine::add_commands() {
         player_->move(from, to);   // `to` is the row's index once moved
         return ok();
     });
+    server_.on("queue_clear", [this](Json) {
+        player_->clear_others();
+        return ok();
+    });
+    server_.on("queue_shuffle", [this](Json) {
+        player_->shuffle();
+        return ok();
+    });
+    server_.on("queue_sort", [this](Json req) {
+        static const std::pair<const char *, QueueSort> keys[] = {
+            {"title", QueueSort::Title}, {"artist", QueueSort::Artist},
+            {"album", QueueSort::Album}, {"duration", QueueSort::Duration}};
+        for (auto &[name, by] : keys)
+            if (req["by"].str() == name) {
+                player_->sort(by, req["desc"].boolean(false));
+                return ok();
+            }
+        return bad("by: title, artist, album or duration");
+    });
+    server_.on("browse", [this](Json req) {
+        if (!req["id"].is_string() || req["id"].str().empty()) return bad("id: a browse id is required");
+        BrowsePage page;
+        std::string err;
+        const std::string id = req["id"].string();
+        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e); }, err))
+            return Reply::error("network", err);
+        return ok(browse_page_json(page));
+    });
+    server_.on("repeat", [this](Json req) {
+        Repeat mode;
+        if (!parse_repeat(req["mode"].str(), mode)) return bad("mode: off, all or one");
+        player_->set_repeat(mode);
+        server_.emit("mode", std::string("\"repeat\":\"") + repeat_name(mode) + "\"");
+        post([this, mode] {   // the store is the worker's alone
+            std::string err;
+            if (db_ok_ && !set_setting(db_, "repeat", repeat_name(mode), err)) log_warn("store: " + err);
+        });
+        return ok();
+    });
+    server_.on("thumbs", [this](Json req) {
+        std::vector<std::string> urls;
+        if (!req["urls"].is_array()) return bad("urls: an array of strings is required");
+        for (Json u : req["urls"].items()) {
+            if (!u.is_string()) return bad("urls: an array of strings is required");
+            urls.push_back(u.string());
+        }
+        const int size = int(std::clamp<int64_t>(req["size"].i64(), 0, 1080));
+        std::string out = "{\"files\":{";
+        bool first = true;
+        for (const auto &[url, file] : thumbs_->request(urls, size)) {
+            out += (first ? "" : ",") + json_quote(url) + ":" + json_quote(file);
+            first = false;
+        }
+        return ok(out + "}}");
+    });
     server_.on("quit", [this](Json) {
         log_info("quit");
         // ponytail: a grace for the reply to leave before the connections close; a server-side
@@ -172,7 +229,7 @@ Reply Engine::status() {
     return ok("{\"version\":" + json_quote(opt_.version) + ",\"state\":\"" + state_name(s.state) + "\",\"index\":" +
               std::to_string(s.index) + ",\"track\":" + track + ",\"position_ms\":" + std::to_string(s.position_ms) +
               ",\"duration_ms\":" + std::to_string(s.duration_ms) + ",\"queue_len\":" + std::to_string(q.size()) +
-              ",\"error\":" + json_quote(s.error) + "}");
+              ",\"error\":" + json_quote(s.error) + ",\"repeat\":\"" + repeat_name(player_->repeat()) + "\"}");
 }
 
 // Replaces the queue and starts. With radio and one song or video, the song's radio follows it:

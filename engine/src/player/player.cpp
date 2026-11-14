@@ -2,6 +2,8 @@
 // thread is to do, and returns).
 #include "player/player.h"
 
+#include <chrono>
+
 namespace bbm {
 
 Player::Player(SourceFactory sources, SinkFactory sinks)
@@ -20,7 +22,7 @@ Player::~Player() {
 }
 
 std::optional<Track> Player::successor() const {
-    const int i = queue_.next_index();
+    const int i = queue_.auto_next_index();
     if (i < 0) return std::nullopt;
     return queue_.tracks()[size_t(i)];
 }
@@ -60,9 +62,13 @@ int Player::reads_for_test() const {
 
 void Player::queue_changed() {
     queue_dirty_ = true;
-    const int i = queue_.next_index();
-    feed_.sync_next(i >= 0 ? &queue_.tracks()[size_t(i)] : nullptr);   // a prepared next may be stale
+    sync_successor();
     cv_.notify_all();
+}
+
+void Player::sync_successor() {
+    const int i = queue_.auto_next_index();
+    feed_.sync_next(i >= 0 ? &queue_.tracks()[size_t(i)] : nullptr);   // a prepared next may be stale
 }
 
 // Start the track at queue index `index` from ms. The flush answers a slow read at once; the
@@ -186,6 +192,38 @@ void Player::remove(int index) {
 void Player::move(int from, int to) {
     std::lock_guard<std::mutex> lk(m_);
     if (queue_.move(from, to)) queue_changed();
+}
+
+void Player::set_repeat(Repeat r) {
+    std::lock_guard<std::mutex> lk(m_);
+    queue_.set_repeat(r);
+    sync_successor();   // the gapless next is another track now, or none
+    cv_.notify_all();
+}
+
+Repeat Player::repeat() const {
+    std::lock_guard<std::mutex> lk(m_);
+    return queue_.repeat();
+}
+
+void Player::clear_others() {
+    std::lock_guard<std::mutex> lk(m_);
+    queue_.clear_others();
+    queue_changed();
+}
+
+void Player::shuffle() {
+    std::lock_guard<std::mutex> lk(m_);
+    // Not cryptographic: the clock is seed enough for a shuffle.
+    std::mt19937 rng(uint32_t(std::chrono::steady_clock::now().time_since_epoch().count()));
+    queue_.shuffle_after_current(rng);
+    queue_changed();
+}
+
+void Player::sort(QueueSort by, bool desc) {
+    std::lock_guard<std::mutex> lk(m_);
+    queue_.sort(by, desc);
+    queue_changed();
 }
 
 }  // namespace bbm

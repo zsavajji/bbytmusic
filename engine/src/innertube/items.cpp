@@ -1,5 +1,6 @@
 #include "innertube/items.h"
 
+#include <algorithm>
 #include <cctype>
 #include <cstdint>
 #include <vector>
@@ -8,6 +9,16 @@ namespace bbm {
 namespace {
 
 constexpr std::string_view kSep = " \xE2\x80\xA2 ";   // " • "
+
+bool ends_with(std::string_view t, std::string_view suffix) {
+    return t.size() >= suffix.size() && t.substr(t.size() - suffix.size()) == suffix;
+}
+
+bool is_plays(std::string_view t) { return ends_with(t, " plays") || ends_with(t, " views"); }
+
+bool is_year(std::string_view t) {
+    return t.size() == 4 && std::all_of(t.begin(), t.end(), [](char c) { return c >= '0' && c <= '9'; });
+}
 
 bool is_sep(std::string_view t) { return t == kSep || t == "\xE2\x80\xA2"; }
 
@@ -21,20 +32,6 @@ bool is_label(std::string_view t) {
 std::string page_type(Json endpoint) {   // of a browseEndpoint
     return endpoint["browseEndpointContextSupportedConfigs"]["browseEndpointContextMusicConfig"]["pageType"]
         .string();
-}
-
-// The largest thumbnail not wider than 544 px; if every one is wider, the narrowest.
-std::string pick_thumb(Json holder) {
-    std::string best, narrowest;
-    int64_t best_w = -1, narrow_w = INT64_MAX;
-    for (Json t : holder.find("thumbnails").items()) {
-        const int64_t w = t["width"].i64();
-        const std::string url = t["url"].string();
-        if (url.empty()) continue;
-        if (w <= 544 && w > best_w) { best_w = w; best = url; }
-        if (w < narrow_w) { narrow_w = w; narrowest = url; }
-    }
-    return best.empty() ? narrowest : best;
 }
 
 bool has_explicit_badge(Json r) {
@@ -61,6 +58,8 @@ void read_subtitle(Json runs, Item &it) {
     std::string plain_artist;
     for (size_t i = 0; i < texts.size(); ++i) {
         it.subtitle += texts[i];
+        if (it.plays.empty() && is_plays(texts[i])) it.plays = texts[i];
+        if (it.year.empty() && is_year(texts[i])) it.year = texts[i];
         Json browse = rs[i]["navigationEndpoint"]["browseEndpoint"];
         const std::string pt = page_type(browse);
         if (pt == "MUSIC_PAGE_TYPE_ARTIST" || pt == "MUSIC_PAGE_TYPE_USER_CHANNEL") {
@@ -141,7 +140,13 @@ bool finish(Json r, Json nav, Json title, Json sub, Json thumb_holder, Item &out
 
 bool parse_responsive(Json r, Item &out) {
     auto col = [&](size_t i) { return r["flexColumns"][i]["musicResponsiveListItemFlexColumnRenderer"]["text"]; };
-    return finish(r, r["navigationEndpoint"], col(0), col(1), r["thumbnail"], out);
+    if (!finish(r, r["navigationEndpoint"], col(0), col(1), r["thumbnail"], out)) return false;
+    if (out.plays.empty())
+        if (std::string t = runs_text(col(2)); is_plays(t)) out.plays = t;
+    if (out.duration_s == 0)
+        out.duration_s = parse_duration(
+            runs_text(r["fixedColumns"][0]["musicResponsiveListItemFixedColumnRenderer"]["text"]));
+    return true;
 }
 
 bool parse_two_row(Json r, Item &out) {
@@ -165,6 +170,19 @@ bool parse_card(Json r, Item &out) {
 }
 
 }  // namespace
+
+std::string pick_thumb(Json holder) {
+    std::string best, narrowest;
+    int64_t best_w = -1, narrow_w = INT64_MAX;
+    for (Json t : holder.find("thumbnails").items()) {
+        const int64_t w = t["width"].i64();
+        const std::string url = t["url"].string();
+        if (url.empty()) continue;
+        if (w <= 544 && w > best_w) { best_w = w; best = url; }
+        if (w < narrow_w) { narrow_w = w; narrowest = url; }
+    }
+    return best.empty() ? narrowest : best;
+}
 
 std::string runs_text(Json o) {
     if (o["simpleText"].is_string()) return o["simpleText"].string();
@@ -202,8 +220,8 @@ std::string to_json(const Item &i) {
     return "{" + s("kind", i.kind) + "," + s("id", i.id) + "," + s("title", i.title) + "," +
            s("subtitle", i.subtitle) + "," + s("thumb", i.thumb) + "," + s("artist", i.artist) + "," +
            s("album", i.album) + "," + s("artist_id", i.artist_id) + "," + s("album_id", i.album_id) + "," +
-           s("playlist_id", i.playlist_id) + "," + s("params", i.params) +
-           ",\"duration_s\":" + std::to_string(i.duration_s) +
+           s("playlist_id", i.playlist_id) + "," + s("params", i.params) + "," + s("plays", i.plays) + "," +
+           s("year", i.year) + ",\"duration_s\":" + std::to_string(i.duration_s) +
            ",\"is_explicit\":" + (i.is_explicit ? "true" : "false") + "}";
 }
 

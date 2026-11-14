@@ -165,6 +165,47 @@ static void pause_resume() {
     CHECK_EQ(r2.sink->opens, 1);
 }
 
+// Repeat::One: the track ends and begins again, a second Track event, back near the start.
+static void repeat_one() {
+    Rig r;
+    r->set_repeat(Repeat::One);
+    r->play({mk("a")}, 0);
+    CHECK(wait_until([&] { return r.ev.count(PlayerEvent::Track) >= 2; }));
+    r->set_repeat(Repeat::Off);   // let this lap be the last
+    CHECK(wait_ended(r));
+    std::vector<PlayerEvent> tracks;
+    for (auto &e : r.ev.all())
+        if (e.kind == PlayerEvent::Track) tracks.push_back(e);
+    CHECK_EQ(tracks.size(), size_t(2));
+    if (tracks.size() == 2) {
+        CHECK_EQ(tracks[1].status.track_id, std::string("a"));
+        CHECK_EQ(tracks[1].status.index, 0);
+        CHECK(tracks[1].status.position_ms < 500);
+    }
+    CHECK(r.sink->frames() >= 2 * kA - 2000);
+}
+
+// Repeat::All: after the last track the queue goes back to index 0, gaplessly.
+static void repeat_all() {
+    Rig r;
+    r->set_repeat(Repeat::All);
+    r->play({mk("a"), mk("b")}, 0);
+    CHECK(wait_until([&] { return r.ev.count(PlayerEvent::Track) >= 3; }));
+    std::vector<int> index;
+    for (auto &e : r.ev.all())
+        if (e.kind == PlayerEvent::Track) index.push_back(e.status.index);
+    CHECK(index.size() >= 3);
+    if (index.size() >= 3) {
+        CHECK_EQ(index[0], 0);
+        CHECK_EQ(index[1], 1);
+        CHECK_EQ(index[2], 0);
+    }
+    CHECK_EQ(r.sink->opens, 1);
+    r->set_repeat(Repeat::Off);
+    r->stop();
+    CHECK(wait_ended(r));
+}
+
 int main() {
     single();
     gapless();
@@ -175,5 +216,7 @@ int main() {
     seek_paused();
     seek_past_end();
     pause_resume();
+    repeat_one();
+    repeat_all();
     return check_done();
 }

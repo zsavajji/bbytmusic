@@ -78,7 +78,20 @@ int main() {
         CHECK(load("search_all.json", d) && parse_search(d.root(), p, err));
         CHECK(count_items(p) >= 20);
         every_item_is_whole(p);
+        std::string titles;
+        for (const auto &s : p.sections) titles += s.title + "|";
+        CHECK_EQ(titles, std::string("Top result|Songs|Albums|Artists|Videos|Playlists|"));
         CHECK_EQ(p.sections.at(0).title, std::string("Top result"));
+        CHECK_EQ(p.sections[0].items.size(), size_t(1));
+        for (const auto &s : p.sections) {
+            const std::string want = s.title == "Songs" ? "song" : s.title == "Albums" ? "album" : "";
+            if (!want.empty())
+                for (const Item &it : s.items) CHECK_EQ(it.kind, want);
+        }
+        bool plays = false;
+        for (const Item &it : p.sections.at(1).items)
+            if (it.title == "Never Gonna Give You Up" && it.artist == "Rick Astley" && it.plays == "2B plays") plays = true;
+        CHECK(plays);
         const Item &top = p.sections[0].items.at(0);
         CHECK_EQ(top.id, std::string("dQw4w9WgXcQ"));
         CHECK_EQ(top.kind, std::string("video"));
@@ -93,6 +106,17 @@ int main() {
                 playlist |= it.kind == "playlist" && it.playlist_id.rfind("VL", 0) != 0;
             }
         CHECK(song && artist && album && playlist);
+    }
+    {   // Albums filter: the year, from the subtitle
+        JsonDoc d;
+        SearchPage p;
+        CHECK(load("search_albums.json", d) && parse_search(d.root(), p, err));
+        const Item &a = p.sections.at(0).items.at(0);
+        CHECK_EQ(a.kind, std::string("album"));
+        CHECK_EQ(a.title, std::string("In the Aeroplane Over the Sea"));
+        CHECK_EQ(a.year, std::string("1998"));
+        CHECK_EQ(a.subtitle, std::string("Album \xE2\x80\xA2 Neutral Milk Hotel \xE2\x80\xA2 1998"));
+        CHECK_EQ(a.id, std::string("MPREb_W0LXV3Jg2OV"));
     }
     {   // A continuation page
         JsonDoc d;
