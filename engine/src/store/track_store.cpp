@@ -6,10 +6,11 @@ bool upsert_track(Db &db, const TrackRow &t, std::string &err) {
     std::lock_guard<std::recursive_mutex> lk(db.mu());
     Stmt s;
     if (!s.prepare(db,
-                   "INSERT INTO tracks(id,title,artist,album,thumb,duration_s,artist_id,album_id) "
-                   "VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET title=excluded.title,"
-                   "artist=excluded.artist,album=excluded.album,thumb=excluded.thumb,"
-                   "duration_s=excluded.duration_s,artist_id=excluded.artist_id,album_id=excluded.album_id",
+                   // INSERT OR REPLACE, not ON CONFLICT … DO UPDATE: the phone's SQLite is
+                   // 3.7.14 and upsert came in 3.24 ("near ON: syntax error" on the Q10). The
+                   // row has no column this statement doesn't set, so replacing it loses nothing.
+                   "INSERT OR REPLACE INTO tracks(id,title,artist,album,thumb,duration_s,artist_id,album_id) "
+                   "VALUES(?,?,?,?,?,?,?,?)",
                    err))
         return false;
     s.bind(1, t.id);
