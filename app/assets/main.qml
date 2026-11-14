@@ -3,7 +3,7 @@ import bb.system 1.2
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
 // bar of a tab's first page was all but empty); what does not fit goes to the tab menu at the
-// bar's left, so the order is by use. A tab's first page then has its actions in the action
+// bar's left, so the order is by use, Home first: it is the tab the app opens on (the user). A tab's first page then has its actions in the action
 // menu; a pushed page has the bar to itself. Each tab is a NavigationPane: albums, the
 // queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
 // Recent and Queue are loaded by a delegate when first opened, so a fault in one of them costs
@@ -55,6 +55,19 @@ TabbedPane {
     }
 
     Tab {
+        title: "Home"
+        imageSource: "asset:///images/ic_home.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "HomeTab.qml"
+            // A file that does not load leaves the tab empty: say why.
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
+        }
+    }
+
+    Tab {
         title: "Search"
         imageSource: "asset:///images/ic_search.png"
         // Back on this tab: type straight away.
@@ -69,19 +82,6 @@ TabbedPane {
             }
             onPopTransitionEnded: {
                 root.retire(page);
-            }
-        }
-    }
-
-    Tab {
-        title: "Home"
-        imageSource: "asset:///images/ic_home.png"
-        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
-        delegate: Delegate {
-            source: "HomeTab.qml"
-            // A file that does not load leaves the tab empty: say why.
-            onErrorMessageChanged: {
-                root.delegateFailed(errorMessage);
             }
         }
     }
