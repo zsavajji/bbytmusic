@@ -33,13 +33,20 @@ Page {
         var time = t.duration_s > 0 ? player.fmt(t.duration_s * 1000) : "";
         // In rearrange mode each row's grip lies over its right end, where the time is: the time
         // then leads the line under the title (the user, 2026-11-14).
-        if (editing && time != "") {
-            sub = sub != "" ? time + " \u2022 " + sub : time;
+        var title = t.title;
+        if (editing) {
+            if (time != "") {
+                sub = sub != "" ? time + " \u2022 " + sub : time;
+            }
+            // Both lines stop short of the grip (it lies over the row's right end from about
+            // x 658 on the Q10; the text starts at 98: 26 and 34 units, see queue.js).
+            title = Q.fit(title, 26);
+            sub = Q.fit(sub, 34);
         }
         return {
             "id": t.id,
             "current": current,
-            "title": current ? "<html><span style='color:#ff4e45'>" + esc(t.title) + "</span></html>" : t.title,
+            "title": current ? "<html><span style='color:#ff4e45'>" + esc(title) + "</span></html>" : title,
             "subtitle": sub,
             "status": editing ? "" : (current ? "Playing" : time),
             "thumbUrl": t.thumb ? t.thumb : "",

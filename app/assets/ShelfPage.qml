@@ -237,13 +237,23 @@ Page {
 
         ConnectionBar {
         }
-        ActivityIndicator {
-            running: page.busy
+        // While the page loads: the spinner in the middle of what the list will fill (the
+        // user, 2026-11-14: it sat at the top).
+        Container {
             visible: page.busy
-            horizontalAlignment: HorizontalAlignment.Center
-            topMargin: ui.du(10)
-            preferredWidth: ui.du(12)
-            preferredHeight: ui.du(12)
+            horizontalAlignment: HorizontalAlignment.Fill
+            layout: DockLayout {
+            }
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 1
+            }
+            ActivityIndicator {
+                running: page.busy
+                horizontalAlignment: HorizontalAlignment.Center
+                verticalAlignment: VerticalAlignment.Center
+                preferredWidth: ui.du(12)
+                preferredHeight: ui.du(12)
+            }
         }
         Container {
             visible: page.failed

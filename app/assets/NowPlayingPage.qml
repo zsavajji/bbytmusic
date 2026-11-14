@@ -5,7 +5,8 @@ import bb.system 1.2
 // title and artist, a row with the album and the Repeat and Shuffle icons, the artwork with the
 // scrubber lying over its lower edge, and Previous / Play-Pause / Next on the action bar with
 // Play-Pause as the Signature action. What YTMusicWP's player adds is in the action menu: the
-// queue, the album, the track's radio, Share, Properties.
+// queue, the album, the artist, the track's radio, Share, the equalizer, Properties. (No Stop:
+// Pause does that, the user, 2026-11-14.)
 Page {
     id: page
     property variant navPane
@@ -214,14 +215,6 @@ Page {
             }
             onTriggered: {
                 info.show(player.track);
-            }
-        },
-        ActionItem {
-            title: "Stop"
-            imageSource: "asset:///images/ic_stop.png"
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            onTriggered: {
-                engine.request("stop", {});
             }
         }
     ]

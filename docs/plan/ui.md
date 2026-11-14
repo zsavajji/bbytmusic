@@ -2,7 +2,7 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.20; installed, **not yet
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.22; installed, **not yet
 seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.20, 2026-11-14)
+## What exists (0.1.0.22, 2026-11-14)
 
 ```
 app/
@@ -72,7 +72,7 @@ app/
     ├── TrackInfo.qml      the Properties sheet
     ├── EqSheet.qml        the equalizer's presets
     ├── SettingsSheet.qml  what to skip in a track (SponsorBlock), a switch per kind
-    ├── MiniPlayer.qml     the strip: state mark, title, progress line
+    ├── MiniPlayer.qml     the strip: state mark, title, elapsed / total, progress line
     ├── ConnectionBar.qml  "the engine is not connected" + Retry
     └── images/            ic_*.png (81 px) and art_none*.png, drawn by scripts/gen-icons.py
 ```
@@ -113,7 +113,7 @@ Measured on the stock player (720 × 720, 9 px per du):
 | artwork | y 178–612, placeholder a black note on #262626 | fills what is left, `AspectFill`; `art_none_large.png` |
 | scrubber band over the artwork's lower edge | y 485–612, black at about 70 % | a Container #b0000000, the Slider, elapsed left and "-5:54" right |
 | action bar | Back, Previous, Pause (Signature), Next, ⋮ | the same, as `ActionItem`s; the Signature colour is the theme's red |
-| ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, View Artist, Start Radio, Share, Equalizer (Off/On), Properties, Stop (favourites and playlists need an account, Phase 4) |
+| ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, View Artist, Start Radio, Share, Equalizer (Off/On), Properties (favourites and playlists need an account, Phase 4) |
 | library: segmented control, rows with an 88 px cover at the left edge | | Search's filter is that control; rows are `StandardListItem`s with `imageSource` |
 | library action bar: tab menu, Shuffle (Signature), ⋮ | | the Queue page: tab menu, Edit Order, Shuffle (Signature), ⋮ |
 | tabs in the tab menu, not on the bar | | `showTabsOnActionBar: false` |
@@ -130,18 +130,36 @@ From YTMusicWP's screens, what each of ours must be able to do:
 | Library: Recently Played | a tab, Recent, from the engine's own history |
 | Library's rest, Samples, Create | not built (Phase 4, the account) |
 
-## What the user decided at their first look (2026-11-14, 0.1.0.20)
+## What the user decided at their first look (2026-11-14, 0.1.0.22)
 
 Their words: "shuffle should be a toggle, when sort is toggled it covers the time, should push
 it to the lefy. primary color is ok, strip could be 20%taller. extra tabs are ok."
 
 - **Shuffle is a mode**, a toggle, as in the stock player: on shuffles what is still to come
-  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.20.)
+  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.22.)
 - **In Edit Order the grip must not cover the time**: in that mode a row's time leads the line
   under its title and the right end is left to the grip.
 - **The primary colour stays YouTube's red.**
 - **The strip is a fifth taller**: 7.2 du.
 - **Home, Explore and Recent stay.**
+
+Then, from a screenshot of 0.1.0.20's queue in Edit Order (`debug/shots/IMG_20261114_203425.png`)
+and three more remarks:
+
+- "on Float on now the album overlays the queue handles": in Edit Order both lines of a row are
+  cut, with an ellipsis, to end before the grip. The cut is an estimate of the text's width
+  from that screenshot's own measurements (`queue.js`: `textUnits`, `fit`; a unit is 19.3 px in
+  a title, 15.5 px under it, on the Q10), because a `StandardListItem` cannot be told where to
+  stop. If it misses on another screen or font size, the row becomes a custom item with real
+  padding.
+- "a long title in the strip gets behind the cascades button, but i can be fine with that. a
+  time elapsed / time total counter could be at the other end": the strip ends with
+  "1:23 / 3:22" in grey. The title still runs behind a page's Signature button.
+- "on tab change the spinner is at the top instead of in the center of the screen": a loading
+  page's spinner sits in the middle of the list's space (ShelfPage, AlbumPage).
+- "the stop button should not be present in the quick menu in the player, why is it
+  necessary?": it is not; gone from Now Playing's menu. Stop is still in the application menu
+  (swipe down), where it has been since 0.1.0.4; not asked about.
 
 Still theirs to confirm, not mentioned yet:
 
@@ -219,7 +237,7 @@ already bit here or will:
 documents compiled on the phone (the `check:` lines), the restored queue came back paused, Home,
 Explore and Queue opened, a drag in Edit Order reached the engine as `queue_move`, 140 covers
 were fetched, and neither log has an error. What they said is under "What the user decided".
-**0.1.0.20, with their three changes, is installed and not yet seen.** The search, the album and
+**0.1.0.22, with their three changes, is installed and not yet seen.** The search, the album and
 artist pages, Now Playing, Recent, the equalizer, Settings and SponsorBlock have not been
 reported on (nothing was played in that session). The engine's additions ran live on the Mac
 (and the first of them on the phone from a shell), the equalizer only in its tests. Still the

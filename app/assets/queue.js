@@ -69,3 +69,38 @@ function indexAfterMove(index, from, to) {
 function nextSlot(index, current) {
     return index > current ? current + 1 : current;
 }
+
+// How wide a text draws, in units of an ordinary lower-case letter of Slate Pro. Measured on the
+// Q10 from a screenshot of the queue (2026-11-14): a unit is about 19.3 px in a list row's
+// title and 15.5 px in the line under it, within a few per cent.
+function textUnits(text) {
+    var units = 0;
+    for (var i = 0; i < text.length; i ++) {
+        var c = text.charAt(i);
+        if ("iljtfrI1.,:;'!| ".indexOf(c) >= 0) {
+            units += 0.55;
+        } else if ("mwMW".indexOf(c) >= 0) {
+            units += 1.5;
+        } else if (c != c.toLowerCase()) {
+            units += 1.2;
+        } else {
+            units += 1.0;
+        }
+    }
+    return units;
+}
+
+// `text` cut to at most `units` wide, with an ellipsis when it was cut.
+// ponytail: an estimate from one phone's font metrics, used so that a StandardListItem's text
+// stops short of the rearrange grip; a custom list item with real padding if other screens or
+// font sizes make it miss.
+function fit(text, units) {
+    if (textUnits(text) <= units) {
+        return text;
+    }
+    var out = text;
+    while (out.length > 0 && textUnits(out) + 1.0 > units) {
+        out = out.substring(0, out.length - 1);
+    }
+    return out.replace(/[\s•]+$/, "") + "…";
+}

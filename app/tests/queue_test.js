@@ -62,4 +62,29 @@ for (var cur = 0; cur < list.length; cur ++) {
         assert.strictEqual(moved2[curNow + 1].id, list[row].id, "row " + row + " next after " + cur);
     }
 }
+// fit: the widths measured on the Q10 screenshot (px = units x 19.3 for a title, x 15.5 under it)
+var rows = [["3:29 \u2022 Modest Mouse \u2022 Good News For People", 602, 15.5],
+    ["4:05 \u2022 Neutral Milk Hotel \u2022 On Avery Island", 552, 15.5],
+    ["Where You'll Find Me Now", 435, 19.3], ["Jigsaw Falling Into Place", 399, 19.3]];
+rows.forEach(function (r) {
+    var px = Q.textUnits(r[0]) * r[2];
+    assert.ok(Math.abs(px - r[1]) / r[1] < 0.07, r[0] + ": " + px + " px estimated, " + r[1] + " measured");
+});
+assert.strictEqual(Q.fit("Float On", 26), "Float On");
+var cut = Q.fit("3:29 \u2022 Modest Mouse \u2022 Good News For People Who Love Bad News", 34);
+assert.ok(Q.textUnits(cut) <= 34, cut);
+assert.strictEqual(cut.charAt(cut.length - 1), "\u2026");
+assert.strictEqual(cut.indexOf("3:29 \u2022 Modest Mouse \u2022 Good News"), 0, cut);
+assert.strictEqual(Q.fit("", 10), "");
+assert.strictEqual(Q.fit("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW", 3), "W\u2026");
+if (process.argv[2] == "--show") {      // where each of the screenshot's rows would end, in px
+    [["3:29 \u2022 Modest Mouse \u2022 Good News For People Who Love Bad News", 34, 15.5],
+     ["4:05 \u2022 Neutral Milk Hotel \u2022 On Avery Island", 34, 15.5],
+     ["1:27 \u2022 Richy Mitch & The Coal Miners \u2022 RMCM", 34, 15.5],
+     ["Where You'll Find Me Now", 26, 19.3],
+     ["The King of Carrot Flowers Pts. Two & Three", 26, 19.3]].forEach(function (r) {
+        var c = Q.fit(r[0], r[1]);
+        console.log(c + "  ->  ends near x " + Math.round(98 + Q.textUnits(c) * r[2]));
+    });
+}
 console.log("queue.js: ok");

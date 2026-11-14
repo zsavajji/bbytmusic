@@ -1,7 +1,7 @@
 import bb.cascades 1.4
 
-// The strip at the bottom of a page: whether it plays, the title on one line, and a line that
-// shows how far the track is. A tap opens Now Playing on navPane, where every control is (the
+// The strip at the bottom of a page: whether it plays, the title on one line, the time elapsed
+// and the track's length at the far end, and a line that shows how far the track is. A tap opens Now Playing on navPane, where every control is (the
 // user, 2026-11-14: "reduced to a strip with just the title to reserve more space"). Hidden when
 // nothing is loaded.
 Container {
@@ -47,6 +47,14 @@ Container {
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 1
             }
+        }
+        // Elapsed and total, at the far end (the user, 2026-11-14). On a page with a Signature
+        // action a long title runs behind that button; the user is fine with that.
+        Label {
+            text: player.fmt(player.positionMs) + " / " + player.fmt(player.durationMs)
+            verticalAlignment: VerticalAlignment.Center
+            textStyle.base: SystemDefaults.TextStyles.SmallText
+            textStyle.color: Color.create("#969696")
         }
     }
     // How far the track is: YouTube's red line along the top edge.
