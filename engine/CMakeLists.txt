@@ -62,7 +62,7 @@ else()
 endif()
 
 # ---- one library per module -----------------------------------------------------------------
-set(BBM_MODULES util net proto stream media audio innertube player store platform server)
+set(BBM_MODULES util net proto stream media audio innertube player store platform server engine)
 set(deps_util)
 set(deps_net util)
 set(deps_proto)
@@ -74,6 +74,7 @@ set(deps_player stream media audio)
 set(deps_store util)
 set(deps_platform util)   # BB10 only: its sources are empty on the host (#ifdef __QNX__)
 set(deps_server util net proto stream media audio innertube player store platform)
+set(deps_engine util net proto stream media audio innertube player store platform server)   # the wiring
 
 set(YYJSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/yyjson)
 
@@ -120,7 +121,7 @@ endforeach()
 # ---- the daemon -----------------------------------------------------------------------------
 add_executable(bbmusicd src/main.cpp)
 target_compile_definitions(bbmusicd PRIVATE BBM_VERSION="${PROJECT_VERSION}")
-target_link_libraries(bbmusicd PRIVATE server)
+target_link_libraries(bbmusicd PRIVATE engine)
 
 # The phone's own probe: the real media, audio and platform modules, run from a shell on the Q10.
 if(BBM_BB10 AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/tools/bb10_probe.cpp)
