@@ -95,7 +95,8 @@ void Player::play(std::vector<Track> tracks, int index, int64_t position_ms) {
         queue_changed();
         return;
     }
-    queue_.set(std::move(tracks), index);
+    std::mt19937 rng(uint32_t(std::chrono::steady_clock::now().time_since_epoch().count()));
+    queue_.set(std::move(tracks), index, &rng);
     queue_dirty_ = true;
     load_index(queue_.index(), position_ms);
 }
@@ -220,10 +221,28 @@ void Player::shuffle() {
     queue_changed();
 }
 
-void Player::sort(QueueSort by, bool desc) {
+bool Player::sort(QueueSort by, bool desc) {
     std::lock_guard<std::mutex> lk(m_);
-    queue_.sort(by, desc);
+    const bool off = queue_.sort(by, desc);
     queue_changed();
+    return off;
+}
+
+void Player::set_shuffle(bool on) {
+    std::lock_guard<std::mutex> lk(m_);
+    std::mt19937 rng(uint32_t(std::chrono::steady_clock::now().time_since_epoch().count()));
+    queue_.set_shuffle(on, rng);
+    queue_changed();
+}
+
+bool Player::shuffle_mode() const {
+    std::lock_guard<std::mutex> lk(m_);
+    return queue_.shuffle();
+}
+
+void Player::restore_shuffle(bool on) {
+    std::lock_guard<std::mutex> lk(m_);
+    queue_.restore_shuffle_flag(on);
 }
 
 }  // namespace bbm

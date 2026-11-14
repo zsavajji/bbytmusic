@@ -167,7 +167,13 @@ void Engine::add_commands() {
             {"album", QueueSort::Album}, {"duration", QueueSort::Duration}};
         for (auto &[name, by] : keys)
             if (req["by"].str() == name) {
-                player_->sort(by, req["desc"].boolean(false));
+                if (player_->sort(by, req["desc"].boolean(false))) {   // the mode went off with it
+                    server_.emit("mode", mode_json());
+                    post([this] {
+                        std::string err;
+                        if (db_ok_ && !set_setting(db_, "shuffle", "off", err)) log_warn("store: " + err);
+                    });
+                }
                 return ok();
             }
         return bad("by: title, artist, album or duration");
@@ -223,6 +229,17 @@ void Engine::add_commands() {
         });
         return ok();
     });
+    server_.on("shuffle", [this](Json req) {
+        if (!req["on"].is_bool()) return bad("on: a boolean is required");
+        const bool on = req["on"].boolean(false);
+        player_->set_shuffle(on);
+        server_.emit("mode", mode_json());
+        post([this, on] {
+            std::string err;
+            if (db_ok_ && !set_setting(db_, "shuffle", on ? "on" : "off", err)) log_warn("store: " + err);
+        });
+        return ok();
+    });
     server_.on("eq", [this](Json req) {
         const auto &presets = eq_presets();
         if (!req["preset"].is_null()) {
@@ -273,8 +290,8 @@ void Engine::add_commands() {
 }
 
 std::string Engine::mode_json() {
-    return std::string("\"repeat\":\"") + repeat_name(player_->repeat()) + "\",\"eq\":\"" +
-           eq_presets()[size_t(eq_.preset())].name + "\"";
+    return std::string("\"repeat\":\"") + repeat_name(player_->repeat()) + "\",\"shuffle\":" +
+           (player_->shuffle_mode() ? "true" : "false") + ",\"eq\":\"" + eq_presets()[size_t(eq_.preset())].name + "\"";
 }
 
 Reply Engine::status() {
@@ -288,8 +305,8 @@ Reply Engine::status() {
     return ok("{\"version\":" + json_quote(opt_.version) + ",\"state\":\"" + state_name(s.state) + "\",\"index\":" +
               std::to_string(s.index) + ",\"track\":" + track + ",\"position_ms\":" + std::to_string(s.position_ms) +
               ",\"duration_ms\":" + std::to_string(s.duration_ms) + ",\"queue_len\":" + std::to_string(q.size()) +
-              ",\"error\":" + json_quote(s.error) + ",\"repeat\":\"" + repeat_name(player_->repeat()) + "\",\"eq\":\"" +
-              eq_presets()[size_t(eq_.preset())].name + "\"}");
+              ",\"error\":" + json_quote(s.error) + ",\"repeat\":\"" + repeat_name(player_->repeat()) + "\",\"shuffle\":" +
+              (player_->shuffle_mode() ? "true" : "false") + ",\"eq\":\"" + eq_presets()[size_t(eq_.preset())].name + "\"}");
 }
 
 // Replaces the queue and starts. With radio and one song or video, the song's radio follows it:

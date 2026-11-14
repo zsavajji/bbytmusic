@@ -65,7 +65,10 @@ public:
     void move(int from, int to);
     void clear_others();   // the current track stays and plays on
     void shuffle();        // what follows the current track
-    void sort(QueueSort by, bool desc);
+    bool sort(QueueSort by, bool desc);   // true: the shuffle mode went off with it
+    void set_shuffle(bool on);            // the mode; a Queue event follows from the caller's side
+    bool shuffle_mode() const;
+    void restore_shuffle(bool on);        // the mode as saved, the queue left as it is
     void set_repeat(Repeat r);   // no Queue event
     Repeat repeat() const;
 

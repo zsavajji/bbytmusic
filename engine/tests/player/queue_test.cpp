@@ -178,5 +178,98 @@ int main() {
     q.set(ts({"a"}), 0);
     q.set_repeat(Repeat::All);
     CHECK_EQ(q.next_index(), 0);
+    // shuffle mode
+    {
+        std::mt19937 rng(7);
+        auto sorted = [](const Queue &x) { std::string v = ids(x); std::sort(v.begin(), v.end()); return v; };
+        Queue m;
+        m.set(ts({"a", "b", "c", "d", "e", "f", "g", "h"}), 2);
+        m.set_shuffle(true, rng);
+        CHECK(m.shuffle());
+        CHECK_EQ(ids(m).substr(0, 3), std::string("abc"));   // up to the current one untouched
+        CHECK_EQ(sorted(m), std::string("abcdefgh"));
+        CHECK_EQ(m.index(), 2);
+        m.set_shuffle(true, rng);   // already on: nothing
+        m.set_shuffle(false, rng);
+        CHECK(!m.shuffle());
+        CHECK_EQ(ids(m), std::string("abcdefgh"));
+        CHECK_EQ(m.index(), 2);
+
+        // added while on: where they would sit without the mode
+        m.set_shuffle(true, rng);
+        m.add(ts({"x"}), false);
+        m.add(ts({"y"}), true);   // right after c
+        m.set_shuffle(false, rng);
+        CHECK_EQ(ids(m), std::string("abcydefghx"));
+        CHECK_EQ(m.index(), 2);
+
+        // remove and move while on
+        m.set_shuffle(true, rng);
+        const std::string cur = m.current()->id;
+        for (int i = 0; i < m.size(); i++)
+            if (m.tracks()[size_t(i)].id == "f") { m.remove(i); break; }
+        CHECK_EQ(m.current()->id, cur);
+        m.move(m.size() - 1, m.index() + 1);
+        CHECK_EQ(m.current()->id, cur);
+        m.set_shuffle(false, rng);
+        CHECK_EQ(ids(m), std::string("abcydeghx"));
+        CHECK_EQ(m.current()->id, cur);
+
+        // set while on: the chosen track first, the rest a permutation, off restores the given order
+        m.set_shuffle(true, rng);
+        m.set(ts({"a", "b", "c", "d", "e", "f"}), 3, &rng);
+        CHECK_EQ(m.index(), 0);
+        CHECK_EQ(m.current()->id, std::string("d"));
+        CHECK_EQ(sorted(m), std::string("abcdef"));
+        m.set_shuffle(false, rng);
+        CHECK_EQ(ids(m), std::string("abcdef"));
+        CHECK_EQ(m.current()->id, std::string("d"));
+        CHECK_EQ(m.index(), 3);
+
+        // sort while on: the mode goes off, a later off changes nothing
+        m.set_shuffle(true, rng);
+        CHECK(m.sort(QueueSort::Title, true));
+        CHECK(!m.shuffle());
+        const std::string after = ids(m);
+        m.set_shuffle(false, rng);
+        CHECK_EQ(ids(m), after);
+        CHECK(!m.sort(QueueSort::Title, false));
+
+        // clear_others while on
+        m.set_shuffle(true, rng);
+        m.clear_others();
+        m.add(ts({"p", "q"}), false);
+        m.set_shuffle(false, rng);
+        CHECK_EQ(m.size(), 3);
+        CHECK_EQ(ids(m).substr(1), std::string("pq"));
+
+        // duplicate ids keep their identity
+        Queue dup;
+        dup.set({t("a"), t("b"), t("a"), t("b"), t("a")}, 0);
+        dup.set_shuffle(true, rng);
+        dup.set_shuffle(false, rng);
+        CHECK_EQ(ids(dup), std::string("ababa"));
+
+        // a restart: the mode on, nothing remembered; off leaves the order alone
+        Queue r;
+        r.restore_shuffle_flag(true);
+        r.set(ts({"a", "b", "c", "d"}), 1);
+        CHECK(r.shuffle());
+        r.set_shuffle(false, rng);
+        CHECK_EQ(ids(r), std::string("abcd"));
+        CHECK_EQ(r.index(), 1);
+        r.restore_shuffle_flag(true);
+        r.add(ts({"z"}), true);   // not remembered either: off keeps the order
+        r.set_shuffle(false, rng);
+        CHECK_EQ(ids(r), std::string("abzcd"));
+
+        // on an empty queue, then tracks
+        Queue e;
+        e.set_shuffle(true, rng);
+        e.add(ts({"a", "b", "c"}), false);
+        e.set_shuffle(false, rng);
+        CHECK_EQ(ids(e), std::string("abc"));
+        CHECK_EQ(e.index(), 0);
+    }
     return check_done();
 }

@@ -153,6 +153,7 @@ void Engine::restore() {
     if (!db_ok_) return;
     if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
+    const bool shuffle_saved = get_setting(db_, "shuffle", "off") == "on";
     {
         std::vector<std::string> cats;
         std::string list = get_setting(db_, "skip", "");
@@ -171,6 +172,7 @@ void Engine::restore() {
     std::string err;
     if (!load_queue(db_, rows, err) || !load_queue_state(db_, st, err)) {
         log_warn("restore: " + err);
+        player_->restore_shuffle(shuffle_saved);
         return;
     }
     std::vector<Track> tracks;
@@ -186,12 +188,17 @@ void Engine::restore() {
             tracks.push_back(to_track(i));
         }
     }
-    if (tracks.empty()) return;
+    if (tracks.empty()) {
+        player_->restore_shuffle(shuffle_saved);
+        return;
+    }
     if (index >= int(tracks.size())) index = int(tracks.size()) - 1;
     log_info("restore: " + std::to_string(tracks.size()) + " tracks, at " + std::to_string(index) + ", " +
              std::to_string(st.position_ms) + " ms");
     player_->play(std::move(tracks), index, st.position_ms);
     player_->pause();
+    // The mode goes on after the play, which would otherwise shuffle the queue that is already in its play order.
+    player_->restore_shuffle(shuffle_saved);
     // The player thread takes the load at once (the network comes later, on the feed thread):
     // wait for it so that a status asked right away is already the restored one.
     for (int i = 0; i < 200 && player_->status().state == PlayState::Stopped; i++)

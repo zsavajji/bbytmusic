@@ -120,6 +120,7 @@ int main() {
     char tmpl[] = "/tmp/bbm_engine_XXXXXX";
     g_dir = mkdtemp(tmpl);
     JsonDoc d;
+    std::string saved_order;
 
     {
         Running r;
@@ -209,6 +210,32 @@ int main() {
         q = parse(c.cmd("queue"), d)["result"];
         CHECK_EQ(q["items"][0]["id"].string(), "a");
         CHECK_EQ(q["items"].size(), size_t(3));
+
+        // shuffle: the mode, with a mode event of all three fields, a queue event, and back to the order before.
+        CHECK_EQ(parse(c.cmd("shuffle"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("shuffle", "\"on\":\"x\""), d)["error"]["code"].string(), "bad_request");
+        const std::string before = ids(parse(c.cmd("queue"), d)["result"]["items"]);
+        CHECK(!parse(c.cmd("status"), d)["result"]["shuffle"].boolean(true));
+        mark = c.events.size();
+        CHECK(parse(c.cmd("shuffle", "\"on\":true"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["shuffle"].is_bool() && e["shuffle"].boolean() && e["repeat"].is_string() && e["eq"].is_string(); }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue"); }, 5000, mark) >= 0);
+        CHECK(parse(c.cmd("status"), d)["result"]["shuffle"].boolean());
+        CHECK_EQ(parse(c.cmd("queue"), d)["result"]["items"].size(), size_t(3));
+        CHECK_EQ(parse(c.cmd("queue"), d)["result"]["items"][0]["id"].string(), "a");
+        mark = c.events.size();
+        CHECK(parse(c.cmd("shuffle", "\"on\":false"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["shuffle"].is_bool() && !e["shuffle"].boolean(); }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue"); }, 5000, mark) >= 0);
+        CHECK(!parse(c.cmd("status"), d)["result"]["shuffle"].boolean());
+        CHECK_EQ(ids(parse(c.cmd("queue"), d)["result"]["items"]), before);
+        // a sort while on turns the mode off
+        CHECK(parse(c.cmd("shuffle", "\"on\":true"), d)["ok"].boolean());
+        mark = c.events.size();
+        CHECK(parse(c.cmd("queue_sort", "\"by\":\"title\""), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["shuffle"].is_bool() && !e["shuffle"].boolean(); }, 5000, mark) >= 0);
+        CHECK(!parse(c.cmd("status"), d)["result"]["shuffle"].boolean());
+
         mark = c.events.size();
         CHECK(parse(c.cmd("queue_clear"), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["len"].i64() == 1; }, 5000, mark) >= 0);
@@ -229,7 +256,7 @@ int main() {
         CHECK(parse(c.cmd("repeat", "\"mode\":\"all\""), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all"; }, 5000, mark) >= 0);
         CHECK_EQ(parse(c.cmd("status"), d)["result"]["repeat"].string(), "all");
-        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all" && e["eq"].str() == "off"; }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all" && e["eq"].str() == "off" && e["shuffle"].is_bool(); }, 5000, mark) >= 0);
 
         // eq: the presets, set one, a mode event with both fields, refused when unknown.
         Json e = parse(c.cmd("eq"), d)["result"];
@@ -243,7 +270,7 @@ int main() {
         CHECK_EQ(parse(c.cmd("status"), d)["result"]["eq"].string(), "off");
         mark = c.events.size();
         CHECK_EQ(parse(c.cmd("eq", "\"preset\":\"rock\""), d)["result"]["preset"].string(), "rock");
-        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["eq"].str() == "rock" && e["repeat"].str() == "all"; }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["eq"].str() == "rock" && e["repeat"].str() == "all" && e["shuffle"].is_bool(); }, 5000, mark) >= 0);
         CHECK_EQ(parse(c.cmd("status"), d)["result"]["eq"].string(), "rock");
         // the tone plays through the equalizer
         mark = c.events.size();
@@ -285,6 +312,11 @@ int main() {
         CHECK(parse(c.cmd("pause"), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "paused"; }, 5000, mark) >= 0);
 
+        // the shuffle mode and the queue's order as it is survive a restart
+        CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"song\",\"id\":\"a\",\"title\":\"Tone A\"},{\"kind\":\"video\",\"id\":\"b\",\"title\":\"Tone B\"},{\"kind\":\"song\",\"id\":\"a\",\"title\":\"Tone A\"}]"), d)["ok"].boolean());
+        CHECK(parse(c.cmd("shuffle", "\"on\":true"), d)["ok"].boolean());
+        saved_order = ids(parse(c.cmd("queue"), d)["result"]["items"]);
+        CHECK_EQ(saved_order.size(), size_t(5));
         CHECK(parse(c.cmd("quit"), d)["ok"].boolean());
         CHECK_EQ(c.line(3000), "<EOF>");   // the engine closes once quit is answered
         r.t.join();
@@ -299,14 +331,15 @@ int main() {
         Json s = parse(c.cmd("status"), d)["result"];
         CHECK_EQ(s["state"].string(), "paused");
         CHECK_EQ(s["index"].i64(), 1);
-        CHECK_EQ(s["queue_len"].i64(), 2);
+        CHECK_EQ(s["queue_len"].i64(), 5);
         CHECK_EQ(s["track"]["id"].string(), "b");
+        CHECK(s["shuffle"].boolean());   // kept across the restart
         CHECK_EQ(s["track"]["title"].string(), "Tone B");
         CHECK_EQ(s["repeat"].string(), "all");   // kept across the restart
         CHECK_EQ(s["eq"].string(), "rock");
         CHECK(s["position_ms"].i64() >= 2000);
         Json q = parse(c.cmd("queue"), d)["result"];
-        CHECK_EQ(ids(q["items"]), "ab");
+        CHECK_EQ(ids(q["items"]), saved_order);   // not shuffled again
         CHECK_EQ(q["items"][0]["album"].string(), "Tones");
         CHECK_EQ(q["index"].i64(), 1);
         const size_t mark = c.events.size();
