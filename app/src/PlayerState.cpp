@@ -6,6 +6,7 @@ PlayerState::PlayerState(QObject *parent)
     , m_index(-1)
     , m_repeat("off")
     , m_eq("off")
+    , m_shuffle(false)
     , m_positionMs(0)
     , m_durationMs(0)
     , m_queueLength(0)
@@ -74,6 +75,8 @@ void PlayerState::onEvent(QString name, QVariantMap f)
                 m_repeat = f["repeat"].toString();
             if (f.contains("eq"))
                 m_eq = f["eq"].toString();
+            if (f.contains("shuffle"))
+                m_shuffle = f["shuffle"].toBool();
         }
         setPosition(f);
     } else if (name == "track") {
@@ -94,6 +97,8 @@ void PlayerState::onEvent(QString name, QVariantMap f)
             m_repeat = f["repeat"].toString();
         if (f.contains("eq"))
             m_eq = f["eq"].toString();
+        if (f.contains("shuffle"))
+            m_shuffle = f["shuffle"].toBool();
     } else if (name == "error") {
         emit errorOccurred(f["message"].toString());
         return;

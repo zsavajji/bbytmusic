@@ -10,7 +10,7 @@ Container {
     property int stripWidth: 720
     visible: player.loaded
     horizontalAlignment: HorizontalAlignment.Fill
-    preferredHeight: ui.du(6)
+    preferredHeight: ui.du(7.2)     // a fifth taller than the first strip (the user, 2026-11-14)
     background: Color.create("#262626")
     layout: DockLayout {
     }

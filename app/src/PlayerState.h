@@ -27,6 +27,8 @@ class PlayerState : public QObject
     Q_PROPERTY(int queueLength READ queueLength NOTIFY changed)
     // "off", "all" or "one".
     Q_PROPERTY(QString repeat READ repeat NOTIFY changed)
+    // The shuffle mode.
+    Q_PROPERTY(bool shuffle READ shuffle NOTIFY changed)
     // The equalizer's preset: "off", "bass_boost", ...
     Q_PROPERTY(QString eq READ eq NOTIFY changed)
     // The current track as the engine gave it (docs/protocol.md, Item): id, album_id, thumb, ...
@@ -48,6 +50,7 @@ public:
     int queueLength() const { return m_queueLength; }
     QString repeat() const { return m_repeat; }
     QString eq() const { return m_eq; }
+    bool shuffle() const { return m_shuffle; }
     QVariantMap track() const { return m_track; }
     QString thumb() const { return m_track.value("thumb").toString(); }
 
@@ -74,6 +77,7 @@ private:
     int m_index;
     QString m_title, m_artist, m_album, m_error, m_repeat, m_eq;
     QVariantMap m_track;
+    bool m_shuffle;
     int m_positionMs, m_durationMs, m_queueLength;
     QTimer m_tick;
     QElapsedTimer m_clock;

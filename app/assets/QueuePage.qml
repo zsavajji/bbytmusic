@@ -30,12 +30,18 @@ Page {
         if (t.album) {
             sub = sub != "" ? sub + " • " + t.album : t.album;
         }
+        var time = t.duration_s > 0 ? player.fmt(t.duration_s * 1000) : "";
+        // In rearrange mode each row's grip lies over its right end, where the time is: the time
+        // then leads the line under the title (the user, 2026-11-14).
+        if (editing && time != "") {
+            sub = sub != "" ? time + " \u2022 " + sub : time;
+        }
         return {
             "id": t.id,
             "current": current,
             "title": current ? "<html><span style='color:#ff4e45'>" + esc(t.title) + "</span></html>" : t.title,
             "subtitle": sub,
-            "status": current ? "Playing" : (t.duration_s > 0 ? player.fmt(t.duration_s * 1000) : ""),
+            "status": editing ? "" : (current ? "Playing" : time),
             "thumbUrl": t.thumb ? t.thumb : "",
             "image": art(t.thumb)
         };
@@ -147,8 +153,22 @@ Page {
     }
 
     function setEditing(on) {
+        if (! on && moveFrom >= 0) {
+            dropped();      // Done under a drag: the row stays where it is
+        }
         editing = on;
         list.rearrangeHandler.setActive(on);
+    }
+
+    // Every row again, in place: what a row shows depends on the mode.
+    onEditingChanged: {
+        var items = tracks;
+        if (items.length != queueModel.size()) {
+            return;
+        }
+        for (var i = 0; i < items.length; i ++) {
+            queueModel.replace(i, entry(items[i], i == marked));
+        }
     }
 
     function sort(by) {
@@ -232,14 +252,16 @@ Page {
             }
         },
         ActionItem {
-            title: "Shuffle"
+            title: player.shuffle ? "Shuffle: On" : "Shuffle: Off"
             imageSource: "asset:///images/ic_shuffle.png"
             ActionBar.placement: ActionBarPlacement.Signature
             shortcuts: Shortcut {
                 key: "S"
             }
             onTriggered: {
-                engine.request("queue_shuffle", {});
+                engine.request("shuffle", {
+                    "on": ! player.shuffle
+                });
             }
         },
         ActionItem {
@@ -361,10 +383,10 @@ Page {
                 }
                 // Should the system leave rearrange mode by itself, the action says so.
                 onActiveChanged: {
-                    page.editing = active;
                     if (! active && page.moveFrom >= 0) {
                         page.dropped();     // the mode went away under a drag
                     }
+                    page.editing = active;  // after the drop: the rows are redrawn from `tracks`
                 }
             }
 

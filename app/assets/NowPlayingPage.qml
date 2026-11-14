@@ -287,16 +287,18 @@ Page {
                     page.cycleRepeat();
                 }
             }
-            // Shuffles what is still to come, once; it is not a mode (the queue shows the order).
+            // A toggle, as in the stock player (the user, 2026-11-14): on shuffles what is still to
+            // come, off puts the queue back in its order.
             ImageButton {
                 defaultImageSource: "asset:///images/ic_shuffle.png"
+                opacity: player.shuffle ? 1.0 : 0.4
                 preferredWidth: ui.du(8)
                 preferredHeight: ui.du(8)
                 verticalAlignment: VerticalAlignment.Center
                 onClicked: {
-                    engine.request("queue_shuffle", {});
-                    notice.body = "Shuffled what comes next.";
-                    notice.show();
+                    engine.request("shuffle", {
+                        "on": ! player.shuffle
+                    });
                 }
             }
         }

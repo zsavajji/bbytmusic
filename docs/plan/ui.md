@@ -130,34 +130,34 @@ From YTMusicWP's screens, what each of ours must be able to do:
 | Library: Recently Played | a tab, Recent, from the engine's own history |
 | Library's rest, Samples, Create | not built (Phase 4, the account) |
 
-## Decisions the user should confirm
+## What the user decided at their first look (2026-11-14, 0.1.0.19)
 
-- **Shuffle is an action, not a mode.** It shuffles what follows the current track, once, and
-  the queue shows the new order. A mode would need the old order kept to undo it, and means
-  little on a radio queue that grows. The stock player and YTMusicWP both show a toggle.
+Their words: "shuffle should be a toggle, when sort is toggled it covers the time, should push
+it to the lefy. primary color is ok, strip could be 20%taller. extra tabs are ok."
+
+- **Shuffle is a mode**, a toggle, as in the stock player: on shuffles what is still to come
+  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.19.)
+- **In Edit Order the grip must not cover the time**: in that mode a row's time leads the line
+  under its title and the right end is left to the grip.
+- **The primary colour stays YouTube's red.**
+- **The strip is a fifth taller**: 7.2 du.
+- **Home, Explore and Recent stay.**
+
+Still theirs to confirm, not mentioned yet:
+
 - **Sort sorts the whole queue**, played tracks included; the current track stays current.
-- **The primary colour is YouTube's red** (#FF0000, base #CC0000): the Signature action, the
-  segmented control's selection, focus highlights. The stock player's is the system's blue.
 - **The strip shows a small play/pause mark** beside the title (what the player is doing, not a
-  button) and a red progress line. "Just the title" would drop both.
+  button) and a red progress line.
 - **Videos and Playlists have no segment** in Search (the control holds four): they appear under
-  All. A fifth and sixth filter would go in the action menu.
+  All.
 - **Start Radio from Now Playing restarts the track** (it is `play` with `radio`).
 - **Repeat One**: Next still moves on; only a track ending by itself repeats.
-- **Home and Recent were not in the brief.** They follow the plan (3.1, 3.6) and YTMusicWP's
-  Home and Library screens; each is one tab, loaded on demand, and one line of `main.qml` to
-  remove. Without an account Home is four or five shelves that follow the country (quick picks,
-  featured playlists, new releases, trending).
-- **The tab order**: Search first (it is where an anonymous user starts), then Home, Explore,
-  Recent, Queue.
-- **Explore and the equalizer were not in the brief either.** Explore is the plan's 3.4 in part
-  (no moods and genres: that feed has another shape); the equalizer is 3.9, ten fixed presets,
-  no sliders. The presets' gains are a first guess and nobody has heard them.
-- **SponsorBlock (3.8) is in, and off.** Turning a switch on makes the engine ask
-  sponsor.ajay.app about every track that starts, by the first four hex digits of the SHA-256
-  of its id (the service then answers for every video sharing them). That is a third party
-  learning roughly what is played: the user's call. A slow answer holds the engine's worker
-  for up to 10 s.
+- **The tab order**: Search first, then Home, Explore, Recent, Queue.
+- **The equalizer** is ten fixed presets, no sliders; their gains are a first guess.
+- **SponsorBlock is in, and off.** Turning a switch on makes the engine ask sponsor.ajay.app
+  about every track that starts, by the first four hex digits of the SHA-256 of its id (the
+  service then answers for every video sharing them). That is a third party learning roughly
+  what is played: the user's call. A slow answer holds the engine's worker for up to 10 s.
 
 ## Build, install, look
 
