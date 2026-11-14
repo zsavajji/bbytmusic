@@ -198,3 +198,50 @@ single-byte-corrupted input never crashes under ASan. Things to know:
 - Not yet tried: a real YouTube file (Cues before the clusters, clusters of unknown size are
   covered only by a hand-made buffer), mono, short packets, BB10. The live test of step 1.11
   is where a real file first goes through it.
+
+### 1.3, 1.4, 1.12 — InnerTube (commit bc4d9ac), 1.13 — store (23200d2), 1.1b — server core (f226340)
+
+In the commit messages. The filter `params` came from a live response's filter chips; an
+unfiltered search has a different layout from a filtered one (a flat list with a top card, no
+continuation) and the parser takes both.
+
+### 1.5, 1.7, 1.8, 1.9 — resolve, DASH, SABR (commit 203ed2c, 2026-11-14)
+
+The live test is gate 0.2 in C++ and passed here in 7 s: `dQw4w9WgXcQ`, 3 433 755 bytes, 22
+segments, DASH and SABR byte-identical, a first read at 2:00 agreeing on both, `IOS` and
+`ANDROID` matching DASH on the segments tried. To know when using it:
+
+- `cancel()` aborts the `open()` or `read()` under way; the next call clears it, so a cancel
+  between two reads is lost. The player keeps its own stop flag.
+- Segment times come from the cues on both sources.
+- AAC 140 resolves but cannot be opened (no MP4 index reader); Opus was there for every track
+  tried.
+- Not covered live: SABR redirect, error, reload, attestation, a backoff, tracks of more than a
+  few minutes, a url that has expired.
+
+### Engine side of 2.2 and 2.9 (commit d33f6dd) and a first UI (commit 869f51d), early
+
+`engine/tools/bb10_probe.cpp` ran on the Q10 from a root shell with the real demuxer, decoder,
+`QsaSink` and `NowPlaying`: 20 s, 0 underruns, about 6 % of a core, the active player in
+`mediaplayer/status`. The overlay's buttons through `NowPlaying`'s reader thread, a route
+change through `QsaSink`, `revoke` and artwork have not been seen.
+
+The UI in `app/` builds into `build/bbmusic.bar` and has never run. What its author assumed
+about the protocol, which the engine's wiring has to match or correct:
+
+1. `queue_move`'s `to` is the row's final index.
+2. `queue_remove` and `queue_move` are followed by a `queue` event.
+3. After a `track` event the duration is `track.duration_s` and the position is 0 until the
+   next `position` event.
+4. `stopped` keeps the last track's title in `status`.
+5. `search_more` may repeat a section title.
+6. `track.artist` and `track.album` are plain strings.
+7. `play` with `radio` true is sent for videos as well as songs.
+
+The list to run on the phone once the engine answers: install, the connection bar goes within
+5 s; typing on Search gives suggestions; Enter gives results with sections and durations; the
+filter re-runs the search; More loads a page; a tap on a song plays and shows the mini-player;
+an album or artist shows "Not yet"; "Play next" and "Add to queue"; the Queue tab marks the
+playing track, a tap jumps, Remove and Play next keep the order; Now Playing shows a moving
+scrubber and a drag seeks; Space, N and P on Queue and Now Playing; Stop and About in the
+menu; reopening mid-song shows the right track and position; with Wi-Fi off an error toast.
