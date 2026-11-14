@@ -50,22 +50,30 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists` | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
 | `search_more` | `continuation` | as `search` |
 | `suggest` | `q` | `{"suggestions":["…"]}` |
-| `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and one song, the engine appends that song's radio, and goes on appending as the queue runs low. |
-| `pause`, `resume`, `toggle`, `stop`, `next`, `prev` | | `{}` |
+| `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and exactly one song or video, the engine appends its radio and goes on appending as the queue runs low; the reply then comes once the radio's first page is in (about 0.6 s; the sound has started by then). If the radio cannot be fetched the song still plays and the reply is still ok. |
+| `pause`, `resume`, `toggle`, `stop`, `next`, `prev` | | `{}`. `resume` or `toggle` after `stop` plays the current track again from its start. `prev` restarts the track when more than 3 s in, else goes to the one before. |
 | `seek` | `ms` | `{}` |
 | `jump` | `index` | `{}` |
 | `queue` | | `{"items":[Track],"index":0}` |
 | `queue_add` | `items`: [Item], `next` (default false: at the end) | `{}` |
 | `queue_remove` | `index` | `{}` |
-| `queue_move` | `from`, `to` | `{}` |
+| `queue_move` | `from`, `to` | `{}`. `to` is the row's index after the move. |
 | `quit` | | `{}`, then the engine exits |
 
 Only songs and videos can be played or queued; an Item of another kind gets `code`
-`bad_request`. Error codes beyond the framing's: `network` (YouTube could not be reached or
-answered with an error), `not_found`, `bad_request`.
+`bad_request`, as does a missing or wrongly typed field. An index outside the queue gets
+`not_found`. `network` means YouTube could not be reached or answered with an error.
 
-Commands answer at once: `play`, `seek` and the rest are acknowledged before the sound changes,
-and what happens next comes as events.
+In `status`, `index` is -1 when the queue is empty; `stopped` still carries the current track.
+After a restart the queue comes back paused, and its tracks have lost `explicit`,
+`playlist_id` and `params` (the store keeps no columns for them).
+
+Commands answer without waiting for the sound: `seek`, `next` and the rest are acknowledged
+before anything changes, and what happens next comes as events. The exceptions are the ones
+that ask YouTube (`search`, `search_more`, `suggest`, and `play` with `radio`).
+
+Every change to the queue (`play`, `queue_add`, `queue_remove`, `queue_move`, a radio page
+arriving) is followed by a `queue` event, and every `track` event by a `position` event.
 
 ## Events
 

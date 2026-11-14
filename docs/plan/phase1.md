@@ -141,30 +141,21 @@ What "done" means for a step: its tests pass under ASan/UBSan through
 with the numbers; `scripts/build-engine.sh` still cross-builds for BB10; no file over about 500
 lines.
 
-## Decisions waiting for the user
+## Decisions, answered by the user on 2026-11-14
 
-Marked here as they come up; each has what was done meanwhile.
-
-1. **Recorded InnerTube responses in the repo.** Tests for search and `next` need real
-   responses. Meanwhile: fetched anonymously, committed under `engine/tests/fixtures/`. Say if
-   you'd rather they stay out of git.
-2. **yyjson** (MIT, one `.c` and one `.h`) as the JSON parser, fetched and pinned. PLAN.md named
-   it; it is the only third-party source besides the three libraries in the Docker image.
-3. **DASH before SABR.** While `VISIONOS` gives direct urls the player uses DASH and falls back
-   to SABR. SABR is built and tested from the start, as you asked, but it is not the default.
-   Say if you want SABR first.
-4. **Branch.** Phase 1 is on `phase1`; `master` has the plan and Phase 0. Nothing is pushed
-   (there is no remote).
-
-5. **Which SQLite on the phone.** The engine links the phone's own (3.7.14.1 from 2012; it has
-   WAL) instead of compiling in a current amalgamation as PLAN.md §8 says. It works for what
-   the store does today and saves about 1 MB. Say if you want the amalgamation anyway.
-6. **Platform code pulled forward.** The BB10 speaker sink, the navigator connection and the
-   now-playing client (steps 2.2 and 2.9, engine side) were built during Phase 1 because a
-   sub-agent was free, and so was a first UI shell (2.3–2.8). Phase 1's own steps were not held
-   up by it.
-7. **`Item` could carry a type label and a year** ("Single", "EP", 1987). They are inside
-   `subtitle` today. Not added.
+1. **Recorded InnerTube responses in the repo:** "let them go into git". Anonymous ones only,
+   as now; never media bytes or signed urls.
+2. **yyjson**, fetched and pinned: yes.
+3. **DASH before SABR:** "yes keep dash before sabr". SABR stays built and tested as the
+   fallback.
+4. **Branch:** "stay on master, no worries". `phase1` was merged into `master` and work goes
+   on there. Nothing is pushed (there is no remote).
+5. **SQLite:** "keep the phone's own" (3.7.14.1). So no SQL newer than that anywhere in the
+   store: no upsert, no window functions, no `WITHOUT ROWID`. PLAN.md §8 says so now.
+6. **Platform code and the UI pulled forward:** "ok no worries".
+7. **A type label and a year in `Item`:** "it's a ui decision, we could have info on current
+   media as an option". Not added to `Item` now; an info view for the current track goes on
+   the UI's list for when the screenshots arrive.
 
 ## Results
 

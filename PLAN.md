@@ -306,8 +306,8 @@ hardware. `../hyperberry/docs/plan/pitfalls.md` applies in full.
 `tracks` (id, title, artists, album, duration, thumb), `playlists`, `playlist_tracks`, `library`
 (liked, saved albums/artists), `queue` (position, track, source), `history` (track, played_at,
 ms played — also feeds stats later), `downloads` (track, itag, bytes, state), `settings`,
-`session` (cookies). Numbered migrations with `PRAGMA user_version`. SQLite's amalgamation is
-compiled into the engine.
+`session` (cookies). Numbered migrations with `PRAGMA user_version`. The engine links the
+phone's own SQLite, 3.7.14.1 (the user, 2026-11-14): no SQL newer than that, so no upsert.
 
 ## 9. Phases
 
