@@ -105,9 +105,10 @@ Page {
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
-            title: "Play"
+            title: "Play All"
             imageSource: "asset:///images/ic_play.png"
-            ActionBar.placement: ActionBarPlacement.Signature
+            // In the action menu: this page is a tab's first, and its bar holds the tabs.
+            ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
                 if (page.tracks.length > 0) {
                     engine.request("play", {

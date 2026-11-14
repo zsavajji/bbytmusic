@@ -261,7 +261,10 @@ Page {
         ActionItem {
             title: player.shuffle ? "Shuffle: On" : "Shuffle: Off"
             imageSource: "asset:///images/ic_shuffle.png"
-            ActionBar.placement: ActionBarPlacement.Signature
+            // An ordinary action, not the Signature one (the user, 2026-11-14): on the bar when
+            // the page is pushed from Now Playing, in the action menu on the Queue tab, whose
+            // bar holds the tabs.
+            ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
                 key: "S"
             }

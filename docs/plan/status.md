@@ -11,7 +11,7 @@ everywhere, an album page, an artist page, Home, Explore and Recent tabs, the qu
 rearrange, shuffle and sort, the stock Now Playing layout, the mini-player as a strip, an
 equalizer, Settings for SponsorBlock). It started, every page compiled on the phone, and they
 asked for three changes (shuffle as a toggle, the time clear of the grip in Edit Order, a
-taller strip), which are in 0.1.0.22, installed and not yet seen. Under it the engine,
+taller strip), which are in 0.1.0.23, installed and not yet seen. Under it the engine,
 `bbmusicd`: search, `browse` (album, playlist, artist, feeds), `browse_more`, `history`, the
 thumbnail cache, resolve through the `VISIONOS` client, DASH ranges (SABR as the fallback), Opus
 through libasound, a radio queue, `queue_clear`, `queue_shuffle`, `queue_sort`, `repeat`,

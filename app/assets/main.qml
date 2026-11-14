@@ -1,14 +1,16 @@
 import bb.cascades 1.4
 import bb.system 1.2
 
-// The root. As in the stock music player the tabs live in the tab menu (bottom left), which
-// leaves each page's action bar to its own actions. Each tab is a NavigationPane: albums, the
+// The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
+// bar of a tab's first page was all but empty); what does not fit goes to the tab menu at the
+// bar's left, so the order is by use. A tab's first page then has its actions in the action
+// menu; a pushed page has the bar to itself. Each tab is a NavigationPane: albums, the
 // queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
 // Recent and Queue are loaded by a delegate when first opened, so a fault in one of them costs
 // that tab and not the app's start.
 TabbedPane {
     id: root
-    showTabsOnActionBar: false
+    showTabsOnActionBar: true
 
     // A page that was pushed is done with: let it drop its signal connections, then free it.
     function retire(page) {
@@ -85,11 +87,12 @@ TabbedPane {
     }
 
     Tab {
-        title: "Explore"
-        imageSource: "asset:///images/ic_explore.png"
+        title: "Queue"
+        imageSource: "asset:///images/ic_queue.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
-            source: "ExploreTab.qml"
+            source: "QueueTab.qml"
+            // A file that does not load leaves the tab empty: say why.
             onErrorMessageChanged: {
                 root.delegateFailed(errorMessage);
             }
@@ -117,12 +120,11 @@ TabbedPane {
     }
 
     Tab {
-        title: "Queue"
-        imageSource: "asset:///images/ic_queue.png"
+        title: "Explore"
+        imageSource: "asset:///images/ic_explore.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
-            source: "QueueTab.qml"
-            // A file that does not load leaves the tab empty: say why.
+            source: "ExploreTab.qml"
             onErrorMessageChanged: {
                 root.delegateFailed(errorMessage);
             }
