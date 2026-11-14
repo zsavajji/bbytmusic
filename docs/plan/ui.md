@@ -169,6 +169,9 @@ scripts/install-phone.sh build/bbmusic.bar   # the Q10 over root ssh (bb10rootx)
 
 - Each build gets the next build id; check `Package-Version` in the script's output against
   what you tell the user.
+- `scripts/build-app.sh` runs `scripts/check-qml-handlers.py` first: every `onSomething:` in
+  the QML must be a signal of the element it sits in (the lint does not look at handler names,
+  and a wrong one stops the app at start), and `node app/tests/queue_test.js`.
 - Lint every QML file before building:
   `../hyperberry/.claude/skills/bb10-build-deploy/scripts/cascades-qmllint.sh app/assets/*.qml`.
   Exit 255 means the app would quit at start. Known false positives: `Timer` (registered from

@@ -18,6 +18,15 @@ else
 	"$ROOT/scripts/build-engine.sh"
 fi
 
+# What a build would otherwise only show on the phone: a signal handler that does not exist
+# (the app quits at start), and the Queue page's arithmetic. Each runs where its tool is there.
+if [ -d "$HOME/.cache/bb10-qmllint/imports" ]; then
+	python3 "$ROOT/scripts/check-qml-handlers.py"
+else
+	echo "build-app.sh: no qmllint cache, signal handlers not checked" >&2
+fi
+if command -v node >/dev/null 2>&1; then node "$ROOT/app/tests/queue_test.js"; fi
+
 [ -f "$ROOT/build/app-buildid.txt" ] || echo 1 >"$ROOT/build/app-buildid.txt"
 docker run --rm -v "$ROOT:/src" -w /src "$IMAGE" bash -c '
 	source /root/bbndk/bbndk-env_10_3_1_995.sh >/dev/null
