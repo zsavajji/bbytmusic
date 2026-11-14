@@ -158,4 +158,33 @@ Marked here as they come up; each has what was done meanwhile.
 
 ## Results
 
-(filled in as the steps land)
+### 1.1a and 1.2 — skeleton, util, net (commit 72f3649, 2026-11-14)
+
+`scripts/test-engine.sh` passes on the Mac with ASan and UBSan; the live HTTP test (GET of
+music.youtube.com, an InnerTube search, a streamed GET) passed in 2.4 s; `scripts/build-engine.sh`
+cross-builds `bbmusicd` for BB10: 2.4 MB, no unwinder import. yyjson 0.13.0 is pinned by
+sha256. Things to know when using it:
+
+- Configure with `-G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Debug`: a bare `cmake -S engine -B …`
+  picked a multi-config generator on this Mac and `ctest` then found no programs.
+  `scripts/test-engine.sh` passes the build type; the generator is still the default there.
+- Test names: `tests/<module>/<name>_test.cpp` is ctest `<module>.<name>`; `<module>_tests`
+  builds one module's tests alone.
+- `json_quote()` returns the string with its quotes. `Json::find(key)` is a depth-first search.
+- On BB10 the link order is fixed in CMake: curl, wolfSSL, opus, then `libz.a` by path.
+- Not run on the phone: this build's network code (gate 0.3 ran the same libraries).
+
+### 1.6 — WebM demuxer, Opus decoder, sinks (commit d65af25, 2026-11-14)
+
+A 5 s synthetic tone decodes to 240 648 frames at 438.8 zero-crossing pairs a second; feeding
+it in chunks of 1, 7, 1000 and 65 536 bytes gives the same PCM; truncated, random and
+single-byte-corrupted input never crashes under ASan. Things to know:
+
+- `feed()` parses ahead to the first block, so `channels()` and `pre_skip()` are valid right
+  after the init bytes. A malformed stream makes `feed()` fail until `reset()`.
+- After a seek the player calls `WebmDemuxer::reset()`, `OpusDecoder::reset()`, then
+  `set_skip()` with the pre-roll (`seek_preroll_ns()`, about 80 ms): `reset()` clears the skip.
+- `Packet` lives in `media/webm_demux.h`.
+- Not yet tried: a real YouTube file (Cues before the clusters, clusters of unknown size are
+  covered only by a hand-made buffer), mono, short packets, BB10. The live test of step 1.11
+  is where a real file first goes through it.
