@@ -4,6 +4,7 @@
 #include <bb/system/InvokeManager>
 #include <QElapsedTimer>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <QTcpSocket>
 #include <QTimer>
@@ -28,6 +29,8 @@ public:
     // The "Retry" button: a new round of quick attempts now.
     Q_INVOKABLE void retry();
     // Sends {"@":<fresh id>,"cmd":cmd,...fields} and returns the id; "" when not connected.
+    // Every id gets one reply(): the engine's, or, if the link drops first, a failure with the
+    // code "disconnected".
     Q_INVOKABLE QString request(const QString &cmd, const QVariantMap &fields);
 
 signals:
@@ -61,6 +64,7 @@ private:
     int m_seq;
     QString m_statusId;
     QString m_queueId;
+    QSet<QString> m_pending; // requests sent and not answered yet
 };
 
 #endif

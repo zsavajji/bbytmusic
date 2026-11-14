@@ -14,6 +14,7 @@ Page {
     property string moreReq: ""
     property string continuation: ""
     property bool hasPlay: false
+    property bool hasShare: false
     property bool isArtist: false
     property bool busy: false
     property bool failed: false
@@ -121,10 +122,15 @@ Page {
         if (rows.length > 0) {
             rowModel.append(rows);
         }
-        // ActionItem has no `visible`: Play is on the bar only when there is something to play.
+        // ActionItem has no `visible`: Play is on the bar only when there is something to play,
+        // Share in the menu only for an artist (a feed has no link worth sending).
         if (top.length > 0 && ! hasPlay) {
             page.addAction(playAction, ActionBarPlacement.Signature);
             hasPlay = true;
+        }
+        if (isArtist && ! hasShare) {
+            page.addAction(shareAction, ActionBarPlacement.InOverflow);
+            hasShare = true;
         }
     }
 
@@ -190,12 +196,23 @@ Page {
         }
     }
 
+    // The engine is back (or was not there yet when the page was made): try again.
+    function onLink() {
+        if (engine.connected && page.failed) {
+            page.load();
+        }
+    }
+
     // Called by main.qml when the page has been popped.
     // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
             engine.reply.disconnect(page.onReply);
         } catch (e0) {
+        }
+        try {
+            engine.connectedChanged.disconnect(page.onLink);
+        } catch (e9) {
         }
         try {
             thumbs.ready.disconnect(page.onThumb);
@@ -209,22 +226,10 @@ Page {
 
     onCreationCompleted: {
         engine.reply.connect(page.onReply);
+        engine.connectedChanged.connect(page.onLink);
         thumbs.ready.connect(page.onThumb);
         load();
     }
-
-    actions: [
-        InvokeActionItem {
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            query {
-                mimeType: "text/plain"
-                invokeActionId: "bb.action.SHARE"
-            }
-            onTriggered: {
-                data = page.browseId.indexOf("UC") == 0 ? "https://music.youtube.com/channel/" + page.browseId : "https://music.youtube.com/";
-            }
-        }
-    ]
 
     Container {
         layout: StackLayout {
@@ -407,6 +412,16 @@ Page {
         ComponentDefinition {
             id: artistPage
             source: "ShelfPage.qml"
+        },
+        InvokeActionItem {
+            id: shareAction
+            query {
+                mimeType: "text/plain"
+                invokeActionId: "bb.action.SHARE"
+            }
+            onTriggered: {
+                data = "https://music.youtube.com/channel/" + page.browseId;
+            }
         },
         ActionItem {
             id: playAction

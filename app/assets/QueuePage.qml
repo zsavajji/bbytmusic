@@ -130,8 +130,9 @@ Page {
                 "from": from,
                 "to": moveTo
             });
+        } else {
+            mark();     // after a move the engine's queue event does it, with the new index
         }
-        mark();
         if (stale) {
             stale = false;
             refresh();
@@ -361,6 +362,9 @@ Page {
                 // Should the system leave rearrange mode by itself, the action says so.
                 onActiveChanged: {
                     page.editing = active;
+                    if (! active && page.moveFrom >= 0) {
+                        page.dropped();     // the mode went away under a drag
+                    }
                 }
             }
 

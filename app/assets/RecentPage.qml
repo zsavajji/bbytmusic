@@ -72,9 +72,10 @@ Page {
         }
     }
 
-    // A new track has begun: the one before it is in the history by now.
+    // The list is read when the tab is chosen (main.qml), not at every track: it would jump
+    // back to its top under a finger. And once the engine is back after a drop.
     function onEvent(name, fields) {
-        if (name == "track" || name == "status") {
+        if (name == "status") {
             page.refresh();
         }
     }

@@ -12,8 +12,11 @@ Page {
     property bool busy: false
     property bool failed: false
     property bool isAlbum: true
-    property variant info            // the browse result
+    property variant info            // the page's artist_id and playlist_id
     property variant tracks: []      // its items
+    property string albumArtist: ""
+    property string moreReq: ""
+    property int pages: 0
 
     function art(url, size, none) {
         var f = url ? thumbs.file(url, size) : "";
@@ -31,47 +34,83 @@ Page {
         failed = ! busy;
     }
 
-    function fill(result) {
-        // A local copy for the loop: reading the `tracks` property converts the whole list each time.
-        var items = result.items ? result.items : [];
-        info = result;
-        isAlbum = result.kind == "album";
-        tracks = items;
-        var rows = [ {
-                "rowType": "head",
-                "title": result.title,
-                "artist": result.artist ? result.artist : "",
-                "subtitle": result.subtitle ? result.subtitle : "",
-                "second": result.second_subtitle ? result.second_subtitle : "",
-                "thumbUrl": result.thumb ? result.thumb : "",
-                "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
-            } ];
+    // The rows of `items`, the first of which is track number `first` + 1.
+    function trackRows(items, first) {
+        var rows = [];
         for (var i = 0; i < items.length; i ++) {
             var t = items[i];
             var sub;
             if (isAlbum) {
                 // The album's artist is in the header: a row names its own only when it differs.
-                sub = t.artist && t.artist != result.artist ? t.artist : "";
+                sub = t.artist && t.artist != albumArtist ? t.artist : "";
                 if (t.plays) {
-                    sub = sub != "" ? sub + " • " + t.plays : t.plays;
+                    sub = sub != "" ? sub + " \u2022 " + t.plays : t.plays;
                 }
             } else {
                 sub = t.artist ? t.artist : "";
                 if (t.album) {
-                    sub = sub != "" ? sub + " • " + t.album : t.album;
+                    sub = sub != "" ? sub + " \u2022 " + t.album : t.album;
                 }
             }
             rows.push({
                 "rowType": isAlbum ? "track" : "ptrack",
-                "title": isAlbum ? (i + 1) + ".  " + t.title : t.title,
+                "title": isAlbum ? (first + i + 1) + ".  " + t.title : t.title,
                 "subtitle": sub,
                 "durationText": t.duration_s > 0 ? player.fmt(t.duration_s * 1000) : "",
                 "thumbUrl": ! isAlbum && t.thumb ? t.thumb : "",
                 "image": isAlbum ? "" : art(t.thumb, 120, "asset:///images/art_none.png")
             });
         }
+        return rows;
+    }
+
+    // A long playlist comes a page at a time: the next one is asked for as soon as one is in,
+    // so that Play has the whole list. ponytail: at most 20 pages (about 2000 tracks).
+    function more(continuation) {
+        if (continuation && pages < 20) {
+            pages ++;
+            moreReq = engine.request("browse_more", {
+                "continuation": continuation
+            });
+        }
+    }
+
+    function fill(result) {
+        // A local copy: reading the `tracks` property converts the whole list each time.
+        var items = result.items ? result.items : [];
+        isAlbum = result.kind == "album";
+        albumArtist = result.artist ? result.artist : "";
+        tracks = items;
+        // The header's facts only: the tracks are in `tracks`.
+        info = {
+            "artist_id": result.artist_id ? result.artist_id : "",
+            "playlist_id": result.playlist_id ? result.playlist_id : ""
+        };
+        var rows = [ {
+                "rowType": "head",
+                "title": result.title,
+                "artist": albumArtist,
+                "subtitle": result.subtitle ? result.subtitle : "",
+                "second": result.second_subtitle ? result.second_subtitle : "",
+                "thumbUrl": result.thumb ? result.thumb : "",
+                "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
+            } ];
+        rows = rows.concat(trackRows(items, 0));
         trackModel.clear();
         trackModel.append(rows);
+        pages = 0;
+        more(result.continuation);
+    }
+
+    function fillMore(result) {
+        var items = result.items ? result.items : [];
+        if (items.length == 0) {
+            return;
+        }
+        var all = tracks;
+        trackModel.append(trackRows(items, all.length));
+        tracks = all.concat(items);
+        more(result.continuation);
     }
 
     function play(index) {
@@ -119,14 +158,21 @@ Page {
     }
 
     function onReply(id, ok, result, code, message) {
-        if (id == "" || id != page.browseReq) {
+        if (id == "") {
             return;
         }
-        page.browseReq = "";
-        page.busy = false;
-        page.failed = ! ok;      // main.qml shows why
-        if (ok) {
-            page.fill(result);
+        if (id == page.browseReq) {
+            page.browseReq = "";
+            page.busy = false;
+            page.failed = ! ok;      // main.qml shows why
+            if (ok) {
+                page.fill(result);
+            }
+        } else if (id == page.moreReq) {
+            page.moreReq = "";
+            if (ok) {
+                page.fillMore(result);
+            }
         }
     }
 
@@ -140,12 +186,23 @@ Page {
         }
     }
 
+    // The engine is back (or was not there yet when the page was made): try again.
+    function onLink() {
+        if (engine.connected && page.failed) {
+            page.load();
+        }
+    }
+
     // Called by main.qml when the page has been popped.
     // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
             engine.reply.disconnect(page.onReply);
         } catch (e0) {
+        }
+        try {
+            engine.connectedChanged.disconnect(page.onLink);
+        } catch (e9) {
         }
         try {
             thumbs.ready.disconnect(page.onThumb);
@@ -159,6 +216,7 @@ Page {
 
     onCreationCompleted: {
         engine.reply.connect(page.onReply);
+        engine.connectedChanged.connect(page.onLink);
         thumbs.ready.connect(page.onThumb);
         load();
     }

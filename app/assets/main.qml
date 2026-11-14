@@ -18,6 +18,13 @@ TabbedPane {
         page.destroy();
     }
 
+    function delegateFailed(message) {
+        if (message != "") {
+            errorToast.body = message;
+            errorToast.show();
+        }
+    }
+
     Menu.definition: MenuDefinition {
         actions: [
             ActionItem {
@@ -62,15 +69,30 @@ TabbedPane {
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
             source: "HomeTab.qml"
+            // A file that does not load leaves the tab empty: say why.
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
         }
     }
 
     Tab {
+        id: recentTab
         title: "Recent"
         imageSource: "asset:///images/ic_recent.png"
+        // The history is read when the tab is chosen (and when its page is first made).
+        onTriggered: {
+            if (recentTab.delegate.object && recentTab.delegate.object.refresh) {
+                recentTab.delegate.object.refresh();
+            }
+        }
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
             source: "RecentTab.qml"
+            // A file that does not load leaves the tab empty: say why.
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
         }
     }
 
@@ -80,13 +102,18 @@ TabbedPane {
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
             source: "QueueTab.qml"
+            // A file that does not load leaves the tab empty: say why.
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
         }
     }
 
     onCreationCompleted: {
         // Every failed command and every track that could not be played: one toast, here.
         engine.reply.connect(function (id, ok, result, code, message) {
-            if (!ok) {
+            // Not for a dropped link: the bar at the top of each page says that.
+            if (!ok && code != "disconnected") {
                 errorToast.body = message ? message : code;
                 errorToast.show();
             }

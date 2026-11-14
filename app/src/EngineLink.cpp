@@ -147,6 +147,11 @@ void EngineLink::lost()
         m_began.start(); // quick attempts again
         emit connectedChanged();
     }
+    // Whoever waits for an answer would wait for ever (a page's spinner, its request id).
+    const QSet<QString> unanswered = m_pending;
+    m_pending.clear();
+    foreach (const QString &id, unanswered)
+        emit reply(id, false, QVariant(), "disconnected", "The engine is not connected.");
     scheduleAttempt();
 }
 
@@ -190,6 +195,7 @@ void EngineLink::handleLine(const QByteArray &line)
         m_queueId = request("queue", QVariantMap());
         return;
     }
+    m_pending.remove(id);
     const QVariantMap error = map["error"].toMap();
     const QVariant result = map["result"];
     emit reply(id, ok, result, error["code"].toString(), error["message"].toString());
@@ -220,5 +226,6 @@ QString EngineLink::request(const QString &cmd, const QVariantMap &fields)
     // JsonDataAccess may indent its output; inside strings newlines are escaped, so these are layout.
     buffer.replace('\n', "").replace('\r', "");
     writeLine(buffer);
+    m_pending.insert(id);
     return id;
 }
