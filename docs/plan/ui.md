@@ -2,8 +2,8 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.22; installed, **not yet
-seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.22). The user first
+opened one, 0.1.0.19, that evening, and has been sending remarks since. Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
 
@@ -130,13 +130,13 @@ From YTMusicWP's screens, what each of ours must be able to do:
 | Library: Recently Played | a tab, Recent, from the engine's own history |
 | Library's rest, Samples, Create | not built (Phase 4, the account) |
 
-## What the user decided at their first look (2026-11-14, 0.1.0.22)
+## What the user decided at their first look (2026-11-14, 0.1.0.19)
 
 Their words: "shuffle should be a toggle, when sort is toggled it covers the time, should push
 it to the lefy. primary color is ok, strip could be 20%taller. extra tabs are ok."
 
 - **Shuffle is a mode**, a toggle, as in the stock player: on shuffles what is still to come
-  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.22.)
+  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.19.)
 - **In Edit Order the grip must not cover the time**: in that mode a row's time leads the line
   under its title and the right end is left to the grip.
 - **The primary colour stays YouTube's red.**
@@ -237,7 +237,8 @@ already bit here or will:
 documents compiled on the phone (the `check:` lines), the restored queue came back paused, Home,
 Explore and Queue opened, a drag in Edit Order reached the engine as `queue_move`, 140 covers
 were fetched, and neither log has an error. What they said is under "What the user decided".
-**0.1.0.22, with their three changes, is installed and not yet seen.** The search, the album and
+They then looked at 0.1.0.20 (a screenshot of the queue) and sent four more remarks; **0.1.0.22,
+with all of it, is installed and not yet reported on.** The search, the album and
 artist pages, Now Playing, Recent, the equalizer, Settings and SponsorBlock have not been
 reported on (nothing was played in that session). The engine's additions ran live on the Mac
 (and the first of them on the phone from a shell), the equalizer only in its tests. Still the
