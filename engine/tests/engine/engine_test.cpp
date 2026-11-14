@@ -47,12 +47,15 @@ struct UnplugOnce : Sink {
     void close() override { n.close(); }
 };
 
-std::unique_ptr<Engine> make_engine(int64_t idle_ms = 600000, SinkFactory sinks = {}) {
+using SegmentsFn = decltype(EngineOptions::segments);
+
+std::unique_ptr<Engine> make_engine(int64_t idle_ms = 600000, SinkFactory sinks = {}, SegmentsFn segments = {}) {
     EngineOptions o;
     o.data_dir = g_dir;
     o.version = "test";
     o.idle_exit_ms = idle_ms;
     o.sinks = sinks ? sinks : [] { return std::make_unique<NullSink>(true); };
+    o.segments = std::move(segments);
     o.sources = [](const Track &t, std::string &err) -> std::unique_ptr<Source> {
         auto s = std::make_unique<ptest::FileSource>(ptest::fixture(t.id == "b" ? "tone880_8s.webm" : "tone440_12s.webm"));
         if (!s->open(err)) return nullptr;
@@ -65,7 +68,8 @@ std::unique_ptr<Engine> make_engine(int64_t idle_ms = 600000, SinkFactory sinks 
 struct Running {
     std::unique_ptr<Engine> e;
     std::thread t;
-    explicit Running(int64_t idle_ms = 600000, SinkFactory sinks = {}) : e(make_engine(idle_ms, std::move(sinks))) {
+    explicit Running(int64_t idle_ms = 600000, SinkFactory sinks = {}, SegmentsFn segments = {})
+        : e(make_engine(idle_ms, std::move(sinks), std::move(segments))) {
         std::string err;
         CHECK(e->start(err));
         CHECK_EQ(err, "");
@@ -91,6 +95,24 @@ std::string ids(Json items) {
     for (Json i : items.items()) s += i["id"].string();
     return s;
 }
+
+// What the fake SponsorBlock answers for track "a".
+struct FakeSegments {
+    std::atomic<int> calls{0};
+    std::atomic<int64_t> from{2000}, to{6000};
+    std::atomic<bool> fail{false};
+    SegmentsFn fn() {
+        return [this](const std::string &id, const std::vector<std::string> &, std::vector<SkipSegment> &out, std::string &err) {
+            calls++;
+            if (fail) {
+                err = "unreachable";
+                return false;
+            }
+            if (id == "a") out.push_back({"music_offtopic", from, to});
+            return true;
+        };
+    }
+};
 
 }  // namespace
 
@@ -363,6 +385,89 @@ int main() {
         const size_t mark = c.events.size();
         CHECK(parse(c.cmd("resume"), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 3000; }, 5000, mark) >= 0);
+    }
+
+    // SponsorBlock: the command, the setting kept, and a segment skipped (the fake is the service).
+    {
+        char t3[] = "/tmp/bbm_engine_XXXXXX";
+        g_dir = mkdtemp(t3);
+        FakeSegments fake;
+        {
+            Running r(600000, {}, fake.fn());
+            Client c(r.e->port());
+            CHECK(c.hello(r.e->token()));
+            Json k = parse(c.cmd("skip"), d)["result"];
+            CHECK_EQ(k["categories"].size(), size_t(0));
+            CHECK_EQ(k["all"].size(), size_t(4));
+            CHECK_EQ(k["all"][0].string(), "sponsor");
+            CHECK_EQ(k["all"][3].string(), "music_offtopic");
+            CHECK_EQ(parse(c.cmd("skip", "\"categories\":[\"selfpromo\"]"), d)["error"]["code"].string(), "bad_request");
+            CHECK_EQ(parse(c.cmd("skip", "\"categories\":\"sponsor\""), d)["error"]["code"].string(), "bad_request");
+            CHECK_EQ(parse(c.cmd("skip", "\"categories\":[3]"), d)["error"]["code"].string(), "bad_request");
+            CHECK_EQ(parse(c.cmd("skip"), d)["result"]["categories"].size(), size_t(0));   // unchanged
+
+            // off: the service is never asked
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 1000; }, 5000) >= 0);
+            CHECK_EQ(fake.calls.load(), 0);
+            size_t mark = c.events.size();
+            CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "stopped"; }, 5000, mark) >= 0);
+
+            // 2000..6000 of "a": the position jumps past it
+            k = parse(c.cmd("skip", "\"categories\":[\"music_offtopic\",\"sponsor\",\"music_offtopic\"]"), d)["result"];
+            CHECK_EQ(k["categories"].size(), size_t(2));
+            CHECK_EQ(k["categories"][0].string(), "sponsor");   // the UI's order
+            CHECK_EQ(k["categories"][1].string(), "music_offtopic");
+            mark = c.events.size();
+            auto t0 = std::chrono::steady_clock::now();
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            const int sk = c.wait_event([](Json e) { return is_ev(e, "skipped"); }, 6000, mark);
+            CHECK(sk >= 0);
+            if (sk >= 0) {
+                JsonDoc sd;
+                Json ev = parse(c.events[size_t(sk)], sd);
+                CHECK_EQ(ev["category"].string(), "music_offtopic");
+                CHECK_EQ(ev["from_ms"].i64(), 2000);
+                CHECK_EQ(ev["to_ms"].i64(), 6000);
+                CHECK_EQ(ev["track_id"].string(), "a");
+            }
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 6000; }, 4500, mark) >= 0);
+            CHECK(etest::ms_since(t0) < 4500);
+            CHECK_EQ(c.wait_event([](Json e) { return is_ev(e, "skipped"); }, 0, size_t(sk) + 1), -1);   // once
+            CHECK_EQ(fake.calls.load(), 1);
+
+            // 0..3000: skipped at the start, not a second later
+            fake.from = 0;
+            fake.to = 3000;
+            mark = c.events.size();
+            t0 = std::chrono::steady_clock::now();
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            mark = size_t(c.wait_event([](Json e) { return is_ev(e, "track"); }, 5000, mark));   // not the last play's positions
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 3000; }, 2000, mark) >= 0);
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "skipped") && e["to_ms"].i64() == 3000; }, 0, mark) >= 0);
+
+            // the service fails: the track plays on, nothing is skipped
+            fake.fail = true;
+            mark = c.events.size();
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            mark = size_t(c.wait_event([](Json e) { return is_ev(e, "track"); }, 5000, mark));
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 3500; }, 6000, mark) >= 0);
+            CHECK_EQ(c.wait_event([](Json e) { return is_ev(e, "skipped"); }, 0, mark), -1);
+            CHECK_EQ(parse(c.cmd("status"), d)["result"]["state"].string(), "playing");
+            CHECK(fake.calls.load() >= 3);
+            CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
+        }
+        // kept across a restart
+        {
+            Running r(600000, {}, fake.fn());
+            Client c(r.e->port());
+            CHECK(c.hello(r.e->token()));
+            Json k = parse(c.cmd("skip"), d)["result"];
+            CHECK_EQ(k["categories"].size(), size_t(2));
+            CHECK_EQ(k["categories"][0].string(), "sponsor");
+            CHECK_EQ(k["categories"][1].string(), "music_offtopic");
+        }
     }
     return check_done();
 }

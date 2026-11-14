@@ -55,6 +55,7 @@ void Engine::on_event(const PlayerEvent &e) {
             history_end();
             hist_id_ = s.track_id;
             hist_pos_ = s.position_ms;
+            skip_new_track(s.track_id);
             Track t;
             t.id = s.track_id;
             if (items_.find(t.id) == items_.end()) {   // only a restored track lacks one; ask the queue
@@ -87,6 +88,7 @@ void Engine::on_event(const PlayerEvent &e) {
             }
         }
         if (save) post([this, s] { save_state(s); });
+        skip_check(s);
         break;
     }
     case PlayerEvent::Queue:

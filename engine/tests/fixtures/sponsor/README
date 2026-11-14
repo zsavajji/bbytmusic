@@ -1,0 +1,5 @@
+Recorded 2026-11-14 with curl, no cookie:
+prefix_f1d9.json   GET https://sponsor.ajay.app/api/skipSegments/f1d9?categories=["sponsor","intro","outro","music_offtopic","selfpromo","interaction"]&actionTypes=["skip"]
+f1d9 is the first four hex digits of SHA-256("kJQP7kiw5Fk"). The answer lists every video whose
+hash starts so; kJQP7kiw5Fk has two music_offtopic segments, [0, 21.808434] and [249.38, 281.521].
+Re-record, do not edit.

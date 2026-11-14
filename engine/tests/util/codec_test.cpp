@@ -2,6 +2,7 @@
 #include "util/base64.h"
 #include "util/ebml.h"
 #include "util/sha1.h"
+#include "util/sha256.h"
 
 using namespace bbm;
 
@@ -18,6 +19,12 @@ int main() {
     CHECK_EQ(sha1_hex("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
              std::string("84983e441c3bd26ebaae4aa1f95129e5e54670f1"));  // two blocks
     CHECK_EQ(sha1_hex(std::string(1000000, 'a')), std::string("34aa973cd4c4daa4f61eeb2bdbad27316534016f"));
+
+    CHECK_EQ(sha256_hex(""), std::string("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
+    CHECK_EQ(sha256_hex("abc"), std::string("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"));
+    CHECK_EQ(sha256_hex("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
+             std::string("248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"));  // two blocks
+    CHECK_EQ(sha256_hex("kJQP7kiw5Fk").substr(0, 4), std::string("f1d9"));
 
     CHECK_EQ(dec("Zm9vYmFy"), std::string("foobar"));
     CHECK_EQ(dec("Zm9vYg=="), std::string("foob"));

@@ -153,6 +153,19 @@ void Engine::restore() {
     if (!db_ok_) return;
     if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
+    {
+        std::vector<std::string> cats;
+        std::string list = get_setting(db_, "skip", "");
+        for (size_t i = 0; i <= list.size();) {
+            size_t j = list.find(',', i);
+            if (j == std::string::npos) j = list.size();
+            const std::string name = list.substr(i, j - i);
+            i = j + 1;
+            if (std::find(skip_categories().begin(), skip_categories().end(), name) != skip_categories().end()) cats.push_back(name);
+        }
+        std::lock_guard<std::mutex> lk(mu_);
+        skip_cats_ = std::move(cats);
+    }
     std::vector<QueueRow> rows;
     QueueState st;
     std::string err;

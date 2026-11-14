@@ -243,6 +243,7 @@ void Engine::add_commands() {
         for (size_t i = 0; i < presets.size(); i++) out += std::string(i ? ",\"" : "\"") + presets[i].name + "\"";
         return ok(out + "]}");
     });
+    server_.on("skip", [this](Json req) { return skip_command(req); });
     server_.on("thumbs", [this](Json req) {
         std::vector<std::string> urls;
         if (!req["urls"].is_array()) return bad("urls: an array of strings is required");

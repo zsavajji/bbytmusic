@@ -24,7 +24,9 @@
 #include "innertube/client.h"
 #include "innertube/items.h"
 #include "platform/now_playing.h"
+#include "engine/sponsor.h"
 #include "engine/thumbs.h"
+#include "net/http.h"
 #include "player/player.h"
 #include "server/server.h"
 #include "store/db.h"
@@ -39,6 +41,9 @@ struct EngineOptions {
     SourceFactory sources;                  // empty: resolve() + make_source() behind the cache
     int64_t cache_bytes = int64_t(256) << 20;
     int64_t idle_exit_ms = 10 * 60 * 1000;  // nothing playing and no client this long: exit
+    // SponsorBlock's segments of a video, on the worker thread; empty: fetch_segments() on the engine's Http.
+    std::function<bool(const std::string &video_id, const std::vector<std::string> &categories,
+                       std::vector<SkipSegment> &out, std::string &err)> segments;
 };
 
 class Engine {
@@ -74,6 +79,11 @@ private:
     void history_end();                                          // mu_ held
     void radio_more();
     void radio_append(const std::vector<Item> &items);           // mu_ held
+    // skip.cpp
+    Reply skip_command(Json req);
+    void skip_new_track(const std::string &id);                  // mu_ held
+    void skip_fetch(const std::string &id, std::vector<std::string> cats);
+    void skip_check(const PlayerStatus &s);                      // not under mu_
     // engine.cpp
     void post(std::function<void()> job);
     void work();
@@ -101,9 +111,15 @@ private:
     std::string hist_id_;                 // the track being listened to, and for how long
     int64_t hist_ms_ = 0, hist_pos_ = 0;
     std::chrono::steady_clock::time_point last_save_;
+    std::vector<std::string> skip_cats_;  // the categories skipped; empty: SponsorBlock is off
+    std::string skip_track_;              // the current track, and its segments
+    std::vector<SkipSegment> skip_segs_;
+    int64_t skip_last_to_ = -1;           // the segment skipped last, so as not to skip it twice
+    std::chrono::steady_clock::time_point skip_last_at_;
 
     // worker only
     std::set<std::string> saved_tracks_;
+    Http sponsor_http_;   // the segments' fetches
     NowPlaying np_;
     bool np_started_ = false, np_failed_ = false;
     Item np_item_;

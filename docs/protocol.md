@@ -68,6 +68,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `queue_shuffle` | | `{}`. Shuffles the tracks after the current one. |
 | `queue_sort` | `by`: `title`, `artist`, `album` or `duration`; `desc` (default false) | `{}`. Sorts the whole queue (text without regard to case, equal rows keep their order); the current track stays the current one. |
 | `eq` | `preset` (optional) | `{"preset":"off","presets":["off","bass_boost",…]}`: the equalizer's preset in use and the ones there are, `off` first. With `preset` it is set first (`bad_request` if there is no such preset), takes effect within a moment on what is playing, and is kept across restarts. |
+| `skip` | `categories` (optional): [string] | `{"categories":["music_offtopic"],"all":["sponsor","intro","outro","music_offtopic"]}`: the kinds of segment the engine skips (SponsorBlock's names), and the ones it knows. With `categories` they are set first (`bad_request` for one it does not know) and kept across restarts. Empty, the default, means off: SponsorBlock is then never asked. When on, each track's segments are asked for by the first four hex digits of its id's SHA-256, never by the id. |
 | `repeat` | `mode`: `off`, `all` or `one` | `{}`. `all` goes back to the first track after the last; `one` plays the current track again when it ends (Next still moves on). Kept across restarts. |
 | `quit` | | `{}`, then the engine exits |
 
@@ -100,6 +101,7 @@ Every change to the queue (`play`, `queue_add`, `queue_remove`, `queue_move`, `q
 | `queue` | `len`, `index` | the queue's content changed; ask `queue` for it |
 | `error` | `message`, `track_id` | a track could not be played; the player has moved on |
 | `mode` | `repeat`, `eq` | the repeat mode or the equalizer's preset changed; both are always there |
+| `skipped` | `category`, `from_ms`, `to_ms`, `track_id` | a segment of the playing track was skipped |
 | `thumb` | `url`, `size`, `file` | a thumbnail asked for with `thumbs` is in the cache; `url` and `size` are the request's |
 
 A UI that connects late sends `status` and `queue` and is then up to date.
