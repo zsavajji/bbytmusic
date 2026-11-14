@@ -1,8 +1,9 @@
 # BBMusic plan: the UI — handover
 
-For the agent who picks up the UI. Written 2026-11-14, when the first working build
-(`bbmusic.bar` 0.1.0.7) was on the user's Q10 and the user had said the look comes next, from
-screenshots they will provide. Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
+For the agent who picks up the UI. Written 2026-11-14 with the first working build
+(`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
+session that built the look from the user's screenshots (0.1.0.9, then 0.1.0.10; installed,
+**not yet seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
 
@@ -19,24 +20,22 @@ provide screenshots".
 - **The mini-player** is the title and artist plus one Play/Pause icon. "only play / pause
   should be there, other actions can be in the full player". The buttons are icons "to fit".
 - **An info view for the current track** (type, year and the like) "as an option".
-- **Wait for the screenshots** before reworking the look, and measure from them rather than
-  guess: the Q10 is 720 × 720, 9 px per design unit, OLED (dark theme), with a keyboard.
-  Screenshots the user takes on the phone land in `/accounts/1000/shared/camera/IMG_*.png`;
-  copy them into `debug/` (git-ignore it) and never commit them.
+- **Measure from screenshots** rather than guess: the Q10 is 720 × 720, 9 px per design unit,
+  OLED (dark theme), with a keyboard. Screenshots the user takes on the phone land in
+  `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
+  commit them. The ones the design below was measured from are in `debug/shots/`.
 
-What is in `app/` today is a first functional shell, written to prove the engine end to end.
-Its structure can stay or go; nothing about its look was designed.
-
-## What exists
+## What exists (0.1.0.10, 2026-11-14)
 
 ```
 app/
 ├── bar-descriptor.xml     id com.zsavajji.bbmusic; the UI entry point and the headless engine
-│                          (bbmusicd, invoke target com.zsavajji.bbmusic.service, action …START)
+│                          (bbmusicd, invoke target com.zsavajji.bbmusic.service, action …START);
+│                          theme dark with YouTube's red as the primary colour
 ├── bbmusic.pro            a plain executable, Qt 4.8 + Cascades
 ├── src/
 │   ├── main.cpp           registers QTimer as `Timer` (import bbmusic 1.0); context properties
-│   │                      `engine` and `player`
+│   │                      `engine`, `player` and `thumbs`
 │   ├── EngineLink.h/.cpp  starts the engine, reads data/engine.json, connects on loopback, says
 │   │                      hello with the token; `engine.request(cmd, fields)` returns the id;
 │   │                      signals `reply(id, ok, result, errorCode, errorMessage)` and
@@ -45,22 +44,97 @@ app/
 │   │                      `status` and `queue_snapshot`
 │   ├── PlayerState.h/.cpp properties for QML: state, playing, loaded, index, title, artist,
 │   │                      album, positionMs (advanced by a timer between events), durationMs,
-│   │                      error, queueLength; `fmt(ms)`
+│   │                      error, queueLength, repeat, track (the whole Item), thumb; `fmt(ms)`
+│   ├── Thumbs.h/.cpp      covers: `thumbs.file(url, size)` gives "file://…" or "" and asks the
+│   │                      engine (one `thumbs` command per turn of the event loop);
+│   │                      `ready(url, size, file)` when one lands
 │   └── UiLog.h            appends to data/bbmusic-ui.log
+├── tests/
+│   └── queue_test.js      `node app/tests/queue_test.js`: checks assets/queue.js
 └── assets/
-    ├── main.qml           TabbedPane: Search, Queue; menu: Stop, About; the error toast
-    ├── SearchPage.qml     text field with focus, suggestions (300 ms debounce), filter DropDown,
-    │                      results by section, tap = play with radio, context actions, More
-    ├── QueuePage.qml      the queue, the playing row marked, tap = jump, Remove, Play next
-    ├── NowPlayingPage.qml title, artist, album, scrubber, times, Previous / Play-Pause / Next
-    │                      as text buttons; Space, N, P
-    ├── MiniPlayer.qml     title + artist (tap opens Now Playing) and one ImageButton
+    ├── main.qml           TabbedPane with the tabs in the tab menu: Search (inline), Home,
+    │                      Recent and Queue (each a Tab delegate, created when first opened);
+    │                      application menu: Stop, About; the error toast; `retire(page)`
+    ├── SearchPage.qml     field, suggestions, segmented filter, results by kind with covers
+    ├── AlbumPage.qml      an album or a playlist: header row, tracks, Play / Shuffle
+    ├── ShelfPage.qml      a page of shelves: an artist, or a feed (Home, with More)
+    ├── RecentPage.qml     the listening history
+    ├── QueuePage.qml      the queue: covers, rearrange mode, Shuffle, Sort, Clear
+    ├── queue.js           the Queue page's arithmetic (diff, move, the slot for Play Next)
+    ├── HomeTab.qml, RecentTab.qml, QueueTab.qml   the NavigationPanes the delegates load
+    ├── NowPlayingPage.qml the stock player's layout
+    ├── TrackInfo.qml      the Properties sheet
+    ├── MiniPlayer.qml     the strip: state mark, title, progress line
     ├── ConnectionBar.qml  "the engine is not connected" + Retry
-    └── images/            ic_play.png, ic_pause.png (81 px, drawn by scripts/gen-icons.py)
+    └── images/            ic_*.png (81 px) and art_none*.png, drawn by scripts/gen-icons.py
 ```
 
-No file is over 370 lines; keep each under about 500, one page or class per file (the user's
+**Loaded at start, so an error there is fatal:** `main.qml`, `SearchPage.qml`, `MiniPlayer.qml`,
+`ConnectionBar.qml`. Everything else is created on demand (a Tab delegate or
+`ComponentDefinition.createObject()`): a fault costs that page, not the app. Keep it that way
+for new tabs and pages.
+
+No file is over 450 lines; keep each under about 500, one page or class per file (the user's
 rule).
+
+## The design, from the user's screenshots
+
+The user's brief (2026-11-14, with seven screenshots of the stock player and six of YTMusicWP on
+a Windows Phone, copied to `debug/shots/`): "work on the search (with clearer separation between
+albums and songs) and with the album art preview and informations about the tracks, the album
+view, the queue (with possibility to rearrange and sort) and the player interface. The
+miniplayer can also be reduced to a strip with just the title to reserve more space, and the
+controls can stay in the player ui. for the player UI i would like to inspire from the stock
+BB10 player, but with the moder functionality expressed in the WP interface", "trying to stay
+as Cascades as possible".
+
+Measured on the stock player (720 × 720, 9 px per du):
+
+| Stock player | Measured | Ours |
+|---|---|---|
+| Now Playing: title, artist | y 0–90; white ~40 px, grey ~26 px | `FontSize.Large` white, `FontSize.Small` #969696, 0.5 du padding |
+| hairline | y 91, #323232 | a 2 px Container |
+| album row with Repeat and Shuffle at its right | y 92–178 | 9.5 du; two 8 du `ImageButton`s |
+| artwork | y 178–612, placeholder a black note on #262626 | fills what is left, `AspectFill`; `art_none_large.png` |
+| scrubber band over the artwork's lower edge | y 485–612, black at about 70 % | a Container #b0000000, the Slider, elapsed left and "-5:54" right |
+| action bar | Back, Previous, Pause (Signature), Next, ⋮ | the same, as `ActionItem`s; the Signature colour is the theme's red |
+| ⋮ menu | Play on, Previous, Pause, Next, Edit Order, Add to Favorites, Add to Playlist, View Album, Share, Set As Ringtone, Equalizer, Audio, Properties | Queue, View Album, Start Radio, Share, Properties, Stop (the rest needs an account, Phase 4, or the equalizer, 3.9) |
+| library: segmented control, rows with an 88 px cover at the left edge | | Search's filter is that control; rows are `StandardListItem`s with `imageSource` |
+| library action bar: tab menu, Shuffle (Signature), ⋮ | | the Queue page: tab menu, Edit Order, Shuffle (Signature), ⋮ |
+| tabs in the tab menu, not on the bar | | `showTabsOnActionBar: false` |
+
+From YTMusicWP's screens, what each of ours must be able to do:
+
+| YTMusicWP | Ours |
+|---|---|
+| Search: chips Album / Songs / Artists / Video / Playlist; a top-result card; rows with cover, "Song • artist • plays" | the segmented control (All, Songs, Albums, Artists; videos and playlists show under All); a "Top result" header; rows with cover, artist, album, plays, length |
+| Player: cover, title, artist, queue button, like, scrubber, shuffle, previous, play, next, repeat | all but like (Phase 4); the queue is an action |
+| Player's Up Next: count, Clear, per-row up / down / remove, the playing row green | the Queue page: count in the header, Clear, the system's rearrange mode for moving, Remove and Play Next on a long press, the playing row red |
+| Mini-player: cover, title, artist, play, next, progress | by the user's wish a strip: title and progress only |
+| Home | a tab: the home feed's shelves as headers and rows (no carousels, no chips), More for the next shelves |
+| Library: Recently Played | a tab, Recent, from the engine's own history |
+| Library's rest, Samples, Create | not built (Phase 4, the account) |
+
+## Decisions the user should confirm
+
+- **Shuffle is an action, not a mode.** It shuffles what follows the current track, once, and
+  the queue shows the new order. A mode would need the old order kept to undo it, and means
+  little on a radio queue that grows. The stock player and YTMusicWP both show a toggle.
+- **Sort sorts the whole queue**, played tracks included; the current track stays current.
+- **The primary colour is YouTube's red** (#FF0000, base #CC0000): the Signature action, the
+  segmented control's selection, focus highlights. The stock player's is the system's blue.
+- **The strip shows a small play/pause mark** beside the title (what the player is doing, not a
+  button) and a red progress line. "Just the title" would drop both.
+- **Videos and Playlists have no segment** in Search (the control holds four): they appear under
+  All. A fifth and sixth filter would go in the action menu.
+- **Start Radio from Now Playing restarts the track** (it is `play` with `radio`).
+- **Repeat One**: Next still moves on; only a track ending by itself repeats.
+- **Home and Recent were not in the brief.** They follow the plan (3.1, 3.6) and YTMusicWP's
+  Home and Library screens; each is one tab, loaded on demand, and one line of `main.qml` to
+  remove. Without an account Home is four or five shelves that follow the country (quick picks,
+  featured playlists, new releases, trending).
+- **The tab order**: Search first (it is where an anonymous user starts), then Home, Recent,
+  Queue.
 
 ## Build, install, look
 
@@ -113,18 +187,39 @@ already bit here or will:
 - A build or probe that needs their finger must be checked first as far as it can be without
   them (the engine can be driven on the phone from the Mac: phase1.md, "On the Q10").
 
-## What works on the phone (0.1.0.7), and what has not been tried
+## What works on the phone, and what has not been tried
 
-Works, by the user's report and the logs: the engine starts with the app and connects;
-suggestions and search; a tap plays with a radio queue of 50; the mini-player; Now Playing
-opens without disturbing playback; pause, resume and the scrubber; the queue restored paused
-after a restart; playback from the cache in under 0.2 s.
+**0.1.0.10 is installed and nobody has opened it** (nor 0.1.0.9 before it). Both were built
+while the user was away: the QML passes the lint and `lupdate`, the C++ compiles, the installer
+answered `result::success`, and 0.1.0.9's engine binary was run on the phone from a shell and
+driven from the Mac (search grouped by kind, `browse` of an album, covers written to `thumbs/`,
+`play`, `repeat`, `queue_sort`, `queue_shuffle`, `queue_clear`); 0.1.0.10's additions (artist,
+home feed, `browse_more`, `history`) ran live on the Mac only. Two read-only reviews by a
+sub-agent went over the QML for run-time faults; the first found nothing fatal and nine
+behavioural points, all fixed in 0.1.0.10. Not one page of the UI has been seen. First
+things to look at, in this order, with `bbmusic-ui.log` open (a `QML:` line there means the app
+quit at start):
 
-Not tried by the user yet: the filter and More on Search; context actions; the Queue page's
-jump, Remove and Play next; Next and Previous; one song running into the next; the keyboard
-shortcuts; the menu; the volume overlay's buttons with this build (they worked with the gate
-app, and the engine now holds now-playing itself); swiping the app away mid-song and coming
-back; an error toast with Wi-Fi off.
+1. The app starts; the tab menu shows Search and Queue; the theme is red.
+2. Search: the segmented control; covers arrive in the rows; headers per kind.
+3. A tap on an album opens its page; the header row; Play, Shuffle.
+4. The strip appears; a tap opens Now Playing; the cover; Repeat and Shuffle icons; the bar.
+5. Queue: covers; the playing row in red (it is HTML in a `StandardListItem`: if the row shows
+   markup, drop it for a plain title); Edit Order and a drag; Sort; Clear.
+6. Properties; Share; View Album and View Artist from the player.
+7. The tab menu's Home, Recent and Queue: each is created when first chosen. An empty tab
+   means its file failed to load; `slog2info | grep -i qml` on the phone says why.
+8. An artist from Search: the header, Top songs, the shelves; Play.
+
+By the user's report on 0.1.0.7 ("works, plays stops scrubs") and its logs: the engine starts
+with the app and connects; suggestions and search; a tap plays with a radio queue of 50; Now
+Playing opens without disturbing playback; pause, resume and the scrubber; the queue restored
+paused after a restart; playback from the cache in under 0.2 s.
+
+Never tried by the user: context actions; Next and Previous; one song running into the next;
+the keyboard shortcuts (Space, N, P; now also Q, A, I on the player, E and S on the queue, S on
+an album); the application menu; the volume overlay's buttons with the engine holding
+now-playing; swiping the app away mid-song and coming back; an error toast with Wi-Fi off.
 
 Open questions from testing: "first play request did not pass, second worked" on 0.1.0.4,
 unexplained and not seen since; an underrun line in the engine's log after some resumes and
@@ -138,19 +233,19 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 
 | Step | UI | Engine side |
 |---|---|---|
-| 2.5 Artwork | list rows and the player show covers | **missing:** fetch `Item.thumb`, cache it under `data/thumbs/`, and give the UI a file path (a command, or a `thumb_file` field filled in when cached) |
-| 2.6 Now Playing | the redesign from the screenshots; icons for Previous/Play/Next; the info view | none for the layout; year and type label would need `Item` fields |
-| 2.8 Queue | reorder by drag if the design wants it | there (`queue_move`) |
+| 2.5 Artwork | **built, unseen:** rows and the player show covers through `Thumbs` | there (`thumbs`, the `thumb` event) |
+| 2.6 Now Playing | **built, unseen:** the stock layout, icons, Properties | there (`repeat`, `queue_shuffle`, `Item.plays`, `Item.year`) |
+| 2.8 Queue | **built, unseen:** rearrange mode, Shuffle, Sort, Clear | there (`queue_move`, `queue_shuffle`, `queue_sort`, `queue_clear`) |
 | 2.9 Overlay | nothing in the UI | there; artwork in the overlay untried (`albumArtwork`, a `file://` path) |
 | 2.10 Active Frame | a cover with title and state, updated only while thumbnailed | none |
 | 2.11 Resume and errors | what the pages show while loading, with no network, for an unplayable track | events are there; check the wording of `error` messages |
 | 2.12 Measure | — | memory, CPU, battery per hour, tap-to-sound |
-| 3.1 Home | carousels | **missing:** `browse` `FEmusic_home` and its parser |
-| 3.2 Album, playlist | a page each; today a tap says "Not yet" | **missing:** `browse` for `MPRE…` and `VL…` |
-| 3.3 Artist | top songs, albums, singles | **missing:** `browse` for a channel id |
+| 3.1 Home | **built, unseen:** a tab of shelves (`ShelfPage`), More | there (`browse` of `FEmusic_home`, `browse_more`); the mood chips are not read |
+| 3.2 Album, playlist | **built, unseen:** one page for both; a playlist's first 100 tracks only | there (`browse`); a playlist's continuation is missing |
+| 3.3 Artist | **built, unseen:** `ShelfPage`; opens from Search, an album, Now Playing | there (`browse` of `UC…`); "more" of a shelf (all albums, all songs) is missing |
 | 3.4 Explore | charts, moods and genres | **missing** |
 | 3.5 Item actions | play next, add to queue, start radio, go to artist/album, share | mostly there; "go to" needs 3.2 and 3.3 |
-| 3.6 History | a page; opening links from other apps (an invoke target) | the store has `history`; **missing:** a command to read it |
+| 3.6 History | **built, unseen:** the Recent tab; opening links from other apps (an invoke target) is not | there (`history`) |
 | 3.7 Region and language | a setting | `InnerTube::set_language` exists; **missing:** a command and a stored setting |
 | 3.8 SponsorBlock, 3.9 Equalizer | settings sheets | **missing** entirely |
 

@@ -1,16 +1,22 @@
 # BBMusic: where things stand
 
-For whoever picks this up next. Brought up to date on 2026-11-14 at the user's request ("save
-the plan for another agent to pickup the ui"). Start here, then follow the links.
+For whoever picks this up next. Brought up to date on 2026-11-14, in the evening, at the end of
+an unattended session on the UI. Start here, then follow the links.
 
 ## In one paragraph
 
-A first working build is on the user's Q10: **`bbmusic.bar` 0.1.0.7**. Its engine, `bbmusicd`,
-searches YouTube Music, resolves a track through the `VISIONOS` client, fetches it by DASH
-ranges (SABR built and tested as the fallback), decodes Opus and plays it through libasound,
-keeps a radio queue going, caches what it played, restores the queue after a restart, and holds
-the system's now-playing controls itself. Its UI is a functional shell. The user's verdict on
-it: "works, plays stops scrubs". The look comes next, from screenshots the user will provide.
+The last build the user has **seen** is `bbmusic.bar` 0.1.0.7 ("works, plays stops scrubs"): its
+engine, `bbmusicd`, searches YouTube Music, resolves a track through the `VISIONOS` client,
+fetches it by DASH ranges (SABR built and tested as the fallback), decodes Opus and plays it
+through libasound, keeps a radio queue going, caches what it played, restores the queue after a
+restart, and holds the system's now-playing controls itself. On top of that, built from the
+user's screenshots while they were away and **installed but never opened**: the UI after the
+stock BB10 player, 0.1.0.10 (covers everywhere, an album page, an artist page, Home and Recent
+tabs, the queue with rearrange, shuffle and sort, the stock Now Playing layout, the mini-player
+as a strip), and in the engine `browse` (album, playlist, artist, the home feed),
+`browse_more`, `history`, the thumbnail cache, `queue_clear`, `queue_shuffle`, `queue_sort` and
+`repeat`. [ui.md](ui.md) lists what to look at first and the decisions the
+user should confirm.
 
 ## Where everything is
 
@@ -36,14 +42,21 @@ nothing is pushed. One commit per step, with what was run and what was not in th
 - Phase 1, the engine: every step, 1.1–1.14.
 - Phase 2, early: the engine side of the speaker (2.2) and now-playing (2.9), packaging (2.1),
   and a first UI (2.3, 2.4, 2.6–2.8).
+- Built and tested in the engine, built and **unseen** in the UI (2026-11-14, evening): artwork
+  (2.5), the Now Playing redesign (2.6), the strip (2.7), the queue's reorder, shuffle and sort
+  (2.8), Home (3.1), the album and playlist page (3.2), the artist page (3.3), most of the item
+  actions (3.5: play next, add to queue, start radio, view album, view artist, share), the
+  history page (3.6, as the Recent tab).
 
 ## Next
 
-1. **The UI's look**, when the screenshots arrive: [ui.md](ui.md).
-2. Phase 2's remaining steps: artwork (2.5, needs an engine command), the Active Frame (2.10),
-   loading and error states (2.11), measurements (2.12).
-3. Phase 3, browse: home, album, playlist, artist, explore. Each needs a `browse` command in
-   the engine first. Then SponsorBlock and the equalizer.
+1. **The user's first look at the new UI**, and what it shows: [ui.md](ui.md), "What works on
+   the phone". Expect a round of fixes; nothing in it has been seen.
+2. Phase 2's remaining steps: artwork in the system's overlay (2.9, `albumArtwork`), the Active
+   Frame (2.10), loading and error states (2.11), measurements (2.12).
+3. Phase 3's rest: explore (3.4), opening links from other apps (3.6), region and language
+   (3.7), a playlist's continuation past 100 tracks, "more" of an artist's shelf. Each needs the
+   engine first. Then SponsorBlock and the equalizer.
 4. Phase 4, the account: gate 0.7 (WebView sign-in) has to be run first, with the user.
 
 ## Open
@@ -55,5 +68,10 @@ nothing is pushed. One commit per step, with what was run and what was not in th
 - SABR through the cache, and SABR's redirect, error and attestation paths against the real
   service: only the fake server has exercised them.
 - An underrun line after some resumes and seeks: not known to be audible.
-- The engine's size on the phone is 4.1 MB unstripped; stripping and trimming wolfSSL are not
+- The engine's size on the phone is 4.2 MB unstripped; stripping and trimming wolfSSL are not
   done.
+- Repeat against real streams, and a seek past a track's end under Repeat One (it moves on, as
+  a manual Next does): only the tone files have exercised repeat.
+- A cover that fails to download is not asked for again until the UI reconnects.
+- The thumbnail cache is capped by count (3000 files, the 1000 oldest dropped at start), not by
+  bytes.
