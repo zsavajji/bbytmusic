@@ -2,7 +2,7 @@
 
 For the agent who picks up the UI. Written 2026-11-14 with the first working build
 (`bbmusic.bar` 0.1.0.7) on the user's Q10, and rewritten that evening after an unattended
-session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.19; installed, **not yet
+session that built the look from the user's screenshots (0.1.0.9 to 0.1.0.20; installed, **not yet
 seen by anyone**). Read [PLAN.md](../../PLAN.md) §3 and §7 first, then
 [docs/protocol.md](../protocol.md): the UI speaks that protocol to the engine and does nothing
 else. [phase1.md](phase1.md) ends with what each build showed on the phone.
@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.19, 2026-11-14)
+## What exists (0.1.0.20, 2026-11-14)
 
 ```
 app/
@@ -130,13 +130,13 @@ From YTMusicWP's screens, what each of ours must be able to do:
 | Library: Recently Played | a tab, Recent, from the engine's own history |
 | Library's rest, Samples, Create | not built (Phase 4, the account) |
 
-## What the user decided at their first look (2026-11-14, 0.1.0.19)
+## What the user decided at their first look (2026-11-14, 0.1.0.20)
 
 Their words: "shuffle should be a toggle, when sort is toggled it covers the time, should push
 it to the lefy. primary color is ok, strip could be 20%taller. extra tabs are ok."
 
 - **Shuffle is a mode**, a toggle, as in the stock player: on shuffles what is still to come
-  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.19.)
+  and remembers the order; off puts it back. (It was a one-shot action in 0.1.0.9–0.1.0.20.)
 - **In Edit Order the grip must not cover the time**: in that mode a row's time leads the line
   under its title and the right end is left to the grip.
 - **The primary colour stays YouTube's red.**
@@ -215,16 +215,14 @@ already bit here or will:
 
 ## What works on the phone, and what has not been tried
 
-**0.1.0.19 is installed and nobody has opened it** (nor any build since 0.1.0.7). They were built
-while the user was away: the QML passes the lint and `lupdate`, the C++ compiles, the installer
-answered `result::success`, and 0.1.0.9's engine binary was run on the phone from a shell and
-driven from the Mac (search grouped by kind, `browse` of an album, covers written to `thumbs/`,
-`play`, `repeat`, `queue_sort`, `queue_shuffle`, `queue_clear`); the later additions (artist,
-home and explore feeds, `browse_more` for feeds and playlists, `history`) ran live on the Mac
-only, and the equalizer only in its tests. Two read-only reviews by a sub-agent went over the
-QML for run-time faults (the second ran the doubtful QML1 constructs on the NDK's own x86 Qt
-4.8): neither found anything fatal; their fifteen behavioural points are fixed. Not one page
-of the UI has been seen. First
+**The user opened 0.1.0.19 on 2026-11-14 at 20:56** and looked for under a minute: all 16
+documents compiled on the phone (the `check:` lines), the restored queue came back paused, Home,
+Explore and Queue opened, a drag in Edit Order reached the engine as `queue_move`, 140 covers
+were fetched, and neither log has an error. What they said is under "What the user decided".
+**0.1.0.20, with their three changes, is installed and not yet seen.** The search, the album and
+artist pages, Now Playing, Recent, the equalizer, Settings and SponsorBlock have not been
+reported on (nothing was played in that session). The engine's additions ran live on the Mac
+(and the first of them on the phone from a shell), the equalizer only in its tests. Still the
 things to look at, in this order, with `bbmusic-ui.log` open (a `QML:` line there means the app
 quit at start; the `check:` lines say which documents compile):
 

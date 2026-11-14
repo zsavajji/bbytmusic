@@ -5,18 +5,19 @@ an unattended session on the UI. Start here, then follow the links.
 
 ## In one paragraph
 
-The last build the user has **seen** is `bbmusic.bar` 0.1.0.7 ("works, plays stops scrubs"): its
-engine, `bbmusicd`, searches YouTube Music, resolves a track through the `VISIONOS` client,
-fetches it by DASH ranges (SABR built and tested as the fallback), decodes Opus and plays it
-through libasound, keeps a radio queue going, caches what it played, restores the queue after a
-restart, and holds the system's now-playing controls itself. On top of that, built from the
-user's screenshots while they were away and **installed but never opened**: the UI after the
-stock BB10 player, 0.1.0.19 (covers everywhere, an album page, an artist page, Home, Explore
-and Recent tabs, the queue with rearrange, shuffle and sort, the stock Now Playing layout, the
-mini-player as a strip, an equalizer, Settings for SponsorBlock), and in the engine `browse` (album, playlist, artist,
-feeds), `browse_more`, `history`, the thumbnail cache, `queue_clear`, `queue_shuffle`,
-`queue_sort`, `repeat`, `eq` and `skip`. [ui.md](ui.md) lists what to look at first and the decisions the
-user should confirm.
+The user has **seen** 0.1.0.7 ("works, plays stops scrubs") and, for a minute on 2026-11-14 at
+20:56, 0.1.0.19: the UI rebuilt after the stock BB10 player from their screenshots (covers
+everywhere, an album page, an artist page, Home, Explore and Recent tabs, the queue with
+rearrange, shuffle and sort, the stock Now Playing layout, the mini-player as a strip, an
+equalizer, Settings for SponsorBlock). It started, every page compiled on the phone, and they
+asked for three changes (shuffle as a toggle, the time clear of the grip in Edit Order, a
+taller strip), which are in 0.1.0.20, installed and not yet seen. Under it the engine,
+`bbmusicd`: search, `browse` (album, playlist, artist, feeds), `browse_more`, `history`, the
+thumbnail cache, resolve through the `VISIONOS` client, DASH ranges (SABR as the fallback), Opus
+through libasound, a radio queue, `queue_clear`, `queue_shuffle`, `queue_sort`, `repeat`,
+`shuffle`, `eq`, `skip`, the cache, the queue restored after a restart, the system's now-playing
+controls. [ui.md](ui.md) has what they decided, what is still theirs to confirm and what nobody
+has looked at yet.
 
 ## Where everything is
 
