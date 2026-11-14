@@ -18,6 +18,11 @@ process again. Sources read: YTMusicWP at its
 `main` (2.4.0), `../bbtube` at `f3beb28`, `../hyperberry` (PLAN.md, docs/plan/design.md,
 pitfalls.md, phase0.md), `../bb10-cxx20`, `../docs`.
 
+**Where things stand, and where the rest of the plan lives:**
+[docs/plan/status.md](docs/plan/status.md) (start there), [phase0.md](docs/plan/phase0.md) (the
+gates), [phase1.md](docs/plan/phase1.md) (the engine), [ui.md](docs/plan/ui.md) (the UI
+handover), [docs/protocol.md](docs/protocol.md) (UI ↔ engine).
+
 ---
 
 ## 1. Iteration 1 in one paragraph

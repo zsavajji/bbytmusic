@@ -5,3 +5,4 @@ gateapp/app/assets/test.webm
 .DS_Store
 engine/third_party/
 /app/assets/cacert.pem
+debug/
