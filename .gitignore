@@ -4,3 +4,4 @@ gateapp/app/assets/test.webm
 .assets.index
 .DS_Store
 engine/third_party/
+/app/assets/cacert.pem
