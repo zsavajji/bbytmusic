@@ -38,7 +38,7 @@ if(BBM_BB10)
   target_link_libraries(bbm_syslibs INTERFACE
     /opt/bb10-sdk/target/qnx6/armle-v7/usr/lib/libz.a -lsocket)
   target_link_libraries(bbm_curl INTERFACE bbm_syslibs)
-  # store (sqlite3) is left out on BB10 until it is needed there.
+  # store uses the phone's own SQLite (3.7.14.1, which has WAL): -lsqlite3, no unwinder in it.
 else()
   find_package(CURL REQUIRED)
   add_library(bbm_curl INTERFACE)
@@ -78,9 +78,6 @@ set(deps_server util net proto stream media audio innertube player store platfor
 set(YYJSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/yyjson)
 
 foreach(m ${BBM_MODULES})
-  if(BBM_BB10 AND m STREQUAL "store")
-    continue()
-  endif()
   file(GLOB srcs CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/src/${m}/*.cpp)
   if(m STREQUAL "util")
     list(APPEND srcs ${YYJSON_DIR}/yyjson.c)
@@ -109,6 +106,8 @@ foreach(m ${BBM_MODULES})
     target_link_libraries(audio ${vis} -lasound -laudio_manager)   # qsa_sink; neither exports an unwinder
   elseif(m STREQUAL "platform" AND BBM_BB10)
     target_link_libraries(platform ${vis} -lbps)
+  elseif(m STREQUAL "store" AND BBM_BB10)
+    target_link_libraries(store ${vis} -lsqlite3)
   elseif(m STREQUAL "store")
     if(TARGET SQLite3::SQLite3)
       target_link_libraries(store ${vis} SQLite3::SQLite3)
