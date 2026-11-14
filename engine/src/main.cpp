@@ -63,7 +63,9 @@ int main(int argc, char **argv) {
         if (a == "--data" && i + 1 < argc) data = argv[++i];
         else if (a == "--wav" && i + 1 < argc) wav = argv[++i];
         else if (a == "--null") null_sink = true;
-        else return usage();
+        // The navigator starts a headless entry point with arguments of its own (the package's
+        // name, "invoke://localhost"): 0.1.0.3 took them for a mistake and exited in 80 ms.
+        else if (a.rfind("--", 0) == 0) return usage();
     }
 
     // SIGINT and SIGTERM go to one thread that stops the engine cleanly (engine.json removed).
