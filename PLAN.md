@@ -279,6 +279,15 @@ the fallback is importing cookies exported from a desktop browser.
 
 ## 7. UI
 
+**The look is the user's to shape** (2026-11-14): "i would like this, and the player in
+particular to resemble the stock player with a Youtube flavor, but with the functions the UI
+has on Windows phone. i will provide screenshots". So: BB10's own music player as the model for
+layout and feel, YouTube Music's colours and identity on top, and YTMusicWP's functions as the
+list of what the screens must be able to do. The UI in `app/` today is a first functional
+shell, not the design; wait for the screenshots before reworking it, and measure from them
+(the Q10 is 720 × 720, 9 px per du). The mini-player is the title plus one Play/Pause icon;
+every other action is on the full player (the user, same day).
+
 QML on C++ models, HyperBerry's split. Designed for the Q10's 720×720 and keyboard first, then
 tall screens.
 
