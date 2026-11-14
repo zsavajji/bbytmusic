@@ -27,6 +27,8 @@ class PlayerState : public QObject
     Q_PROPERTY(int queueLength READ queueLength NOTIFY changed)
     // "off", "all" or "one".
     Q_PROPERTY(QString repeat READ repeat NOTIFY changed)
+    // The equalizer's preset: "off", "bass_boost", ...
+    Q_PROPERTY(QString eq READ eq NOTIFY changed)
     // The current track as the engine gave it (docs/protocol.md, Item): id, album_id, thumb, ...
     Q_PROPERTY(QVariantMap track READ track NOTIFY changed)
     Q_PROPERTY(QString thumb READ thumb NOTIFY changed)
@@ -45,6 +47,7 @@ public:
     QString error() const { return m_error; }
     int queueLength() const { return m_queueLength; }
     QString repeat() const { return m_repeat; }
+    QString eq() const { return m_eq; }
     QVariantMap track() const { return m_track; }
     QString thumb() const { return m_track.value("thumb").toString(); }
 
@@ -69,7 +72,7 @@ private:
 
     QString m_state;
     int m_index;
-    QString m_title, m_artist, m_album, m_error, m_repeat;
+    QString m_title, m_artist, m_album, m_error, m_repeat, m_eq;
     QVariantMap m_track;
     int m_positionMs, m_durationMs, m_queueLength;
     QTimer m_tick;

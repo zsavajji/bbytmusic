@@ -5,6 +5,7 @@ PlayerState::PlayerState(QObject *parent)
     , m_state("stopped")
     , m_index(-1)
     , m_repeat("off")
+    , m_eq("off")
     , m_positionMs(0)
     , m_durationMs(0)
     , m_queueLength(0)
@@ -71,6 +72,8 @@ void PlayerState::onEvent(QString name, QVariantMap f)
             m_queueLength = f["queue_len"].toInt();
             if (f.contains("repeat"))
                 m_repeat = f["repeat"].toString();
+            if (f.contains("eq"))
+                m_eq = f["eq"].toString();
         }
         setPosition(f);
     } else if (name == "track") {
@@ -87,7 +90,10 @@ void PlayerState::onEvent(QString name, QVariantMap f)
         m_queueLength = f["len"].toInt();
         m_index = f["index"].toInt();
     } else if (name == "mode") {
-        m_repeat = f["repeat"].toString();
+        if (f.contains("repeat"))
+            m_repeat = f["repeat"].toString();
+        if (f.contains("eq"))
+            m_eq = f["eq"].toString();
     } else if (name == "error") {
         emit errorOccurred(f["message"].toString());
         return;

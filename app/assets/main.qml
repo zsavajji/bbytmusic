@@ -77,6 +77,18 @@ TabbedPane {
     }
 
     Tab {
+        title: "Explore"
+        imageSource: "asset:///images/ic_explore.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "ExploreTab.qml"
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
+        }
+    }
+
+    Tab {
         id: recentTab
         title: "Recent"
         imageSource: "asset:///images/ic_recent.png"

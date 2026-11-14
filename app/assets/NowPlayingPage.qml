@@ -195,6 +195,17 @@ Page {
             }
         },
         ActionItem {
+            title: player.eq == "off" || player.eq == "" ? "Equalizer (Off)" : "Equalizer (On)"
+            imageSource: "asset:///images/ic_equalizer.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                var sheet = eqSheet.createObject();
+                if (sheet) {
+                    sheet.show();
+                }
+            }
+        },
+        ActionItem {
             title: "Properties"
             imageSource: "asset:///images/ic_info.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
@@ -384,6 +395,10 @@ Page {
         ComponentDefinition {
             id: shelfPage
             source: "ShelfPage.qml"
+        },
+        ComponentDefinition {
+            id: eqSheet
+            source: "EqSheet.qml"
         },
         TrackInfo {
             id: info
