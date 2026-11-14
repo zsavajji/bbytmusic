@@ -48,7 +48,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 
 | `cmd` | Fields | `result` |
 |---|---|---|
-| `status` | | `{"version":"…","state":"stopped\|loading\|playing\|paused","index":0,"track":Track or null,"position_ms":0,"duration_ms":0,"queue_len":0,"error":"","repeat":"off\|all\|one"}` |
+| `status` | | `{"version":"…","state":"stopped\|loading\|playing\|paused","index":0,"track":Track or null,"position_ms":0,"duration_ms":0,"queue_len":0,"error":"","repeat":"off\|all\|one","eq":"off"}` |
 | `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists` | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
 | `search_more` | `continuation` | as `search` |
 | `browse` | `id`: the browse id of an album (`MPRE…`), a playlist (`VL…`), an artist (`UC…`) or a feed (`FEmusic_home`) | `{"kind":"album\|playlist","id":"…","title":"…","subtitle":"Album • 1998","second_subtitle":"11 songs • 40 minutes","artist":"…","artist_id":"…","year":"1998","thumb":"https://…","description":"…","playlist_id":"…","items":[Item]}`. An album's tracks carry the album's title, id and thumb, and the album's artist when the row names none. A playlist gives its first page (about 100 tracks) and, when there are more, a `continuation` for `browse_more`. An artist's id (a channel id, `UC…`) answers `{"kind":"artist","id":"…","title":"…","subtitle":"42.5K subscribers","thumb":"https://…","description":"…","items":[Item],"sections":[{"title":"Albums","items":[Item]}]}`: `items` are the top songs, `sections` the page's shelves in its own order and under its own titles (Albums, Singles & EPs, Videos, Featured on, Fans might also like), without the top songs. A feed (`FEmusic_home`, any `FE…`) answers `{"kind":"feed","id":"…","items":[],"sections":[…],"continuation":"…"}`: its shelves, and the token of the next ones ("" at the end). Every `browse` result carries `sections` and `continuation`, empty where they do not apply. |
@@ -67,6 +67,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `queue_clear` | | `{}`. Removes every track but the current one, which plays on. |
 | `queue_shuffle` | | `{}`. Shuffles the tracks after the current one. |
 | `queue_sort` | `by`: `title`, `artist`, `album` or `duration`; `desc` (default false) | `{}`. Sorts the whole queue (text without regard to case, equal rows keep their order); the current track stays the current one. |
+| `eq` | `preset` (optional) | `{"preset":"off","presets":["off","bass_boost",…]}`: the equalizer's preset in use and the ones there are, `off` first. With `preset` it is set first (`bad_request` if there is no such preset), takes effect within a moment on what is playing, and is kept across restarts. |
 | `repeat` | `mode`: `off`, `all` or `one` | `{}`. `all` goes back to the first track after the last; `one` plays the current track again when it ends (Next still moves on). Kept across restarts. |
 | `quit` | | `{}`, then the engine exits |
 
@@ -98,7 +99,7 @@ Every change to the queue (`play`, `queue_add`, `queue_remove`, `queue_move`, `q
 | `position` | `position_ms`, `duration_ms` | about once a second while playing |
 | `queue` | `len`, `index` | the queue's content changed; ask `queue` for it |
 | `error` | `message`, `track_id` | a track could not be played; the player has moved on |
-| `mode` | `repeat` | the repeat mode changed |
+| `mode` | `repeat`, `eq` | the repeat mode or the equalizer's preset changed; both are always there |
 | `thumb` | `url`, `size`, `file` | a thumbnail asked for with `thumbs` is in the cache; `url` and `size` are the request's |
 
 A UI that connects late sends `status` and `queue` and is then up to date.

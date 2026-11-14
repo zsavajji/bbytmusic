@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <ctime>
 
+#include "engine/eq_sink.h"
 #include "engine/item_json.h"
 #include "engine/unplug_sink.h"
 #include "store/history_store.h"
@@ -22,7 +23,7 @@ Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/c
     player_ = std::make_unique<Player>(std::move(sources), [this]() -> std::unique_ptr<Sink> {
         std::unique_ptr<Sink> s = opt_.sinks ? opt_.sinks() : nullptr;
         if (!s) return nullptr;
-        return std::make_unique<UnplugSink>(std::move(s), [this] {
+        return std::make_unique<UnplugSink>(std::make_unique<EqSink>(std::move(s), eq_), [this] {
             log_info("headphones out: pausing");
             player_->pause();
         });
@@ -150,6 +151,7 @@ Item Engine::item_for(const Track &t) {
 // The queue as it was at the last stop, paused where it was.
 void Engine::restore() {
     if (!db_ok_) return;
+    if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
     std::vector<QueueRow> rows;
     QueueState st;

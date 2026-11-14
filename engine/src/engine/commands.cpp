@@ -216,12 +216,32 @@ void Engine::add_commands() {
         Repeat mode;
         if (!parse_repeat(req["mode"].str(), mode)) return bad("mode: off, all or one");
         player_->set_repeat(mode);
-        server_.emit("mode", std::string("\"repeat\":\"") + repeat_name(mode) + "\"");
+        server_.emit("mode", mode_json());
         post([this, mode] {   // the store is the worker's alone
             std::string err;
             if (db_ok_ && !set_setting(db_, "repeat", repeat_name(mode), err)) log_warn("store: " + err);
         });
         return ok();
+    });
+    server_.on("eq", [this](Json req) {
+        const auto &presets = eq_presets();
+        if (!req["preset"].is_null()) {
+            const int i = req["preset"].is_string() ? eq_preset_index(req["preset"].str()) : -1;
+            if (i < 0) {
+                std::string list;
+                for (const EqPreset &p : presets) list += (list.empty() ? "" : ", ") + std::string(p.name);
+                return bad("preset: one of " + list);
+            }
+            eq_.set_preset(i);
+            server_.emit("mode", mode_json());
+            post([this, i] {
+                std::string err;
+                if (db_ok_ && !set_setting(db_, "eq", eq_presets()[size_t(i)].name, err)) log_warn("store: " + err);
+            });
+        }
+        std::string out = std::string("{\"preset\":\"") + presets[size_t(eq_.preset())].name + "\",\"presets\":[";
+        for (size_t i = 0; i < presets.size(); i++) out += std::string(i ? ",\"" : "\"") + presets[i].name + "\"";
+        return ok(out + "]}");
     });
     server_.on("thumbs", [this](Json req) {
         std::vector<std::string> urls;
@@ -251,6 +271,11 @@ void Engine::add_commands() {
     });
 }
 
+std::string Engine::mode_json() {
+    return std::string("\"repeat\":\"") + repeat_name(player_->repeat()) + "\",\"eq\":\"" +
+           eq_presets()[size_t(eq_.preset())].name + "\"";
+}
+
 Reply Engine::status() {
     const PlayerStatus s = player_->status();
     const std::vector<Track> q = player_->queue();
@@ -262,7 +287,8 @@ Reply Engine::status() {
     return ok("{\"version\":" + json_quote(opt_.version) + ",\"state\":\"" + state_name(s.state) + "\",\"index\":" +
               std::to_string(s.index) + ",\"track\":" + track + ",\"position_ms\":" + std::to_string(s.position_ms) +
               ",\"duration_ms\":" + std::to_string(s.duration_ms) + ",\"queue_len\":" + std::to_string(q.size()) +
-              ",\"error\":" + json_quote(s.error) + ",\"repeat\":\"" + repeat_name(player_->repeat()) + "\"}");
+              ",\"error\":" + json_quote(s.error) + ",\"repeat\":\"" + repeat_name(player_->repeat()) + "\",\"eq\":\"" +
+              eq_presets()[size_t(eq_.preset())].name + "\"}");
 }
 
 // Replaces the queue and starts. With radio and one song or video, the song's radio follows it:

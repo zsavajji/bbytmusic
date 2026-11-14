@@ -20,6 +20,7 @@
 #include <string>
 #include <thread>
 
+#include "audio/equalizer.h"
 #include "innertube/client.h"
 #include "innertube/items.h"
 #include "platform/now_playing.h"
@@ -63,6 +64,7 @@ private:
     Reply play(Json req);
     Reply queue_add(Json req);
     Reply resume(bool toggle);
+    std::string mode_json();   // the payload of a mode event: repeat and eq
     // Runs one InnerTube call under it_mu_, then hands its visitor data to resolve() once.
     bool yt_call(const std::function<bool(InnerTube &, std::string &)> &call, std::string &err);
     // events.cpp
@@ -116,6 +118,7 @@ private:
     std::thread worker_;
     std::atomic<bool> closing_{false};
 
+    Equalizer eq_;                     // the player's thread uses it through the sink
     std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_
     std::unique_ptr<Player> player_;   // last: its threads call into everything above
 };

@@ -207,6 +207,26 @@ int main() {
         CHECK(parse(c.cmd("repeat", "\"mode\":\"all\""), d)["ok"].boolean());
         CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all"; }, 5000, mark) >= 0);
         CHECK_EQ(parse(c.cmd("status"), d)["result"]["repeat"].string(), "all");
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["repeat"].str() == "all" && e["eq"].str() == "off"; }, 5000, mark) >= 0);
+
+        // eq: the presets, set one, a mode event with both fields, refused when unknown.
+        Json e = parse(c.cmd("eq"), d)["result"];
+        CHECK_EQ(e["preset"].string(), "off");
+        CHECK_EQ(e["presets"][0].string(), "off");
+        bool has_bass = false;
+        for (Json p : e["presets"].items()) has_bass = has_bass || p.str() == "bass_boost";
+        CHECK(has_bass);
+        CHECK_EQ(parse(c.cmd("eq", "\"preset\":\"warp\""), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("eq", "\"preset\":3"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["eq"].string(), "off");
+        mark = c.events.size();
+        CHECK_EQ(parse(c.cmd("eq", "\"preset\":\"rock\""), d)["result"]["preset"].string(), "rock");
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["eq"].str() == "rock" && e["repeat"].str() == "all"; }, 5000, mark) >= 0);
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["eq"].string(), "rock");
+        // the tone plays through the equalizer
+        mark = c.events.size();
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 1000; }, 5000, mark) >= 0);
+        CHECK_EQ(parse(c.cmd("status"), d)["result"]["state"].string(), "playing");
 
         // seek: the position follows.
         mark = c.events.size();
@@ -261,6 +281,7 @@ int main() {
         CHECK_EQ(s["track"]["id"].string(), "b");
         CHECK_EQ(s["track"]["title"].string(), "Tone B");
         CHECK_EQ(s["repeat"].string(), "all");   // kept across the restart
+        CHECK_EQ(s["eq"].string(), "rock");
         CHECK(s["position_ms"].i64() >= 2000);
         Json q = parse(c.cmd("queue"), d)["result"];
         CHECK_EQ(ids(q["items"]), "ab");
