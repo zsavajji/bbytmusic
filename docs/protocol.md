@@ -57,6 +57,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `thumbs` | `urls`: [string], `size` (default 0: as the url says) | `{"files":{"<url>":"<path>"}}`: the urls already in the cache, each with its file's absolute path. The others are fetched in the background and each arrives as a `thumb` event. With a `size`, a `googleusercontent.com` url is asked for at `size` × `size` pixels as a JPEG. Files live in `<data_dir>/thumbs/`. |
 | `suggest` | `q` | `{"suggestions":["…"]}` |
 | `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and exactly one song or video, the engine appends its radio and goes on appending as the queue runs low; the reply then comes once the radio's first page is in (about 0.6 s; the sound has started by then). If the radio cannot be fetched the song still plays and the reply is still ok. |
+| `radio` | | `{}`. The current track plays on and the rest of the queue is replaced by its radio, which goes on being appended as the queue runs low, as with `play`; the reply comes once the radio's first page is in. If the radio cannot be fetched the track still plays on, alone, and the reply is still ok. `not_found` when the queue is empty. |
 | `pause`, `resume`, `toggle`, `stop`, `next`, `prev` | | `{}`. `resume` or `toggle` after `stop` plays the current track again from its start. `prev` restarts the track when more than 3 s in, else goes to the one before. |
 | `seek` | `ms` | `{}` |
 | `jump` | `index` | `{}` |
@@ -67,7 +68,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `queue_clear` | | `{}`. Removes every track but the current one, which plays on. |
 | `queue_shuffle` | | `{}`. Shuffles the tracks after the current one, once; the shuffle mode is not changed. |
 | `shuffle` | `on`: bool | `{}`. The shuffle mode (the user, 2026-11-14: "shuffle should be a toggle"). On: the tracks after the current one are shuffled and the order they had is remembered. Off: the queue goes back to that order, the current track staying the current one; tracks added meanwhile are where `queue_add` would have put them. While on, a `play` starts with the chosen track and shuffles the rest; `queue_sort` makes its order the remembered one and turns the mode off. The mode is kept across restarts, the remembered order is not (off then leaves the queue as it is). |
-| `queue_sort` | `by`: `title`, `artist`, `album` or `duration`; `desc` (default false) | `{}`. Sorts the whole queue (text without regard to case, equal rows keep their order); the current track stays the current one. |
+| `queue_sort` | `by`: `title`, `artist`, `album` or `duration`; `desc` (default false) | `{}`. Sorts only the tracks after the current one (text without regard to case, equal rows keep their order); the played ones and the current one stay put. |
 | `eq` | `preset` (optional) | `{"preset":"off","presets":["off","bass_boost",…]}`: the equalizer's preset in use and the ones there are, `off` first. With `preset` it is set first (`bad_request` if there is no such preset), takes effect within a moment on what is playing, and is kept across restarts. |
 | `skip` | `categories` (optional): [string] | `{"categories":["music_offtopic"],"all":["sponsor","intro","outro","music_offtopic"]}`: the kinds of segment the engine skips (SponsorBlock's names), and the ones it knows. With `categories` they are set first (`bad_request` for one it does not know) and kept across restarts. Empty, the default, means off: SponsorBlock is then never asked. When on, each track's segments are asked for by the first four hex digits of its id's SHA-256, never by the id. |
 | `repeat` | `mode`: `off`, `all` or `one` | `{}`. `all` goes back to the first track after the last; `one` plays the current track again when it ends (Next still moves on). Kept across restarts. |
@@ -83,13 +84,13 @@ After a restart the queue comes back paused, and its tracks have lost `explicit`
 
 Commands answer without waiting for the sound: `seek`, `next` and the rest are acknowledged
 before anything changes, and what happens next comes as events. The exceptions are the ones
-that ask YouTube (`search`, `search_more`, `suggest`, and `play` with `radio`).
+that ask YouTube (`search`, `search_more`, `suggest`, `radio`, and `play` with `radio`).
 
 A search for `all` that YouTube answers as one flat list comes back grouped by kind, in the
 sections "Top result", "Songs", "Albums", "Artists", "Videos" and "Playlists" (singles and EPs
 are albums; the empty ones are left out).
 
-Every change to the queue (`play`, `queue_add`, `queue_remove`, `queue_move`, `queue_clear`,
+Every change to the queue (`play`, `radio`, `queue_add`, `queue_remove`, `queue_move`, `queue_clear`,
 `queue_shuffle`, `queue_sort`, `shuffle`, a radio page arriving) is followed by a `queue` event, and every `track` event by a `position` event.
 
 ## Events

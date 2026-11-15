@@ -141,6 +141,7 @@ int main() {
         CHECK_EQ(parse(c.cmd("search", "\"q\":\"x\",\"filter\":\"podcasts\""), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("seek"), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("jump", "\"index\":0"), d)["error"]["code"].string(), "not_found");
+        CHECK_EQ(parse(c.cmd("radio"), d)["error"]["code"].string(), "not_found");   // no current track
 
         // play: the events in order: queue, loading, track (then a position), playing.
         const size_t from = c.events.size();
@@ -191,18 +192,20 @@ int main() {
         CHECK_EQ(parse(c.cmd("queue_remove", "\"index\":2"), d)["error"]["code"].string(), "not_found");
 
         // queue_sort, queue_shuffle, queue_clear: each followed by a queue event; `a` plays on.
+        mark = c.events.size();
         CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"song\",\"id\":\"c\",\"title\":\"tone C\"}]"), d)["ok"].boolean());
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["len"].i64() == 3; }, 5000, mark) >= 0);
         mark = c.events.size();
         CHECK(parse(c.cmd("queue_sort", "\"by\":\"title\",\"desc\":true"), d)["ok"].boolean());
-        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["index"].i64() == 2; }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue"); }, 5000, mark) >= 0);
         q = parse(c.cmd("queue"), d)["result"];
-        CHECK_EQ(ids(q["items"]), "cba");
-        CHECK_EQ(q["index"].i64(), 2);
+        CHECK_EQ(ids(q["items"]), "acb");   // only what follows `a` is sorted
+        CHECK_EQ(q["index"].i64(), 0);
         CHECK_EQ(parse(c.cmd("queue_sort", "\"by\":\"size\""), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("queue_sort"), d)["error"]["code"].string(), "bad_request");
         mark = c.events.size();
         CHECK(parse(c.cmd("queue_sort", "\"by\":\"title\""), d)["ok"].boolean());
-        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue") && e["index"].i64() == 0; }, 5000, mark) >= 0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "queue"); }, 5000, mark) >= 0);
         CHECK_EQ(ids(parse(c.cmd("queue"), d)["result"]["items"]), "abc");
         mark = c.events.size();
         CHECK(parse(c.cmd("queue_shuffle"), d)["ok"].boolean());

@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.25, 2026-11-14)
+## What exists (0.1.0.27, 2026-11-15)
 
 ```
 app/
@@ -179,20 +179,22 @@ and three more remarks:
   necessary?": it is not; gone from Now Playing's menu. Stop is still in the application menu
   (swipe down), where it has been since 0.1.0.4; not asked about.
 
-Still theirs to confirm, not mentioned yet:
+## What the user said at their second look (2026-11-15, 0.1.0.25/0.1.0.26)
 
-- **Sort sorts the whole queue**, played tracks included; the current track stays current.
-- **The strip shows a small play/pause mark** beside the title (what the player is doing, not a
-  button) and a red progress line.
-- **Videos and Playlists have no segment** in Search (the control holds four): they appear under
-  All.
-- **Start Radio from Now Playing restarts the track** (it is `play` with `radio`).
-- **Repeat One**: Next still moves on; only a track ending by itself repeats.
-- **The equalizer** is ten fixed presets, no sliders; their gains are a first guess.
-- **SponsorBlock is in, and off.** Turning a switch on makes the engine ask sponsor.ajay.app
-  about every track that starts, by the first four hex digits of the SHA-256 of its id (the
-  service then answers for every video sharing them). That is a third party learning roughly
-  what is played: the user's call. A slow answer holds the engine's worker for up to 10 s.
+"it seems fine for all the pages, search works, album page is fine, also, strip is ok, queue
+sorting is ok, artist page is fine. the equalizer i would like to expand later, sponsorblock
+settings are ok." Their answers to what was still theirs to confirm:
+
+- **Sort sorts only what is to come** ("should only show the queue from now on"): since
+  0.1.0.27 `queue_sort` leaves the played tracks and the current one where they are. Read as
+  the sort's scope, not as hiding played tracks on the Queue page; not confirmed which.
+- **Start Radio from Now Playing continues the track** ("should continue"): since 0.1.0.27 it
+  is the `radio` command; the song plays on and the rest of the queue becomes its radio.
+- Kept as they are: the strip's play/pause mark and red line; Videos and Playlists under All;
+  Repeat One (Next moves on); the equalizer as ten presets "for now" (to be expanded later);
+  SponsorBlock's Settings, off by default.
+- **The Active Frame** (2.10): the album art, title and artist; an elapsed / total counter if
+  there is room.
 
 ## Build, install, look
 

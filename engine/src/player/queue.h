@@ -23,8 +23,8 @@ public:
     bool jump(int i);
     void clear_others();                                  // keeps the current track only (none: empties)
     void shuffle_after_current(std::mt19937 &rng);        // what follows the current track
-    // The whole list, stable; the index follows. In shuffle mode the sorted order is kept and the mode
-    // goes off: true then.
+    // What follows the current track, stable; the played ones and the current one stay put. In shuffle
+    // mode the sorted order is kept and the mode goes off: true then.
     bool sort(QueueSort by, bool desc);
     bool shuffle() const { return shuffle_; }
     // On: what follows the current track is shuffled, the order before is remembered. Off: back to it.

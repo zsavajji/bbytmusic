@@ -67,6 +67,7 @@ private:
     void add_commands();
     Reply status();
     Reply play(Json req);
+    Reply radio_command();
     Reply queue_add(Json req);
     Reply resume(bool toggle);
     std::string mode_json();   // the payload of a mode event: repeat and eq
@@ -77,6 +78,7 @@ private:
     void on_np_command(const std::string &c);
     void np_update(const PlayerStatus &s, bool send_meta);       // worker
     void history_end();                                          // mu_ held
+    void radio_first(const std::string &id, uint64_t gen);       // not under mu_
     void radio_more();
     void radio_append(const std::vector<Item> &items);           // mu_ held
     // skip.cpp

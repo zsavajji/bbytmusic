@@ -118,36 +118,46 @@ int main() {
     q.shuffle_after_current(rng);
     CHECK_EQ(q.current()->id, std::string("a"));
 
-    // sort: stable, case-blind for text, the index follows the current track (even among duplicates)
+    // sort: only what follows the current track, stable, case-blind for text; the rest stays put
     {
         auto tk = [](const char *id, const char *title, const char *artist, const char *album, int dur) {
             Track x; x.id = id; x.title = title; x.artist = artist; x.album = album; x.duration_s = dur; return x;
         };
-        auto fresh = [&] {
+        auto fresh = [&](int current) {
             q.set({tk("1", "banana", "Zed", "Y", 30), tk("2", "Apple", "amy", "X", 10), tk("3", "cherry", "Zed", "X", 20),
-                   tk("2", "Apple", "amy", "X", 10)}, 3);   // the current one is the second "2"
+                   tk("2", "Apple", "amy", "X", 10)}, current);
         };
-        fresh();
+        fresh(0);
         q.sort(QueueSort::Title, false);
-        CHECK_EQ(ids(q), std::string("2213"));
-        CHECK_EQ(q.index(), 1);   // the second Apple, after the first
+        CHECK_EQ(ids(q), std::string("1223"));
+        CHECK_EQ(q.index(), 0);
         q.sort(QueueSort::Title, true);
-        CHECK_EQ(ids(q), std::string("3122"));
-        CHECK_EQ(q.index(), 3);
-        fresh();
+        CHECK_EQ(ids(q), std::string("1322"));
+        CHECK_EQ(q.index(), 0);
+        fresh(0);
         q.sort(QueueSort::Artist, false);
-        CHECK_EQ(ids(q), std::string("2213"));   // amy, amy, then Zed in order
-        CHECK_EQ(q.index(), 1);
-        fresh();
+        CHECK_EQ(ids(q), std::string("1223"));   // amy, amy, then Zed
+        fresh(0);
         q.sort(QueueSort::Album, false);
-        CHECK_EQ(ids(q), std::string("2321"));
-        CHECK_EQ(q.index(), 2);
-        fresh();
+        CHECK_EQ(ids(q), std::string("1232"));   // all X: equal rows keep their order
+        fresh(0);
         q.sort(QueueSort::Duration, false);
-        CHECK_EQ(ids(q), std::string("2231"));
+        CHECK_EQ(ids(q), std::string("1223"));
         q.sort(QueueSort::Duration, true);
         CHECK_EQ(ids(q), std::string("1322"));
+        fresh(3);
+        q.sort(QueueSort::Title, false);
+        CHECK_EQ(ids(q), std::string("1232"));   // nothing follows the current track
         CHECK_EQ(q.index(), 3);
+        // the current track in the middle: the tracks before it and it stay where they are
+        q.set({tk("1", "zulu", "", "", 0), tk("2", "mike", "", "", 0), tk("3", "yankee", "", "", 0), tk("4", "delta", "", "", 0),
+               tk("5", "bravo", "", "", 0), tk("6", "charlie", "", "", 0)}, 2);
+        q.sort(QueueSort::Title, false);
+        CHECK_EQ(ids(q), std::string("123564"));
+        CHECK_EQ(q.index(), 2);
+        q.sort(QueueSort::Title, true);
+        CHECK_EQ(ids(q), std::string("123465"));
+        CHECK_EQ(q.index(), 2);
         q.set({}, 0);
         q.sort(QueueSort::Title, false);
         CHECK_EQ(q.index(), -1);

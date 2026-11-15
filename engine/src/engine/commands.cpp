@@ -107,6 +107,7 @@ void Engine::add_commands() {
         return ok(out + "]}");
     });
     server_.on("play", [this](Json req) { return play(req); });
+    server_.on("radio", [this](Json) { return radio_command(); });
     simple("pause", [](Player &p) { p.pause(); });
     simple("stop", [](Player &p) { p.stop(); });
     simple("next", [](Player &p) { p.next(); });
@@ -334,19 +335,27 @@ Reply Engine::play(Json req) {
         radio_asked_.clear();
         player_->play(std::move(tracks), index, 0);
     }
-    if (!radio) return ok();
-    QueuePage page;
-    std::string err;
-    const std::string id = items[0].id;
-    if (!yt_call([&](InnerTube &yt, std::string &e) { return watch_queue(yt, id, "", page, e); }, err)) {
-        log_warn("radio of " + id + ": " + err);   // the song plays on without it
-        return ok();
+    if (radio) radio_first(items[0].id, gen);
+    return ok();
+}
+
+// The current track plays on and the rest of the queue becomes its radio; like play, the reply
+// comes once the radio's first page is in.
+Reply Engine::radio_command() {
+    uint64_t gen;
+    std::string id;
+    {
+        std::lock_guard<std::mutex> lk(mu_);
+        gen = ++radio_gen_;
+        radio_next_.clear();
+        radio_asked_.clear();
+        player_->clear_others();
+        const std::vector<Track> q = player_->queue();
+        if (q.empty()) return Reply::error("not_found", "the queue is empty");
+        id = q[0].id;
     }
-    std::lock_guard<std::mutex> lk(mu_);
-    if (gen == radio_gen_) {
-        radio_next_ = page.continuation;
-        radio_append(page.items);
-    }
+    log_info("radio of " + id);
+    radio_first(id, gen);
     return ok();
 }
 

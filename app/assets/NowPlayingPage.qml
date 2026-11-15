@@ -177,11 +177,7 @@ Page {
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
                 if (player.track.id) {
-                    engine.request("play", {
-                        "items": [ player.track ],
-                        "index": 0,
-                        "radio": true
-                    });
+                    engine.request("radio", {});
                 }
             }
         },

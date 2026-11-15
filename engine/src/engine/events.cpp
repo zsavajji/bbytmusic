@@ -177,6 +177,22 @@ void Engine::radio_more() {
     });
 }
 
+// The first page of a song's radio, on the caller's thread; appended unless another play or radio
+// has come since `gen`. A failure is only logged: the song plays on without it.
+void Engine::radio_first(const std::string &id, uint64_t gen) {
+    QueuePage page;
+    std::string err;
+    if (!yt_call([&](InnerTube &yt, std::string &e) { return watch_queue(yt, id, "", page, e); }, err)) {
+        log_warn("radio of " + id + ": " + err);
+        return;
+    }
+    std::lock_guard<std::mutex> lk(mu_);
+    if (gen == radio_gen_) {
+        radio_next_ = page.continuation;
+        radio_append(page.items);
+    }
+}
+
 // Appends what can be played and is not queued yet (the first page starts with the song itself).
 void Engine::radio_append(const std::vector<Item> &items) {
     std::set<std::string> have;

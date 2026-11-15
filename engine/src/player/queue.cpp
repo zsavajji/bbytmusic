@@ -161,7 +161,7 @@ int compare(const Track &a, const Track &b, QueueSort by) {
 bool Queue::sort(QueueSort by, bool desc) {
     std::vector<size_t> order(tracks_.size());   // positions, so a duplicate id cannot confuse the current one
     std::iota(order.begin(), order.end(), size_t(0));
-    std::stable_sort(order.begin(), order.end(), [&](size_t a, size_t b) {
+    std::stable_sort(order.begin() + (index_ + 1), order.end(), [&](size_t a, size_t b) {   // index_ -1: everything
         const int c = compare(tracks_[a], tracks_[b], by);
         return desc ? c > 0 : c < 0;
     });
