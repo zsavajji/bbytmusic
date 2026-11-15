@@ -18,7 +18,12 @@ static snd_pcm_t *P(void *p) { return static_cast<snd_pcm_t *>(p); }
 
 bool QsaSink::open_pcm(std::string &err) {
     snd_pcm_t *pcm = nullptr;
-    char name[] = "pcmPreferred";
+    audio_manager_device_t route = AUDIO_DEVICE_DEFAULT;
+    audio_manager_get_default_device(&route);
+    // pcmPreferredp stays on the codec card (pcmC0D1p) for good; Bluetooth is its own card, behind
+    // a2dpp (Q20, 2026-11-15: A2DP connected, the sound stayed on the speaker).
+    char preferred[] = "pcmPreferred", a2dp[] = "a2dpp";
+    char *name = route == AUDIO_DEVICE_A2DP ? a2dp : preferred;
     int rc = audio_manager_snd_pcm_open_name(AUDIO_TYPE_MULTIMEDIA, &pcm, &handle_, name, SND_PCM_OPEN_PLAYBACK);
     if (rc != 0) { err = "pcm open rc " + std::to_string(rc) + " (" + snd_strerror(rc) + ")"; return false; }
     pcm_ = pcm;
@@ -46,13 +51,11 @@ bool QsaSink::open_pcm(std::string &err) {
     setup.channel = SND_PCM_CHANNEL_PLAYBACK;
     rc = snd_pcm_plugin_setup(pcm, &setup);
     if (rc == 0 && setup.buf.block.frag_size > 0) frag_ = setup.buf.block.frag_size;
-    log_info("speaker: " + std::to_string(setup.format.rate) + " Hz, " + std::to_string(setup.format.voices) +
+    log_info(std::string("speaker: ") + name + " (" + audio_manager_get_device_name(route) + "), " + std::to_string(setup.format.rate) + " Hz, " + std::to_string(setup.format.voices) +
              " voices, fragment " + std::to_string(setup.buf.block.frag_size) + " bytes x " +
              std::to_string(setup.buf.block.frags) + ", rc " + std::to_string(rc));
     rc = snd_pcm_plugin_prepare(pcm, SND_PCM_CHANNEL_PLAYBACK);
     if (rc != 0) { err = "pcm prepare rc " + std::to_string(rc) + " (" + snd_strerror(rc) + ")"; close_pcm(); return false; }
-    audio_manager_device_t route = AUDIO_DEVICE_DEFAULT;
-    audio_manager_get_default_device(&route);
     route_ = int(route);
     return true;
 }
@@ -123,6 +126,16 @@ bool QsaSink::write(const int16_t *s, size_t frames, std::string &err) {
         if (underruns_ + write_errors <= 5)
             log_warn("write gave " + std::to_string(wrote) + " of " + std::to_string(frag_) + ", status " + std::to_string(status.status));
         if (snd_pcm_plugin_prepare(P(pcm_), SND_PCM_CHANNEL_PLAYBACK) != 0 || write_errors > 50) {
+            // Bluetooth off: a2dpp dies before the default device moves (Q20, 2026-11-15), so
+            // the route check never sees it. Pause as for headphones out.
+            if (route_ == AUDIO_DEVICE_A2DP) {
+                log_info("route: a2dp gone (unplugged: stopping)");
+                pending_.clear();
+                close_pcm();
+                unplugged_ = true;
+                err = "unplugged";
+                return false;
+            }
             err = "speaker write failed";
             pending_.erase(pending_.begin(), pending_.begin() + long(pos));
             return false;
