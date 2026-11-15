@@ -71,6 +71,7 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `queue_sort` | `by`: `title`, `artist`, `album` or `duration`; `desc` (default false) | `{}`. Sorts only the tracks after the current one (text without regard to case, equal rows keep their order); the played ones and the current one stay put. |
 | `eq` | `preset` (optional) | `{"preset":"off","presets":["off","bass_boost",…]}`: the equalizer's preset in use and the ones there are, `off` first. With `preset` it is set first (`bad_request` if there is no such preset), takes effect within a moment on what is playing, and is kept across restarts. |
 | `skip` | `categories` (optional): [string] | `{"categories":["music_offtopic"],"all":["sponsor","intro","outro","music_offtopic"]}`: the kinds of segment the engine skips (SponsorBlock's names), and the ones it knows. With `categories` they are set first (`bad_request` for one it does not know) and kept across restarts. Empty, the default, means off: SponsorBlock is then never asked. When on, each track's segments are asked for by the first four hex digits of its id's SHA-256, never by the id. |
+| `region` | `gl` (optional): two uppercase letters, like `IT` | `{"gl":"IT"}`: the country the content is asked for, in use now. With `gl` it is set first (`bad_request` unless two uppercase letters), kept across restarts, and a `region` event follows; the Home feed, `search` and the rest are asked for with it from then on (a feed's older continuations are for the old one). YouTube applies it to some shelves (Home's Quick picks, trending songs) and not to others (featured playlists and new releases follow the engine's IP; checked 2026-11-15). The language stays English: the item parser reads English labels. A user who never chose one gets the country YouTube sees the engine in (music.youtube.com/sw.js_data, no other service), asked for once, by the first command that asks YouTube after the first start; if that fails it is `US` for that run and asked again at the next start. The bare form only reports; it does not ask. |
 | `repeat` | `mode`: `off`, `all` or `one` | `{}`. `all` goes back to the first track after the last; `one` plays the current track again when it ends (Next still moves on). Kept across restarts. |
 | `quit` | | `{}`, then the engine exits |
 
@@ -103,6 +104,7 @@ Every change to the queue (`play`, `radio`, `queue_add`, `queue_remove`, `queue_
 | `queue` | `len`, `index` | the queue's content changed; ask `queue` for it |
 | `error` | `message`, `track_id` | a track could not be played; the player has moved on |
 | `mode` | `repeat`, `shuffle`, `eq` | the repeat mode, the shuffle mode or the equalizer's preset changed; all three are always there |
+| `region` | `gl` | `region` was set with a `gl` (not when the engine detected it): content already shown is of the old country |
 | `skipped` | `category`, `from_ms`, `to_ms`, `track_id` | a segment of the playing track was skipped |
 | `thumb` | `url`, `size`, `file` | a thumbnail asked for with `thumbs` is in the cache; `url` and `size` are the request's |
 

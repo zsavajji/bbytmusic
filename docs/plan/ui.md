@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.30, 2026-11-15)
+## What exists (0.1.0.32, 2026-11-15)
 
 ```
 app/
@@ -314,7 +314,7 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 | 3.4 Explore | **built, unseen:** a tab on `FEmusic_explore`; charts, moods and genres are not | `FEmusic_charts` and `FEmusic_new_releases` parse too; `FEmusic_moods_and_genres` comes back empty (another renderer) |
 | 3.5 Item actions | play next, add to queue, start radio, go to artist/album, share | mostly there; "go to" needs 3.2 and 3.3 |
 | 3.6 History | **built, unseen:** the Recent tab; opening links from other apps (an invoke target) is not | there (`history`) |
-| 3.7 Region and language | a setting | `InnerTube::set_language` exists; **missing:** a command and a stored setting |
+| 3.7 Region and language | **built, unseen (0.1.0.32):** Settings' "Content country" DropDown (`regions.js`, 109 countries); Home reloads on the `region` event | there: `region` command, stored setting, first start detects from `sw.js_data` (YouTube's own IP guess). `gl` changes Quick picks and Trending; New releases and Featured follow the IP. Language stays `en` (the parser reads English) |
 | 3.8 SponsorBlock | **built, unseen:** Settings, a switch per kind, off by default | there (`skip`, the `skipped` event); ran live on the Mac |
 | 3.9 Equalizer | **built, unseen, unheard:** a sheet of presets from Now Playing | there (`eq`); presets only, no bands to set |
 

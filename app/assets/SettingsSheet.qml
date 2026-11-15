@@ -1,12 +1,15 @@
 import bb.cascades 1.4
+import "regions.js" as Regions
 
-// Settings, from the application menu: which marked parts of a track are skipped (SponsorBlock).
-// All off, the default, means the service is never asked. Created when asked for, gone when
-// closed; each switch is saved by the engine as it is moved.
+// Settings, from the application menu: the country of the content, and which marked parts of a
+// track are skipped (SponsorBlock). All off, the default, means the service is never asked.
+// Created when asked for, gone when closed; each choice is saved by the engine as it is made.
 Sheet {
     id: sheet
     property string listReq: ""
-    property bool filling: false    // the switches are being set from the engine's answer
+    property string regionReq: ""
+    property string gl: ""          // the country in use, as the engine last said or was told
+    property bool filling: false    // the controls are being set from the engine's answers
 
     function has(list, name) {
         for (var i = 0; i < list.length; i ++) {
@@ -17,7 +20,52 @@ Sheet {
         return false;
     }
 
+    // The countries as options (made here: the list is long), and the one in use selected. The
+    // DropDown's "changed" also fires for each option added and for the selection: not a wish.
+    function fillRegions(inUse) {
+        var list = Regions.list();
+        var at = -1;
+        sheet.filling = true;
+        for (var i = 0; i < list.length; i ++) {
+            var o = optionDef.createObject();
+            o.text = list[i][1];
+            o.value = list[i][0];
+            region.add(o);
+            if (list[i][0] == inUse) {
+                at = i;
+            }
+        }
+        if (at < 0) {
+            // A country the list lacks: its bare code.
+            var x = optionDef.createObject();
+            x.text = inUse;
+            x.value = inUse;
+            region.add(x);
+            at = list.length;
+        }
+        sheet.gl = inUse;
+        region.selectedIndex = at;
+        sheet.filling = false;
+    }
+
+    function sendRegion() {
+        if (filling || region.selectedIndex < 0 || region.selectedValue == sheet.gl) {
+            return;
+        }
+        sheet.gl = region.selectedValue;
+        // Home reloads on the engine's `region` event.
+        engine.request("region", {
+            "gl": sheet.gl
+        });
+    }
+
     function onReply(id, ok, result, code, message) {
+        if (id != "" && id == sheet.regionReq) {
+            sheet.regionReq = "";
+            if (ok && result.gl) {
+                sheet.fillRegions(result.gl);
+            }
+        }
         if (id != "" && id == sheet.listReq) {
             sheet.listReq = "";
             if (ok) {
@@ -58,6 +106,7 @@ Sheet {
     function show() {
         engine.reply.connect(sheet.onReply);
         listReq = engine.request("skip", {});
+        regionReq = engine.request("region", {});
         sheet.open();
     }
 
@@ -81,6 +130,29 @@ Sheet {
         }
         ScrollView {
             Container {
+                Header {
+                    title: "Content country"
+                }
+                Container {
+                    leftPadding: ui.du(2)
+                    rightPadding: ui.du(2)
+                    topPadding: ui.du(1)
+                    bottomPadding: ui.du(2)
+                    Label {
+                        text: "The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are."
+                        multiline: true
+                        textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                    }
+                    DropDown {
+                        id: region
+                        title: "Country"
+                        topMargin: ui.du(2)
+                        onSelectedIndexChanged: {
+                            sheet.sendRegion();
+                        }
+                    }
+                }
                 Header {
                     title: "Skip in a track"
                 }
@@ -178,5 +250,12 @@ Sheet {
                 }
             }
         }
+        attachedObjects: [
+            ComponentDefinition {
+                id: optionDef
+                Option {
+                }
+            }
+        ]
     }
 }

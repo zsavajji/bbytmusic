@@ -15,10 +15,18 @@ namespace bbm {
 inline constexpr const char *kClientName = "WEB_REMIX";
 inline constexpr const char *kClientNameId = "67";   // X-YouTube-Client-Name
 inline constexpr const char *kClientVersion = "1.20260707.12.00";
+// What player_matrix.py sends; a desktop browser's user agent.
+inline constexpr const char *kWebUserAgent =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/140.0.0.0 Safari/537.36";
 
 class InnerTube {
 public:
-    void set_language(std::string hl, std::string gl) { hl_ = std::move(hl); gl_ = std::move(gl); }
+    void set_language(std::string hl, std::string gl) {
+        if (gl != gl_) visitor_.clear();   // the visitor data encodes the region: the next response gives a new one
+        hl_ = std::move(hl);
+        gl_ = std::move(gl);
+    }
     const std::string &hl() const { return hl_; }
     const std::string &gl() const { return gl_; }
 

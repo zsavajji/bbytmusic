@@ -222,6 +222,16 @@ Page {
         }
     }
 
+    // The country was changed in Settings: Home's shelves are of the old one. An answer still on
+    // its way is of the old one too: forgetting its id drops it.
+    function onEvent(name, fields) {
+        if (name == "region" && browseId == "FEmusic_home") {
+            browseReq = "";
+            moreReq = "";
+            load();
+        }
+    }
+
     // The engine is back (or was not there yet when the page was made): try again.
     function onLink() {
         if (engine.connected && page.failed) {
@@ -241,6 +251,10 @@ Page {
         } catch (e9) {
         }
         try {
+            engine.event.disconnect(page.onEvent);
+        } catch (e8) {
+        }
+        try {
             thumbs.ready.disconnect(page.onThumb);
         } catch (e1) {
         }
@@ -253,6 +267,7 @@ Page {
     onCreationCompleted: {
         engine.reply.connect(page.onReply);
         engine.connectedChanged.connect(page.onLink);
+        engine.event.connect(page.onEvent);
         thumbs.ready.connect(page.onThumb);
         load();
     }

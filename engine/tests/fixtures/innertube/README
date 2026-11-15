@@ -27,3 +27,7 @@ browse_home_more.json browse          "continuation": the token of browse_home.j
 browse_playlist_more.json browse      "continuation": the token of browse_playlist.json's last row (a continuationItemRenderer),
                                       with that response's visitorData as above
 The home feed follows the requester's country whatever "gl" says.
+
+Added with the region setting (2026-11-15), a plain GET, no body, a desktop Chrome User-Agent:
+sw_js_data.txt        https://music.youtube.com/sw.js_data   the country YouTube sees: )]}' and JSON whose
+                      root[0][2][0][0][1] is "IT". The IP, the visitor data and the other ids are scrubbed.

@@ -57,8 +57,8 @@ nothing is pushed. One commit per step, with what was run and what was not in th
 1. Done 2026-11-15: the user's look at the new UI; every page fine (ui.md, "second look").
 2. Phase 2's remaining steps: artwork in the system's overlay (2.9) and the Active Frame (2.10)
    are built and unseen (0.1.0.29); loading and error states (2.11), measurements (2.12).
-3. Phase 3's rest: charts and moods (3.4), opening links from other apps (3.6), region and
-   language (3.7; the item parser reads English labels, so a language needs work there first),
+3. Phase 3's rest: charts and moods (3.4), opening links from other apps (3.6), language (3.7;
+   the item parser reads English labels; the country is done, 0.1.0.32),
    "more" of an artist's shelf. Each needs the engine first.
 4. Phase 4, the account: gate 0.7 (WebView sign-in) has to be run first, with the user.
 

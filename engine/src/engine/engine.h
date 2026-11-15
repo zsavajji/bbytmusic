@@ -72,7 +72,10 @@ private:
     Reply resume(bool toggle);
     std::string mode_json();   // the payload of a mode event: repeat and eq
     // Runs one InnerTube call under it_mu_, then hands its visitor data to resolve() once.
+    // First, on the first start, the country is asked for (once per process).
     bool yt_call(const std::function<bool(InnerTube &, std::string &)> &call, std::string &err);
+    void set_region(const std::string &gl);   // it_mu_ held: use it and keep it
+    void detect_region();                     // it_mu_ held
     // events.cpp
     void on_event(const PlayerEvent &e);
     void on_np_command(const std::string &c);
@@ -108,6 +111,7 @@ private:
     std::mutex it_mu_;   // the InnerTube: one request at a time
     InnerTube yt_;
     bool visitor_shared_ = false;
+    bool region_known_ = false;   // stored, chosen, or detection was tried: it is not tried again
 
     std::mutex mu_;      // what follows, up to the worker's queue
     std::map<std::string, Item> items_;   // everything known of the queued tracks, by id

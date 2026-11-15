@@ -1,12 +1,6 @@
 #include "innertube/client.h"
 
 namespace bbm {
-namespace {
-// What player_matrix.py sends; a desktop browser's user agent.
-constexpr const char *kUserAgent =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/140.0.0.0 Safari/537.36";
-}  // namespace
 
 bool InnerTube::post(std::string_view endpoint, std::string_view body_fields, JsonDoc &out,
                      std::string &err) {
@@ -25,7 +19,7 @@ bool InnerTube::post(std::string_view endpoint, std::string_view body_fields, Js
     req.method = "POST";
     req.url = "https://music.youtube.com/youtubei/v1/" + std::string(endpoint) + "?prettyPrint=false";
     req.headers = {{"Content-Type", "application/json"},
-                   {"User-Agent", kUserAgent},
+                   {"User-Agent", kWebUserAgent},
                    {"Origin", "https://music.youtube.com"},
                    {"X-YouTube-Client-Name", kClientNameId},
                    {"X-YouTube-Client-Version", kClientVersion}};

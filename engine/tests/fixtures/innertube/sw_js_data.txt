@@ -1,0 +1,2 @@
+)]}'
+[["yt.sw.adr",null,[[["it","IT",null,"192.0.2.1",null,null,null,null,null,null,null,"","","x","Mozilla/5.0,gzip(gfe)",67,"1.20261110.04.00",null,"",null,null,null,"x",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1,{"46":0,"62":[null,null,null,null,null,"x"],"103":"*/*","104":"x","108":"x"}],null,[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,false],null,[null,null,null,null,null,null,true],[null,"x"]],"x",null,null,"","x",null,null,null,"x"],"V5fc3c1a7||"]]

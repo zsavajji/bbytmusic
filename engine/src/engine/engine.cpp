@@ -7,6 +7,7 @@
 #include "engine/eq_sink.h"
 #include "engine/item_json.h"
 #include "engine/unplug_sink.h"
+#include "innertube/region.h"
 #include "store/history_store.h"
 #include "store/queue_store.h"
 #include "store/schema.h"
@@ -154,6 +155,10 @@ void Engine::restore() {
     if (!db_ok_) return;
     if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
+    if (std::string gl = get_setting(db_, "region", ""); valid_region(gl)) {   // before any command runs
+        yt_.set_language("en", gl);
+        region_known_ = true;
+    }
     const bool shuffle_saved = get_setting(db_, "shuffle", "off") == "on";
     {
         std::vector<std::string> cats;

@@ -6,6 +6,7 @@
 #include "engine/item_json.h"
 #include "innertube/browse.h"
 #include "innertube/next.h"
+#include "innertube/region.h"
 #include "innertube/search.h"
 #include "store/history_store.h"
 #include "store/settings.h"
@@ -59,12 +60,37 @@ bool parse_filter(Json v, SearchFilter &out) {
 
 bool Engine::yt_call(const std::function<bool(InnerTube &, std::string &)> &call, std::string &err) {
     std::lock_guard<std::mutex> lk(it_mu_);
+    if (!region_known_) detect_region();
     const bool r = call(yt_, err);
     if (!visitor_shared_ && !yt_.visitor_data().empty()) {
         set_visitor_data(yt_.visitor_data());
         visitor_shared_ = true;
     }
     return r;
+}
+
+void Engine::set_region(const std::string &gl) {
+    region_known_ = true;
+    yt_.set_language("en", gl);   // drops the visitor data too: the next call shares the new one with resolve()
+    visitor_shared_ = false;
+    post([this, gl] {   // the store is the worker's alone
+        std::string err;
+        if (db_ok_ && !set_setting(db_, "region", gl, err)) log_warn("store: " + err);
+    });
+}
+
+// First start, no country stored: ask YouTube which it sees. One try per process, so a slow or
+// failing answer costs one call; on failure "US" stays for this run and nothing is stored, so the
+// next start asks again.
+void Engine::detect_region() {
+    region_known_ = true;
+    std::string gl, err;
+    if (!fetch_region(yt_, gl, err)) {
+        log_warn("region: " + err + "; US for now");
+        return;
+    }
+    log_info("region: " + gl);
+    set_region(gl);
 }
 
 void Engine::add_commands() {
@@ -260,6 +286,15 @@ void Engine::add_commands() {
         std::string out = std::string("{\"preset\":\"") + presets[size_t(eq_.preset())].name + "\",\"presets\":[";
         for (size_t i = 0; i < presets.size(); i++) out += std::string(i ? ",\"" : "\"") + presets[i].name + "\"";
         return ok(out + "]}");
+    });
+    server_.on("region", [this](Json req) {
+        if (!req["gl"].is_null() && !valid_region(req["gl"].str())) return bad("gl: two uppercase letters, like IT");
+        std::lock_guard<std::mutex> lk(it_mu_);
+        if (!req["gl"].is_null()) {
+            set_region(req["gl"].string());
+            server_.emit("region", "\"gl\":" + json_quote(yt_.gl()));
+        }
+        return ok("{\"gl\":" + json_quote(yt_.gl()) + "}");
     });
     server_.on("skip", [this](Json req) { return skip_command(req); });
     server_.on("thumbs", [this](Json req) {

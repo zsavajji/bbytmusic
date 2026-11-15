@@ -275,6 +275,17 @@ int main() {
         CHECK_EQ(parse(c.cmd("eq", "\"preset\":\"rock\""), d)["result"]["preset"].string(), "rock");
         CHECK(c.wait_event([](Json e) { return is_ev(e, "mode") && e["eq"].str() == "rock" && e["repeat"].str() == "all" && e["shuffle"].is_bool(); }, 5000, mark) >= 0);
         CHECK_EQ(parse(c.cmd("status"), d)["result"]["eq"].string(), "rock");
+
+        // region: the bare form only reports (US until one is set); a gl is two capitals; it is kept.
+        CHECK_EQ(parse(c.cmd("region"), d)["result"]["gl"].string(), "US");
+        for (const char *gl : {"\"gl\":\"it\"", "\"gl\":\"ITA\"", "\"gl\":\"\"", "\"gl\":7"})
+            CHECK_EQ(parse(c.cmd("region", gl), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("region"), d)["result"]["gl"].string(), "US");   // unchanged
+        mark = c.events.size();
+        CHECK_EQ(parse(c.cmd("region", "\"gl\":\"DE\""), d)["result"]["gl"].string(), "DE");
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "region") && e["gl"].str() == "DE"; }, 5000, mark) >= 0);
+        CHECK_EQ(parse(c.cmd("region"), d)["result"]["gl"].string(), "DE");
+
         // the tone plays through the equalizer
         mark = c.events.size();
         CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 1000; }, 5000, mark) >= 0);
@@ -340,6 +351,8 @@ int main() {
         CHECK_EQ(s["track"]["title"].string(), "Tone B");
         CHECK_EQ(s["repeat"].string(), "all");   // kept across the restart
         CHECK_EQ(s["eq"].string(), "rock");
+        JsonDoc rd;   // d holds s
+        CHECK_EQ(parse(c.cmd("region"), rd)["result"]["gl"].string(), "DE");   // kept across the restart
         CHECK(s["position_ms"].i64() >= 2000);
         Json q = parse(c.cmd("queue"), d)["result"];
         CHECK_EQ(ids(q["items"]), saved_order);   // not shuffled again

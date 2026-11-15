@@ -3,6 +3,7 @@
 
 #include "check.h"
 #include "innertube/next.h"
+#include "innertube/region.h"
 #include "innertube/search.h"
 
 using namespace bbm;
@@ -71,5 +72,12 @@ int main() {
     CHECK(watch_queue_more(yt, qp.continuation, qp2, err));
     std::printf("queue continuation: %zu items\n", qp2.items.size());
     CHECK(qp2.items.size() > 10);
+
+    std::string gl;
+    const bool rok = fetch_region(yt, gl, err);
+    if (!rok) std::fprintf(stderr, "region: %s\n", err.c_str());
+    CHECK(rok);
+    std::printf("region: %s\n", gl.c_str());
+    CHECK(valid_region(gl));
     return check_done();
 }
