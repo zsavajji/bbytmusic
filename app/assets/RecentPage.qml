@@ -10,6 +10,7 @@ Page {
     property variant tracks: []
     property string historyReq: ""
     property bool asked: false
+    property bool failed: false
 
     function art(url) {
         var f = url ? thumbs.file(url, 120) : "";
@@ -21,6 +22,7 @@ Page {
             historyReq = engine.request("history", {
                 "limit": 100
             });
+            failed = historyReq == "";
         }
     }
 
@@ -66,6 +68,7 @@ Page {
     function onReply(id, ok, result, code, message) {
         if (id != "" && id == page.historyReq) {
             page.historyReq = "";
+            page.failed = ! ok;      // main.qml shows why
             if (ok) {
                 page.fill(result);
             }
@@ -73,7 +76,7 @@ Page {
     }
 
     // The list is read when the page is made, not at every track: it would jump back to its top
-    // under a finger. And once the engine is back after a drop.
+    // under a finger. And once the engine is back after a drop, which also retries a failed read.
     function onEvent(name, fields) {
         if (name == "status") {
             page.refresh();
@@ -114,9 +117,7 @@ Page {
         engine.reply.connect(page.onReply);
         engine.event.connect(page.onEvent);
         thumbs.ready.connect(page.onThumb);
-        if (engine.connected) {
-            page.refresh();
-        }
+        page.refresh();
     }
 
     // Letter shortcuts are safe here: no text field on this page.
@@ -150,11 +151,28 @@ Page {
         Label {
             text: "Nothing yet. What you listen to shows up here."
             multiline: true
-            visible: page.asked && page.tracks.length == 0
+            visible: page.asked && page.tracks.length == 0 && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
+        }
+        Container {
+            visible: page.failed
+            horizontalAlignment: HorizontalAlignment.Center
+            topPadding: ui.du(6)
+            Label {
+                text: "This page could not be loaded."
+                horizontalAlignment: HorizontalAlignment.Center
+            }
+            Button {
+                text: "Retry"
+                horizontalAlignment: HorizontalAlignment.Center
+                onClicked: {
+                    page.refresh();
+                }
+            }
         }
         ListView {
             id: list
+            visible: ! page.failed
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 1
             }

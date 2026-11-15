@@ -14,6 +14,7 @@ Page {
     property string lastSet: ""        // the text we put in the field ourselves: not a keystroke
     property bool busy: false
     property bool noResults: false
+    property bool failed: false
     property bool showSuggestions: false
     // The ids of the requests whose answers this page wants.
     property string searchId: ""
@@ -149,6 +150,7 @@ Page {
             "filter": filter.selectedValue
         });
         busy = searchId != "";
+        failed = ! busy;
         if (! busy) {
             notice.body = "The engine is not connected.";
             notice.show();
@@ -196,11 +198,15 @@ Page {
         } else if (id == searchId) {
             searchId = "";
             busy = false;
+            failed = ! ok;      // main.qml shows why
             if (ok) {
                 resultModel.clear();
                 lastHeader = "";
                 addSections(result);
                 noResults = resultModel.size() == 0;
+            } else {
+                // Not the last query's rows again while the retry runs.
+                resultModel.clear();
             }
         } else if (id == moreId) {
             moreId = "";
@@ -216,8 +222,16 @@ Page {
         }
     }
 
+    // The engine is back: repeat a search that failed. (This page stays for the life of the app.)
+    function onLink() {
+        if (engine.connected && page.failed) {
+            page.runSearch(page.query);
+        }
+    }
+
     onCreationCompleted: {
         engine.reply.connect(page.handleReply);
+        engine.connectedChanged.connect(page.onLink);
         thumbs.ready.connect(page.onThumb);
         page.focusField();
     }
@@ -282,8 +296,24 @@ Page {
         }
         Label {
             text: "No results."
-            visible: page.noResults && ! page.busy && ! page.showSuggestions
+            visible: page.noResults && ! page.busy && ! page.showSuggestions && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
+        }
+        Container {
+            visible: page.failed && ! page.showSuggestions
+            horizontalAlignment: HorizontalAlignment.Center
+            topPadding: ui.du(6)
+            Label {
+                text: "The search could not be done."
+                horizontalAlignment: HorizontalAlignment.Center
+            }
+            Button {
+                text: "Retry"
+                horizontalAlignment: HorizontalAlignment.Center
+                onClicked: {
+                    page.runSearch(page.query);
+                }
+            }
         }
 
         ListView {
@@ -310,7 +340,7 @@ Page {
 
         ListView {
             id: resultList
-            visible: ! page.showSuggestions
+            visible: ! page.showSuggestions && ! page.failed
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 1
             }
