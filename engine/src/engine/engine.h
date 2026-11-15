@@ -141,7 +141,7 @@ private:
     // What the overlay was last sent of the track: sent again when the Next button, the duration or the cover differ.
     bool np_sent_next_ = false;
     int64_t np_sent_ms_ = 0;
-    std::string np_sent_art_;
+    std::string np_sent_art_, np_sent_line_;   // the cover; the artist line ("Title – Artist" off Bluetooth)
     std::atomic<bool> np_revoked_{false};
     std::chrono::steady_clock::time_point idle_since_;
     bool idle_ = false;

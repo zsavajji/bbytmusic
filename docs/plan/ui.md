@@ -206,6 +206,12 @@ settings are ok." Their answers to what was still theirs to confirm:
   length (`duration: 0`) were known. Since 0.1.0.34 the cover is copied to
   `/accounts/1000/shared/misc/.bbmusic/` (`access_shared`, a new permission the phone may ask
   for) and the metadata goes again when Next, the length or the cover change.
+- **The overlay shows the cover and the artist line, never the title** (the user, on 0.1.0.34;
+  the service did get `title`): since 0.1.0.36 the artist line is "Title – Artist" on the
+  speaker and headphones, and the plain fields over Bluetooth, where the same metadata reaches
+  the car (AVRCP; the user asked whether the car would show it right). The route is read when
+  the metadata is made (`bluetooth_route()`, audio_manager's default device); a route change
+  shows from the next state or queue update. Untried in a car.
 
 ## Build, install, look
 

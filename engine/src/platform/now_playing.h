@@ -47,4 +47,8 @@ private:
     std::thread reader_;
 };
 
+// Whether the sound goes out over Bluetooth (A2DP): there the same metadata reaches the car or the
+// speaker (AVRCP), which shows the title itself. False off BB10.
+bool bluetooth_route();
+
 }  // namespace bbm

@@ -4,6 +4,8 @@
 #include "util/log.h"
 
 #ifdef __QNX__
+#include <audio/audio_manager_device.h>
+#include <audio/audio_manager_routing.h>
 #include <fcntl.h>
 #include <poll.h>
 #include <unistd.h>
@@ -106,7 +108,14 @@ void NowPlaying::stop() {
     if (fd_ >= 0) { ::close(fd_); fd_ = -1; }
 }
 
+bool bluetooth_route() {
+    audio_manager_device_t d = AUDIO_DEVICE_DEFAULT;
+    return audio_manager_get_default_device(&d) == 0 && d == AUDIO_DEVICE_A2DP;
+}
+
 #else  // the host: nothing to talk to
+
+bool bluetooth_route() { return false; }
 
 bool NowPlaying::send(const std::function<std::string(int)> &, std::string &err) { err = "not on this platform"; return false; }
 bool NowPlaying::start(const std::string &, std::function<void(const std::string &)>, std::string &err) { err = "not on this platform"; return false; }

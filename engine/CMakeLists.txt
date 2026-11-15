@@ -106,7 +106,7 @@ foreach(m ${BBM_MODULES})
   elseif(m STREQUAL "audio" AND BBM_BB10)
     target_link_libraries(audio ${vis} -lasound -laudio_manager)   # qsa_sink; neither exports an unwinder
   elseif(m STREQUAL "platform" AND BBM_BB10)
-    target_link_libraries(platform ${vis} -lbps)
+    target_link_libraries(platform ${vis} -lbps -laudio_manager)   # bluetooth_route()
   elseif(m STREQUAL "store" AND BBM_BB10)
     target_link_libraries(store ${vis} -lsqlite3)
   elseif(m STREQUAL "store")

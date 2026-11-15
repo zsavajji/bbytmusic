@@ -141,12 +141,21 @@ void Engine::np_update(const PlayerStatus &s, bool send_meta) {
     // The overlay is /usr/sbin/nowplaying (uid 393, group 1000_shared): it cannot read our sandbox,
     // so it gets a copy in the shared folder (np_art_dir), or no cover if that fails.
     const std::string art = np_art_.copy(have.empty() ? "" : have.begin()->second);
-    if (send_meta || has_next != np_sent_next_ || s.duration_ms != np_sent_ms_ || art != np_sent_art_) {
+    // The Q20's overlay shows the cover and the artist line, not the title (the user, 2026-11-15,
+    // with `title` in the message): there the artist line carries "Title – Artist", title first so a
+    // cut keeps it. Over Bluetooth the same fields reach the car (AVRCP), which shows the title on
+    // its own: plain fields then. A route change shows from the next update (state, queue).
+    const std::string line = bluetooth_route() || np_item_.title.empty() ? np_item_.artist
+                             : np_item_.artist.empty()                     ? np_item_.title
+                                                                           : np_item_.title + " \u2013 " + np_item_.artist;
+    if (send_meta || has_next != np_sent_next_ || s.duration_ms != np_sent_ms_ || art != np_sent_art_ ||
+        line != np_sent_line_) {
         np_sent_next_ = has_next;
         np_sent_ms_ = s.duration_ms;
         np_sent_art_ = art;
+        np_sent_line_ = line;
         if (!art.empty()) log_info("now-playing: art " + art);
-        np_.set_metadata(np_item_.title, np_item_.artist, np_item_.album, s.duration_ms, s.position_ms, has_next, true, art);
+        np_.set_metadata(np_item_.title, line, np_item_.album, s.duration_ms, s.position_ms, has_next, true, art);
     }
     np_.set_state(playing ? NowPlaying::State::Playing
                           : s.state == PlayState::Paused ? NowPlaying::State::Paused : NowPlaying::State::Stopped);
