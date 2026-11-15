@@ -93,7 +93,10 @@ void Engine::on_event(const PlayerEvent &e) {
     }
     case PlayerEvent::Queue:
         server_.emit("queue", "\"len\":" + std::to_string(player_->queue().size()) + ",\"index\":" + std::to_string(s.index));
-        post([this] { save_queue(); });
+        post([this, s] {
+            save_queue();
+            np_update(s, false);   // Next may have come or gone
+        });
         break;
     case PlayerEvent::QueueLow:
         radio_more();
@@ -128,16 +131,21 @@ void Engine::np_update(const PlayerStatus &s, bool send_meta) {
         np_revoked_ = false;
         send_meta = true;
     }
-    if (send_meta) {
-        const bool has_next = s.index >= 0 && size_t(s.index) + 1 < player_->queue().size();
-        // The cover is the file Now Playing shows; if it is not cached yet the fetch is queued and
-        // np_art() sends the metadata again when it lands.
-        const auto have = thumbs_->request({np_item_.thumb}, kArtSize);
-        const std::string art = have.empty() ? "" : have.begin()->second;
+    // The metadata goes with a track change, and again when what the overlay shows of it has
+    // changed since: a radio's pages are appended after the track event (Next), and the duration
+    // is known when the stream opens.
+    const bool has_next = s.index >= 0 && size_t(s.index) + 1 < player_->queue().size();
+    // The cover is the file Now Playing shows; if it is not cached yet the fetch is queued and
+    // np_art() sends the metadata again when it lands.
+    const auto have = thumbs_->request({np_item_.thumb}, kArtSize);
+    // The overlay is /usr/sbin/nowplaying (uid 393, group 1000_shared): it cannot read our sandbox,
+    // so it gets a copy in the shared folder (np_art_dir), or no cover if that fails.
+    const std::string art = np_art_.copy(have.empty() ? "" : have.begin()->second);
+    if (send_meta || has_next != np_sent_next_ || s.duration_ms != np_sent_ms_ || art != np_sent_art_) {
+        np_sent_next_ = has_next;
+        np_sent_ms_ = s.duration_ms;
+        np_sent_art_ = art;
         if (!art.empty()) log_info("now-playing: art " + art);
-        // ponytail: the overlay is another process (/usr/sbin/nowplaying) and may not read a file
-        // in our sandbox (<data_dir>/thumbs); if the phone shows no art, copy it to a world-readable
-        // place (the shared folder) and pass that.
         np_.set_metadata(np_item_.title, np_item_.artist, np_item_.album, s.duration_ms, s.position_ms, has_next, true, art);
     }
     np_.set_state(playing ? NowPlaying::State::Playing

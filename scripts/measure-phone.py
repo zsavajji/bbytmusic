@@ -37,21 +37,22 @@ def size_kb(s):   # pidin's "76K", "1260K", "8192", "2M"
 
 
 def processes():
-    out = {}
-    for line in ssh('pidin -F "%a %N" ar').splitlines():
-        parts = line.split()
-        if len(parts) == 2 and parts[0].isdigit() and parts[1].split("/")[-1] in ("bbmusic", "bbmusicd"):
-            out[parts[1].split("/")[-1]] = int(parts[0])
+    # Both are listed under the app's id; the executable in each one's memory map says which.
+    pids = [int(l.split()[0]) for l in ssh('pidin -F "%a %N" ar').splitlines()
+            if "com.zsavajji.bbmusic" in l and l.split()[0].isdigit()]
     snap = {}
-    for name, pid in out.items():
+    for pid in pids:
+        mem = ssh(f"pidin -p {pid} mem").splitlines()
+        names = [l.split()[0] for l in mem[1:] if l.split() and l.split()[0] in ("bbmusic", "bbmusicd")]
+        if not names:
+            continue
         times = ssh(f"pidin -p {pid} times").splitlines()
         cols = times[-1].split() if len(times) > 1 else []
         cpu = float(cols[-4]) + float(cols[-3]) if len(cols) >= 4 else 0.0
         # The first thread's row carries the process's code and data sizes.
-        mem = ssh(f"pidin -p {pid} mem").splitlines()
         row = mem[1].split() if len(mem) > 1 else []
         data = size_kb(row[6]) if len(row) > 6 else 0
-        snap[name] = {"pid": pid, "cpu_s": cpu, "data_kb": data}
+        snap[names[0]] = {"pid": pid, "cpu_s": cpu, "data_kb": data}
     return snap
 
 

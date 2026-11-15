@@ -60,6 +60,7 @@ bool Engine::start(std::string &err) {
                                   json_quote(file));
         if (size == kArtSize) post([this, url] { np_art(url); });
     });
+    np_art_.clean();
     player_->set_listener([this](const PlayerEvent &e) { on_event(e); });
     restore();
     add_commands();

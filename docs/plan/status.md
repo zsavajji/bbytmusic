@@ -22,6 +22,11 @@ through libasound, a radio queue, `queue_clear`, `queue_shuffle`, `queue_sort`, 
 controls. [ui.md](ui.md) has what they decided, what is still theirs to confirm and what nobody
 has looked at yet.
 
+**The test phone is a Q20 (BlackBerry Classic)** since 2026-11-15 (the user: "it's Q20 now"):
+720 × 720 like the Q10, so the layouts measured on the Q10 hold; it adds a trackpad and the
+call, menu, back and end keys. `ssh bb10rootx` (USB) and `scripts/install-phone.sh` reach it.
+Older notes say Q10.
+
 ## Where everything is
 
 | What | Where |
@@ -55,8 +60,8 @@ nothing is pushed. One commit per step, with what was run and what was not in th
 ## Next
 
 1. Done 2026-11-15: the user's look at the new UI; every page fine (ui.md, "second look").
-2. Phase 2's remaining steps: artwork in the system's overlay (2.9) and the Active Frame (2.10)
-   are built and unseen (0.1.0.29); loading and error states (2.11), measurements (2.12).
+2. Phase 2: the overlay's cover and Next (2.9) fixed in 0.1.0.34, unseen; the Active Frame
+   (2.10) unseen; 2.11 done; 2.12 measured but for the battery (ui.md, the step table).
 3. Phase 3's rest: charts and moods (3.4), opening links from other apps (3.6), language (3.7;
    the item parser reads English labels; the country is done, 0.1.0.32),
    "more" of an artist's shelf. Each needs the engine first.

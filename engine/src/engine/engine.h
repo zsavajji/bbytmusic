@@ -24,6 +24,7 @@
 #include "innertube/client.h"
 #include "innertube/items.h"
 #include "platform/now_playing.h"
+#include "engine/np_art.h"
 #include "engine/sponsor.h"
 #include "engine/thumbs.h"
 #include "net/http.h"
@@ -41,6 +42,10 @@ struct EngineOptions {
     SourceFactory sources;                  // empty: resolve() + make_source() behind the cache
     int64_t cache_bytes = int64_t(256) << 20;
     int64_t idle_exit_ms = 10 * 60 * 1000;  // nothing playing and no client this long: exit
+    // Where the now-playing overlay's cover is copied (it cannot read data_dir): a dot-folder in the
+    // shared storage, which its group (1000_shared) reads and the Pictures app does not list. Needs
+    // the access_shared permission; where it is not there (the host) no cover is sent.
+    std::string np_art_dir = "/accounts/1000/shared/misc/.bbmusic";
     // SponsorBlock's segments of a video, on the worker thread; empty: fetch_segments() on the engine's Http.
     std::function<bool(const std::string &video_id, const std::vector<std::string> &categories,
                        std::vector<SkipSegment> &out, std::string &err)> segments;
@@ -132,6 +137,11 @@ private:
     NowPlaying np_;
     bool np_started_ = false, np_failed_ = false;
     Item np_item_;
+    NpArt np_art_{opt_.np_art_dir};
+    // What the overlay was last sent of the track: sent again when the Next button, the duration or the cover differ.
+    bool np_sent_next_ = false;
+    int64_t np_sent_ms_ = 0;
+    std::string np_sent_art_;
     std::atomic<bool> np_revoked_{false};
     std::chrono::steady_clock::time_point idle_since_;
     bool idle_ = false;

@@ -1,7 +1,7 @@
 import bb.cascades 1.4
 
-// The strip at the bottom of a page: whether it plays, the title on one line, the time elapsed
-// and the track's length at the far end, and a line that shows how far the track is. A tap opens Now Playing on navPane, where every control is (the
+// The strip at the bottom of a page: the title on one line, the time elapsed and the track's
+// length at the far end, over a fill that grows from the left as the track plays. A tap opens Now Playing on navPane, where every control is (the
 // user, 2026-11-14: "reduced to a strip with just the title to reserve more space"). Hidden when
 // nothing is loaded.
 Container {
@@ -23,21 +23,24 @@ Container {
         }
     }
 
+    // How far the track is: the strip fills from the left, a slight red while playing, a lighter
+    // grey while paused, so its colour is the state too (the user, 2026-11-15: no icon that reads as
+    // a button; "make it fill as the progress goes").
+    Container {
+        horizontalAlignment: HorizontalAlignment.Left
+        verticalAlignment: VerticalAlignment.Fill
+        implicitLayoutAnimationsEnabled: false      // it changes four times a second
+        preferredWidth: player.durationMs > 0 ? mini.stripWidth * Math.min(1, player.positionMs / player.durationMs) : 0
+        background: player.playing ? Color.create("#5c2424") : Color.create("#3a3a3a")
+    }
+
     Container {
         horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Center
-        leftPadding: ui.du(1)
+        leftPadding: ui.du(2)
         rightPadding: ui.du(2)
         layout: StackLayout {
             orientation: LayoutOrientation.LeftToRight
-        }
-        // Not a button: it says what the player is doing.
-        ImageView {
-            imageSource: player.playing ? "asset:///images/ic_play.png" : "asset:///images/ic_pause.png"
-            preferredWidth: ui.du(4)
-            preferredHeight: ui.du(4)
-            verticalAlignment: VerticalAlignment.Center
-            loadEffect: ImageViewLoadEffect.None
         }
         Label {
             text: player.title
@@ -57,16 +60,6 @@ Container {
             textStyle.color: Color.create("#969696")
         }
     }
-    // How far the track is: YouTube's red line along the top edge.
-    Container {
-        horizontalAlignment: HorizontalAlignment.Left
-        verticalAlignment: VerticalAlignment.Top
-        preferredHeight: ui.px(4)
-        implicitLayoutAnimationsEnabled: false      // it changes four times a second
-        preferredWidth: player.durationMs > 0 ? mini.stripWidth * player.positionMs / player.durationMs : 0
-        background: Color.create("#ff0000")
-    }
-
     gestureHandlers: TapHandler {
         onTapped: {
             mini.open();

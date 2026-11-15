@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.32, 2026-11-15)
+## What exists (0.1.0.34, 2026-11-15)
 
 ```
 app/
@@ -194,7 +194,18 @@ settings are ok." Their answers to what was still theirs to confirm:
   Repeat One (Next moves on); the equalizer as ten presets "for now" (to be expanded later);
   SponsorBlock's Settings, off by default.
 - **The Active Frame** (2.10): the album art, title and artist; an elapsed / total counter if
-  there is room.
+  there is room. Then: "the image as background in cover, with the text overlaid onto it, with a
+  black opacity layer".
+- **The strip has no play/pause icon** ("it seems an action"): since 0.1.0.34 the strip itself
+  is the progress: dark grey, filled from the left in a slight red while playing, a lighter grey
+  while paused ("make it fill as the progress goes", "fill it from grey to red"). The thin red
+  line along its top is gone.
+- **The volume overlay** showed no cover and no Next button: the overlay service
+  (`/usr/sbin/nowplaying`, uid 393, group 1000_shared) cannot read the app's sandbox, and the
+  metadata went once per track, before the radio's pages (`nextEnabled: false`) and the stream's
+  length (`duration: 0`) were known. Since 0.1.0.34 the cover is copied to
+  `/accounts/1000/shared/misc/.bbmusic/` (`access_shared`, a new permission the phone may ask
+  for) and the metadata goes again when Next, the length or the cover change.
 
 ## Build, install, look
 
@@ -307,7 +318,7 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 | 2.9 Overlay | nothing in the UI | there; **since 0.1.0.29 the engine sends the cover** (`albumArtwork`, the 544 px file in `<data_dir>/thumbs`; `now-playing: art` in the log). Unseen: the overlay may not read our sandbox; then copy it to the shared folder |
 | 2.10 Active Frame | **built, unseen (0.1.0.29):** `AppCover.qml`, the art (Now Playing's 544 px file) filling the card, title, artist and elapsed / total on a 60% black band at its foot (the user: "the image as background ... with a black opacity layer") | none |
 | 2.11 Resume and errors | **since 0.1.0.30** every page that loads has a failed state with Retry and retries when the engine is back (Search and Recent were the last); errors are toasts (main.qml) | events are there |
-| 2.12 Measure | — | memory, CPU, battery per hour, tap-to-sound |
+| 2.12 Measure | — | **2026-11-15, 0.1.0.32 on the Q20** (`scripts/measure-phone.py`): 9 min of playback, plugged in: engine 7.7 % of a core, UI 6.0 %; data 2.4 MB (engine), 86 MB (UI, mostly Cascades/Qt). Tap to sound (UI's `play` to the engine's `state playing`): 0.69-1.41 s for a track not cached (seven taps), 77 ms cached. **Battery not measured**: the phone stayed on USB (ssh runs over it); needs an unplugged run with a sampler of `/pps/system/BattMgr/status` (`AverageCurrent`; read it with `cat`, the phone's grep cannot) |
 | 3.1 Home | **built, unseen:** a tab of shelves (`ShelfPage`), More | there (`browse` of `FEmusic_home`, `browse_more`); the mood chips are not read |
 | 3.2 Album, playlist | **built, unseen:** one page for both; a long playlist page by page | there (`browse`, `browse_more`) |
 | 3.3 Artist | **built, unseen:** `ShelfPage`; opens from Search, an album, Now Playing | there (`browse` of `UC…`); "more" of a shelf (all albums, all songs) is missing |
