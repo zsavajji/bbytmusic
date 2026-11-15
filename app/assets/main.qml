@@ -103,6 +103,11 @@ TabbedPane {
     }
 
     onCreationCompleted: {
+        // The card shown while the app is minimised, made once. A fault in it costs the card, not the app.
+        var card = coverDef.createObject();
+        if (card) {
+            Application.cover = card;
+        }
         // Every failed command and every track that could not be played: one toast, here.
         engine.reply.connect(function (id, ok, result, code, message) {
             // Not for a dropped link: the bar at the top of each page says that.
@@ -133,6 +138,10 @@ TabbedPane {
         ComponentDefinition {
             id: settingsSheet
             source: "SettingsSheet.qml"
+        },
+        ComponentDefinition {
+            id: coverDef
+            source: "AppCover.qml"
         },
         SystemDialog {
             id: about

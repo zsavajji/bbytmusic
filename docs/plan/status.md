@@ -13,7 +13,8 @@ equalizer, Settings for SponsorBlock). It started, every page compiled on the ph
 asked for three changes (shuffle as a toggle, the time clear of the grip in Edit Order, a
 taller strip), which are in 0.1.0.25. On 2026-11-15 they found every page fine on
 0.1.0.25/26 and answered the open questions; 0.1.0.27 (sort only what is to come, Start Radio
-that lets the song play on) is installed and not yet seen. Under it the engine,
+that lets the song play on) and 0.1.0.28 (the
+Active Frame, 2.10) are installed and not yet seen. Under it the engine,
 `bbmusicd`: search, `browse` (album, playlist, artist, feeds), `browse_more`, `history`, the
 thumbnail cache, resolve through the `VISIONOS` client, DASH ranges (SABR as the fallback), Opus
 through libasound, a radio queue, `queue_clear`, `queue_shuffle`, `queue_sort`, `repeat`,

@@ -25,7 +25,7 @@ provide screenshots".
   `/accounts/1000/shared/camera/IMG_*.png`; copy them into `debug/` (git-ignored) and never
   commit them. The ones the design below was measured from are in `debug/shots/`.
 
-## What exists (0.1.0.27, 2026-11-15)
+## What exists (0.1.0.28, 2026-11-15)
 
 ```
 app/
@@ -305,7 +305,7 @@ engine (`engine/src/engine/commands.cpp`), then the UI.
 | 2.6 Now Playing | **built, unseen:** the stock layout, icons, Properties | there (`repeat`, `queue_shuffle`, `Item.plays`, `Item.year`) |
 | 2.8 Queue | **built, unseen:** rearrange mode, Shuffle, Sort, Clear | there (`queue_move`, `queue_shuffle`, `queue_sort`, `queue_clear`) |
 | 2.9 Overlay | nothing in the UI | there; artwork in the overlay untried (`albumArtwork`, a `file://` path) |
-| 2.10 Active Frame | a cover with title and state, updated only while thumbnailed | none |
+| 2.10 Active Frame | **built, unseen (0.1.0.28):** `AppCover.qml`, the art (Now Playing's 544 px file), title, artist, elapsed / total; art left on a wide card (Q10 310x211), on top on a tall one | none |
 | 2.11 Resume and errors | what the pages show while loading, with no network, for an unplayable track | events are there; check the wording of `error` messages |
 | 2.12 Measure | — | memory, CPU, battery per hour, tap-to-sound |
 | 3.1 Home | **built, unseen:** a tab of shelves (`ShelfPage`), More | there (`browse` of `FEmusic_home`, `browse_more`); the mood chips are not read |
