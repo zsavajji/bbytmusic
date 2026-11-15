@@ -13,8 +13,8 @@ equalizer, Settings for SponsorBlock). It started, every page compiled on the ph
 asked for three changes (shuffle as a toggle, the time clear of the grip in Edit Order, a
 taller strip), which are in 0.1.0.25. On 2026-11-15 they found every page fine on
 0.1.0.25/26 and answered the open questions; 0.1.0.27 (sort only what is to come, Start Radio
-that lets the song play on) and 0.1.0.28 (the
-Active Frame, 2.10) are installed and not yet seen. Under it the engine,
+that lets the song play on) and 0.1.0.29 (the
+Active Frame, 2.10; the cover in the overlay, 2.9) are installed and not yet seen. Under it the engine,
 `bbmusicd`: search, `browse` (album, playlist, artist, feeds), `browse_more`, `history`, the
 thumbnail cache, resolve through the `VISIONOS` client, DASH ranges (SABR as the fallback), Opus
 through libasound, a radio queue, `queue_clear`, `queue_shuffle`, `queue_sort`, `repeat`,
@@ -55,8 +55,8 @@ nothing is pushed. One commit per step, with what was run and what was not in th
 ## Next
 
 1. Done 2026-11-15: the user's look at the new UI; every page fine (ui.md, "second look").
-2. Phase 2's remaining steps: artwork in the system's overlay (2.9, `albumArtwork`), the Active
-   Frame (2.10), loading and error states (2.11), measurements (2.12).
+2. Phase 2's remaining steps: artwork in the system's overlay (2.9) and the Active Frame (2.10)
+   are built and unseen (0.1.0.29); loading and error states (2.11), measurements (2.12).
 3. Phase 3's rest: charts and moods (3.4), opening links from other apps (3.6), region and
    language (3.7; the item parser reads English labels, so a language needs work there first),
    "more" of an artist's shelf. Each needs the engine first.

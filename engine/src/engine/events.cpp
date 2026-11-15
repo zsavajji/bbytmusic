@@ -130,10 +130,25 @@ void Engine::np_update(const PlayerStatus &s, bool send_meta) {
     }
     if (send_meta) {
         const bool has_next = s.index >= 0 && size_t(s.index) + 1 < player_->queue().size();
-        np_.set_metadata(np_item_.title, np_item_.artist, np_item_.album, s.duration_ms, s.position_ms, has_next, true);
+        // The cover is the file Now Playing shows; if it is not cached yet the fetch is queued and
+        // np_art() sends the metadata again when it lands.
+        const auto have = thumbs_->request({np_item_.thumb}, kArtSize);
+        const std::string art = have.empty() ? "" : have.begin()->second;
+        if (!art.empty()) log_info("now-playing: art " + art);
+        // ponytail: the overlay is another process (/usr/sbin/nowplaying) and may not read a file
+        // in our sandbox (<data_dir>/thumbs); if the phone shows no art, copy it to a world-readable
+        // place (the shared folder) and pass that.
+        np_.set_metadata(np_item_.title, np_item_.artist, np_item_.album, s.duration_ms, s.position_ms, has_next, true, art);
     }
     np_.set_state(playing ? NowPlaying::State::Playing
                           : s.state == PlayState::Paused ? NowPlaying::State::Paused : NowPlaying::State::Stopped);
+}
+
+// The worker, when a cover at kArtSize has been fetched: if it is the playing song's, send the
+// metadata again with it.
+void Engine::np_art(const std::string &url) {
+    if (closing_ || !np_started_ || np_revoked_ || url != np_item_.thumb) return;
+    np_update(player_->status(), true);
 }
 
 // The overlay's buttons, on NowPlaying's reader thread.

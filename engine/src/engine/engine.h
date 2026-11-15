@@ -77,6 +77,7 @@ private:
     void on_event(const PlayerEvent &e);
     void on_np_command(const std::string &c);
     void np_update(const PlayerStatus &s, bool send_meta);       // worker
+    void np_art(const std::string &url);                         // worker
     void history_end();                                          // mu_ held
     void radio_first(const std::string &id, uint64_t gen);       // not under mu_
     void radio_more();
@@ -95,6 +96,8 @@ private:
     void save_queue();                                           // worker
     void save_state(const PlayerStatus &s);                      // worker
     Item item_for(const Track &t);                               // mu_ held
+
+    static constexpr int kArtSize = 544;   // the cover now-playing asks for: the file Now Playing shows
 
     EngineOptions opt_;
     Server server_;
@@ -137,7 +140,7 @@ private:
     std::atomic<bool> closing_{false};
 
     Equalizer eq_;                     // the player's thread uses it through the sink
-    std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_
+    std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_ and posts to the worker
     std::unique_ptr<Player> player_;   // last: its threads call into everything above
 };
 

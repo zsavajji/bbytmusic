@@ -33,13 +33,13 @@ Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/c
 Engine::~Engine() {
     closing_ = true;
     stop();
-    thumbs_.reset();   // after the connections are gone; joins its fetch thread, whose ready() emits
     {
         std::lock_guard<std::mutex> lk(wq_mu_);
         worker_quit_ = true;
     }
     wq_cv_.notify_all();
     if (worker_.joinable()) worker_.join();
+    thumbs_.reset();   // after the worker, which asks it for covers; joins its fetch thread, whose ready() emits and posts
     player_->set_listener(nullptr);
     np_.stop();        // its reader thread calls the player
     player_.reset();   // joins the player's threads, and with them a listener call in flight
@@ -54,9 +54,10 @@ bool Engine::start(std::string &err) {
         db_ok_ = true;
     }
     thumbs_ = std::make_unique<Thumbs>(opt_.data_dir + "/thumbs", [this](const std::string &url, int size, const std::string &file) {
-        if (!closing_)
-            server_.emit("thumb", "\"url\":" + json_quote(url) + ",\"size\":" + std::to_string(size) + ",\"file\":" +
-                                      json_quote(file));
+        if (closing_) return;
+        server_.emit("thumb", "\"url\":" + json_quote(url) + ",\"size\":" + std::to_string(size) + ",\"file\":" +
+                                  json_quote(file));
+        if (size == kArtSize) post([this, url] { np_art(url); });
     });
     player_->set_listener([this](const PlayerEvent &e) { on_event(e); });
     restore();
