@@ -212,6 +212,13 @@ settings are ok." Their answers to what was still theirs to confirm:
   the car (AVRCP; the user asked whether the car would show it right). The route is read when
   the metadata is made (`bluetooth_route()`, audio_manager's default device); a route change
   shows from the next state or queue update. Untried in a car.
+- **Podcasts** ("please add a podcasts category"): since 0.1.0.37 a third row on Home opens the
+  Podcasts chip (`FEmusic_home` with its `params`; YouTube Music has no podcasts browse id) as
+  shelves of episodes by genre. An episode (kind `episode`, its show in `artist`/`album_id`)
+  plays alone, never with a radio; View Podcast opens the show (`MPSP…`) in AlbumPage. Known
+  gap: a restored episode comes back as a song (Start Radio is then offered).
+- **Search's segments become All, Songs, Artists, Podcasts** ("remove albums, put podcasts at
+  the end"): albums show under All.
 
 ## Build, install, look
 

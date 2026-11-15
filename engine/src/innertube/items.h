@@ -9,7 +9,7 @@
 namespace bbm {
 
 struct Item {
-    std::string kind;        // "song" "video" "album" "artist" "playlist" "station"
+    std::string kind;        // "song" "video" "episode" "album" "artist" "playlist" "station"
     std::string id;          // videoId, or a browse id for the other kinds
     std::string title, subtitle, thumb;   // subtitle: "Artist • Album" as YouTube gives it
     std::string artist, album, artist_id, album_id, playlist_id, params;
@@ -20,9 +20,10 @@ struct Item {
 // `renderer_parent` is the object that holds the renderer under its own name, e.g. an element of
 // a shelf's "contents": {"musicResponsiveListItemRenderer": {...}}. Understands
 // musicResponsiveListItemRenderer, musicTwoRowItemRenderer, playlistPanelVideoRenderer (also
-// inside playlistPanelVideoWrapperRenderer) and musicCardShelfRenderer (its top result).
-// Returns false, leaving `out` untouched, for anything else, and for what has no kind or no id
-// (podcast episodes, headers, messages).
+// inside playlistPanelVideoWrapperRenderer), musicCardShelfRenderer (its top result) and
+// musicMultiRowListItemRenderer (a podcast episode: kind "episode", its show as `artist` and
+// `album_id`). Returns false, leaving `out` untouched, for anything else, and for what has no kind
+// or no id (podcast episodes in the other renderers, headers, messages).
 bool parse_item(Json renderer_parent, Item &out);
 
 // {"kind":"song","id":"...",...}: every field, strings through json_quote, duration_s as a

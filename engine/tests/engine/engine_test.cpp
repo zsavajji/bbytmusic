@@ -143,6 +143,14 @@ int main() {
         CHECK_EQ(parse(c.cmd("jump", "\"index\":0"), d)["error"]["code"].string(), "not_found");
         CHECK_EQ(parse(c.cmd("radio"), d)["error"]["code"].string(), "not_found");   // no current track
 
+        // An episode can be queued, and comes back as it went in (kind, show and its page).
+        CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"episode\",\"id\":\"e1\",\"title\":\"Ep 1\",\"artist\":\"A Show\",\"album_id\":\"MPSPPL1\"}]"), d)["ok"].boolean());
+        Json eq = parse(c.cmd("queue"), d)["result"]["items"];
+        CHECK_EQ(eq.size(), size_t(1));
+        CHECK_EQ(eq[0]["kind"].string(), "episode");
+        CHECK_EQ(eq[0]["artist"].string(), "A Show");
+        CHECK_EQ(eq[0]["album_id"].string(), "MPSPPL1");
+
         // play: the events in order: queue, loading, track (then a position), playing.
         const size_t from = c.events.size();
         CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());

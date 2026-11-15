@@ -31,3 +31,10 @@ The home feed follows the requester's country whatever "gl" says.
 Added with the region setting (2026-11-15), a plain GET, no body, a desktop Chrome User-Agent:
 sw_js_data.txt        https://music.youtube.com/sw.js_data   the country YouTube sees: )]}' and JSON whose
                       root[0][2][0][0][1] is "IT". The IP, the visitor data and the other ids are scrubbed.
+
+Added with the podcasts category (2026-11-15), the same way (hl en, gl US; the home feed follows the IP, so these are Italy's):
+browse_podcasts.json  browse          "browseId":"FEmusic_home","params":"ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB"
+                                      (the params of Home's "Podcasts" chip; there is no browse id of its own)
+browse_show.json      browse          "browseId":"MPSPPLAU7ZtBFN5JI"   (a show listed in browse_podcasts.json: 20 episodes)
+browse_show_more.json browse          "continuation": the token of browse_show.json's shelf (its continuations[0]; 24 episodes, the last page),
+                                      with that response's visitorData as for browse_home_more.json

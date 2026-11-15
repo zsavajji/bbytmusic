@@ -207,10 +207,11 @@ void Engine::add_commands() {
     });
     server_.on("browse", [this](Json req) {
         if (!req["id"].is_string() || req["id"].str().empty()) return bad("id: a browse id is required");
+        if (!req["params"].is_null() && !req["params"].is_string()) return bad("params: a string");
         BrowsePage page;
         std::string err;
-        const std::string id = req["id"].string();
-        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e); }, err))
+        const std::string id = req["id"].string(), params = req["params"].string();
+        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e, params); }, err))
             return Reply::error("network", err);
         return ok(browse_page_json(page));
     });
@@ -345,7 +346,7 @@ Reply Engine::status() {
               (player_->shuffle_mode() ? "true" : "false") + ",\"eq\":\"" + eq_presets()[size_t(eq_.preset())].name + "\"}");
 }
 
-// Replaces the queue and starts. With radio and one song or video, the song's radio follows it:
+// Replaces the queue and starts. With radio and one song or video (an episode has none), its radio follows it:
 // its first page is fetched here, on the connection's thread, once the play has begun.
 Reply Engine::play(Json req) {
     std::vector<Item> items;
@@ -356,7 +357,7 @@ Reply Engine::play(Json req) {
         Reply err;
         if (!index_field(req, "index", int(items.size()), index, err)) return bad(err.message);
     }
-    const bool radio = req["radio"].boolean(false) && items.size() == 1;
+    const bool radio = req["radio"].boolean(false) && items.size() == 1 && items[0].kind != "episode";
     log_info("play " + std::to_string(items.size()) + " item(s), first " + items[size_t(index)].id + " \"" +
              items[size_t(index)].title + "\"" + (radio ? ", with its radio" : ""));
     std::vector<Track> tracks;

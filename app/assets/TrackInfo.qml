@@ -22,7 +22,7 @@ Sheet {
         row("Year", track.year);
         row("Length", track.duration_s > 0 ? player.fmt(track.duration_s * 1000) : "");
         row("Plays", track.plays);
-        row("Type", track.kind == "video" ? "Video" : "Song");
+        row("Type", track.kind == "video" ? "Video" : (track.kind == "episode" ? "Episode" : "Song"));
         row("Explicit", track.explicit ? "Yes" : "");
         row("Link", track.id ? "https://music.youtube.com/watch?v=" + track.id : "");
         sheet.open();

@@ -69,7 +69,7 @@ std::string played_json(const PlayedTrack &t) {
     return j + ",\"played_at\":" + std::to_string(t.played_at) + "}";
 }
 
-bool playable(const Item &i) { return (i.kind == "song" || i.kind == "video") && !i.id.empty(); }
+bool playable(const Item &i) { return (i.kind == "song" || i.kind == "video" || i.kind == "episode") && !i.id.empty(); }
 
 bool parse_items(Json array, std::vector<Item> &out, std::string &why) {
     out.clear();
@@ -96,7 +96,7 @@ bool parse_items(Json array, std::vector<Item> &out, std::string &why) {
         i.is_explicit = j["explicit"].boolean(j["is_explicit"].boolean());
         if (!playable(i)) {
             why = i.id.empty() ? "an item has no id"
-                               : "only songs and videos can be played, not kind \"" + i.kind + "\" (" + i.id + ")";
+                               : "only songs, videos and episodes can be played, not kind \"" + i.kind + "\" (" + i.id + ")";
             return false;
         }
         out.push_back(std::move(i));

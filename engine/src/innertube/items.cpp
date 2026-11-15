@@ -173,6 +173,43 @@ bool parse_panel(Json r, Item &out) {
     return true;
 }
 
+// "1 hr 46 min", "9 min 4 sec", "27 min" -> seconds; 0 for the empty text of a live stream.
+int parse_spoken_duration(std::string_view t) {
+    long total = 0, n = 0;
+    bool digits = false;
+    for (size_t i = 0; i < t.size(); ++i) {
+        if (t[i] >= '0' && t[i] <= '9') {
+            n = n * 10 + (t[i] - '0');
+            digits = true;
+        } else if (digits && t[i] != ' ') {   // the first letter of the unit; the rest of the word is skipped
+            total += n * (t[i] == 'h' ? 3600 : t[i] == 'm' ? 60 : t[i] == 's' ? 1 : 0);
+            n = 0;
+            digits = false;
+            while (i + 1 < t.size() && t[i + 1] != ' ') ++i;
+        }
+    }
+    return static_cast<int>(total);
+}
+
+// A podcast episode: onTap plays it, the second title names its show (the show's own page has
+// none: browse fills it in). The subtitle is YouTube's "148K views • Apr 16".
+bool parse_episode(Json r, Item &out) {
+    Json watch = r["onTap"]["watchEndpoint"];
+    if (watch["videoId"].str().empty()) return false;
+    Item it;
+    it.kind = "episode";
+    it.id = watch["videoId"].string();
+    it.title = runs_text(r["title"]);
+    it.thumb = pick_thumb(r["thumbnail"]);
+    read_subtitle(r["subtitle"], it);
+    it.duration_s = parse_spoken_duration(runs_text(r["playbackProgress"]["musicPlaybackProgressRenderer"]["durationText"]));
+    Json show = r["secondTitle"]["runs"][0];
+    it.artist = show["text"].string();
+    it.album_id = show["navigationEndpoint"]["browseEndpoint"]["browseId"].string();
+    out = std::move(it);
+    return true;
+}
+
 bool parse_card(Json r, Item &out) {
     Json nav = r["title"]["runs"][0]["navigationEndpoint"];
     return finish(r, nav, r["title"], r["subtitle"], r["thumbnail"], out);
@@ -221,6 +258,7 @@ bool parse_item(Json p, Item &out) {
         !r.is_null())
         return parse_panel(r, out);
     if (Json r = p["musicCardShelfRenderer"]; !r.is_null()) return parse_card(r, out);
+    if (Json r = p["musicMultiRowListItemRenderer"]; !r.is_null()) return parse_episode(r, out);
     return false;
 }
 

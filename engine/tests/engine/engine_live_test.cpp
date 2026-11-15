@@ -150,5 +150,42 @@ int main() {
         CHECK(parse(c.cmd("quit"), d)["ok"].boolean());
         run.join();
     }
+
+    // A podcast episode from Home's Podcasts chip plays like a video, alone: no radio follows it.
+    {
+        auto e = make_engine(dir);
+        std::thread run([&] { e->run(); });
+        Client c(e->port());
+        CHECK(c.hello(e->token()));
+        CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
+        auto t0 = Clock::now();
+        Json r = parse(c.cmd("browse", "\"id\":\"FEmusic_home\",\"params\":\"ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB\""), d)["result"];
+        step("browse the Podcasts chip", t0);
+        std::string item;
+        for (Json sec : r["sections"].items())
+            for (Json it : sec["items"].items())
+                if (item.empty() && it["kind"].str() == "episode")
+                    item = "{\"kind\":\"episode\",\"id\":" + json_quote(it["id"].str()) + ",\"title\":" + json_quote(it["title"].str()) +
+                           ",\"artist\":" + json_quote(it["artist"].str()) + ",\"album_id\":" + json_quote(it["album_id"].str()) +
+                           ",\"duration_s\":" + std::to_string(it["duration_s"].i64()) + "}";
+        CHECK(!item.empty());
+        std::printf("  first episode: %s\n", item.c_str());
+        t0 = Clock::now();
+        const size_t mark = c.events.size();
+        CHECK(parse(c.cmd("play", "\"items\":[" + item + "],\"radio\":true"), d)["ok"].boolean());   // radio is ignored
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "playing"; }, 30000, mark) >= 0);
+        step("episode: playing", t0);
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() > 3000; }, 30000, mark) >= 0);
+        step("  position past 3 s", t0);
+        Json q = parse(c.cmd("queue"), d)["result"];
+        CHECK_EQ(q["items"].size(), size_t(1));
+        CHECK_EQ(q["items"][0]["kind"].string(), "episode");
+        CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
+        CHECK(parse(c.cmd("quit"), d)["ok"].boolean());
+        run.join();
+        const double ep_heard = audible_s(dir + "/out.wav");
+        std::printf("  WAV: %.2f s of sound\n", ep_heard);
+        CHECK(ep_heard > 2.0);   // the position passed 3 s; a talk has quiet gaps
+    }
     return check_done();
 }

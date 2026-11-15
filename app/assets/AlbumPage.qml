@@ -1,9 +1,10 @@
 import bb.cascades 1.4
 import bb.system 1.2
 
-// An album's page (or a playlist's: the engine's `browse` answers both alike). The cover with the
-// title, artist, year and length scrolls away with the list; under it the tracks. A tap plays the
-// album from that track; Play (the Signature action) from the first; Shuffle in a random order.
+// An album's page (or a playlist's: the engine's `browse` answers both alike; or a podcast show's,
+// whose rows are episodes). The cover with the title, artist, year and length scrolls away with
+// the list; under it the tracks. A tap plays the album from that track; Play (the Signature
+// action) from the first; Shuffle in a random order. On a show a tap plays that episode alone.
 Page {
     id: page
     property variant navPane
@@ -12,6 +13,8 @@ Page {
     property bool busy: false
     property bool failed: false
     property bool isAlbum: true
+    property bool isShow: false
+    property string showName: ""
     property variant info            // the page's artist_id and playlist_id
     property variant tracks: []      // its items
     property string albumArtist: ""
@@ -40,7 +43,9 @@ Page {
         for (var i = 0; i < items.length; i ++) {
             var t = items[i];
             var sub;
-            if (isAlbum) {
+            if (isShow) {
+                sub = t.subtitle ? t.subtitle : "";     // YouTube's "148K views \u2022 Apr 16"
+            } else if (isAlbum) {
                 // The album's artist is in the header: a row names its own only when it differs.
                 sub = t.artist && t.artist != albumArtist ? t.artist : "";
                 if (t.plays) {
@@ -53,7 +58,7 @@ Page {
                 }
             }
             rows.push({
-                "rowType": isAlbum ? "track" : "ptrack",
+                "rowType": isAlbum ? "track" : (isShow ? "etrack" : "ptrack"),
                 "title": isAlbum ? (first + i + 1) + ".  " + t.title : t.title,
                 "subtitle": sub,
                 "durationText": t.duration_s > 0 ? player.fmt(t.duration_s * 1000) : "",
@@ -79,6 +84,8 @@ Page {
         // A local copy: reading the `tracks` property converts the whole list each time.
         var items = result.items ? result.items : [];
         isAlbum = result.kind == "album";
+        isShow = result.kind == "show";
+        showName = result.title ? result.title : "";
         albumArtist = result.artist ? result.artist : "";
         tracks = items;
         // The header's facts only: the tracks are in `tracks`.
@@ -107,6 +114,13 @@ Page {
         if (items.length == 0) {
             return;
         }
+        if (isShow) {
+            // The next episodes name no show (the engine named the first page's): it is this page's.
+            for (var k = 0; k < items.length; k ++) {
+                items[k].artist = showName;
+                items[k].album_id = browseId;
+            }
+        }
         var all = tracks;
         trackModel.append(trackRows(items, all.length));
         tracks = all.concat(items);
@@ -121,6 +135,15 @@ Page {
                 "radio": false
             });
         }
+    }
+
+    // A show's episode on its own: no list to run on into, no radio.
+    function playOne(index) {
+        engine.request("play", {
+            "items": [ tracks[index] ],
+            "index": 0,
+            "radio": false
+        });
     }
 
     function shuffled() {
@@ -448,6 +471,35 @@ Page {
                     }
                 },
                 ListItemComponent {
+                    type: "etrack"
+                    StandardListItem {
+                        id: etrack
+                        title: ListItemData.title
+                        description: ListItemData.subtitle
+                        status: ListItemData.durationText
+                        imageSource: ListItemData.image
+                        contextActions: [
+                            ActionSet {
+                                title: ListItemData.title
+                                ActionItem {
+                                    title: "Play Next"
+                                    imageSource: "asset:///images/ic_play_next.png"
+                                    onTriggered: {
+                                        etrack.ListItem.view.queueAdd(etrack.ListItem.indexPath, true);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "Add to Queue"
+                                    imageSource: "asset:///images/ic_add_queue.png"
+                                    onTriggered: {
+                                        etrack.ListItem.view.queueAdd(etrack.ListItem.indexPath, false);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                ListItemComponent {
                     type: "ptrack"
                     StandardListItem {
                         id: ptrack
@@ -487,7 +539,11 @@ Page {
 
             onTriggered: {
                 if (indexPath[0] > 0) {
-                    page.play(indexPath[0] - 1);
+                    if (page.isShow) {
+                        page.playOne(indexPath[0] - 1);
+                    } else {
+                        page.play(indexPath[0] - 1);
+                    }
                 }
             }
         }

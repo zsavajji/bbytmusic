@@ -2,6 +2,7 @@
 #include <cstdio>
 
 #include "check.h"
+#include "innertube/browse.h"
 #include "innertube/next.h"
 #include "innertube/region.h"
 #include "innertube/search.h"
@@ -72,6 +73,36 @@ int main() {
     CHECK(watch_queue_more(yt, qp.continuation, qp2, err));
     std::printf("queue continuation: %zu items\n", qp2.items.size());
     CHECK(qp2.items.size() > 10);
+
+    // Home's Podcasts chip (FEmusic_home and its params), its next genres, and a show's page.
+    BrowsePage pod, pod_more, show, show_more;
+    const char *podcasts = "ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB";
+    const bool pok = browse(yt, "FEmusic_home", pod, err, podcasts);
+    if (!pok) std::fprintf(stderr, "browse podcasts: %s\n", err.c_str());
+    CHECK(pok);
+    CHECK(!pod.sections.empty() && !pod.sections[0].items.empty() && !pod.continuation.empty());
+    if (pok && !pod.sections.empty() && !pod.sections[0].items.empty()) {
+        const Item &ep = pod.sections[0].items[0];
+        std::printf("podcasts: %zu shelves, first \"%s\" (%s) of \"%s\" %s, %d s\n", pod.sections.size(),
+                    ep.title.c_str(), ep.id.c_str(), ep.artist.c_str(), ep.album_id.c_str(), ep.duration_s);
+        CHECK_EQ(ep.kind, std::string("episode"));
+        CHECK(browse_more(yt, pod.continuation, pod_more, err));
+        CHECK(!pod_more.sections.empty() && !pod_more.sections[0].items.empty());
+        if (!pod_more.sections.empty() && !pod_more.sections[0].items.empty())
+            CHECK_EQ(pod_more.sections[0].items[0].kind, std::string("episode"));
+        const bool sok = browse(yt, ep.album_id, show, err);
+        if (!sok) std::fprintf(stderr, "browse show: %s\n", err.c_str());
+        CHECK(sok);
+        CHECK_EQ(show.kind, std::string("show"));
+        CHECK(!show.title.empty() && show.items.size() >= 5);
+        std::printf("show: \"%s\", %zu episodes, continuation %s\n", show.title.c_str(), show.items.size(),
+                    show.continuation.empty() ? "no" : "yes");
+        if (!show.continuation.empty()) {
+            CHECK(browse_more(yt, show.continuation, show_more, err));
+            CHECK(!show_more.items.empty());
+            if (!show_more.items.empty()) CHECK_EQ(show_more.items[0].kind, std::string("episode"));
+        }
+    }
 
     std::string gl;
     const bool rok = fetch_region(yt, gl, err);

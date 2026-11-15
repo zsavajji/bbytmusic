@@ -25,6 +25,16 @@ void read_feed(Json list, BrowsePage &p) {
     p.continuation = list["continuations"][0]["nextContinuationData"]["continuation"].string();
 }
 
+bool is_track(const Item &it) { return it.kind == "song" || it.kind == "video" || it.kind == "episode"; }
+
+// What of a continuation's rows can be played.
+void read_rows(Json rows, BrowsePage &p) {
+    for (Json r : rows.items()) {
+        Item it;
+        if (parse_item(r, it) && is_track(it)) p.items.push_back(std::move(it));
+    }
+}
+
 // The token of the trailing continuationItemRenderer of a playlist's rows ("" when the list ends).
 std::string rows_continuation(Json rows) {
     for (Json r : rows.items())
@@ -59,7 +69,7 @@ bool parse_artist(Json response, const std::string &id, BrowsePage &out, std::st
             top_done = true;
             for (Json r : shelf["contents"].items()) {
                 Item it;
-                if (!parse_item(r, it) || (it.kind != "song" && it.kind != "video")) continue;
+                if (!parse_item(r, it) || !is_track(it)) continue;
                 if (it.artist.empty()) {
                     it.artist = p.title;
                     it.artist_id = id;
@@ -96,9 +106,9 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
     Json h = two["tabs"][0]["tabRenderer"]["content"]["sectionListRenderer"]["contents"][0]
                 ["musicResponsiveHeaderRenderer"];
     Json shelf;
-    const bool album = id.rfind("MPRE", 0) == 0;
+    const bool album = id.rfind("MPRE", 0) == 0, show = id.rfind("MPSP", 0) == 0;
     for (Json c : two["secondaryContents"]["sectionListRenderer"]["contents"].items()) {
-        shelf = album ? c["musicShelfRenderer"] : c["musicPlaylistShelfRenderer"];
+        shelf = album || show ? c["musicShelfRenderer"] : c["musicPlaylistShelfRenderer"];
         if (!shelf.is_null()) break;
     }
     if (h.is_null() || shelf.is_null()) {
@@ -106,7 +116,7 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
         return false;
     }
     BrowsePage p;
-    p.kind = album ? "album" : "playlist";
+    p.kind = album ? "album" : show ? "show" : "playlist";
     p.id = id;
     p.title = runs_text(h["title"]);
     p.subtitle = runs_text(h["subtitle"]);
@@ -137,8 +147,11 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
     }
     for (Json c : shelf["contents"].items()) {
         Item it;
-        if (!parse_item(c, it) || (it.kind != "song" && it.kind != "video")) continue;
-        if (album) {
+        if (!parse_item(c, it) || !is_track(it)) continue;
+        if (show) {   // the show's own page names it on no row
+            if (it.artist.empty()) it.artist = p.title;
+            if (it.album_id.empty()) it.album_id = id;
+        } else if (album) {
             it.album = p.title;
             it.album_id = id;
             if (it.thumb.empty()) it.thumb = p.thumb;
@@ -150,7 +163,8 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
         }
         p.items.push_back(std::move(it));
     }
-    if (!album) p.continuation = rows_continuation(shelf["contents"]);
+    if (show) p.continuation = shelf["continuations"][0]["nextContinuationData"]["continuation"].string();
+    else if (!album) p.continuation = rows_continuation(shelf["contents"]);
     if (p.items.empty()) {
         err = "browse: no tracks in the response";
         return false;
@@ -160,15 +174,17 @@ bool parse_browse(Json response, const std::string &id, BrowsePage &out, std::st
 }
 
 std::string browse_id(const std::string &id) {
-    for (const char *known : {"MPRE", "VL", "UC", "FE"})
+    for (const char *known : {"MPRE", "MPSP", "VL", "UC", "FE"})
         if (id.rfind(known, 0) == 0) return id;
     return "VL" + id;
 }
 
-bool browse(InnerTube &yt, const std::string &id, BrowsePage &out, std::string &err) {
+bool browse(InnerTube &yt, const std::string &id, BrowsePage &out, std::string &err, const std::string &params) {
     const std::string page = browse_id(id);
+    std::string fields = "\"browseId\":" + json_quote(page);
+    if (!params.empty()) fields += ",\"params\":" + json_quote(params);
     JsonDoc doc;
-    return yt.post("browse", "\"browseId\":" + json_quote(page), doc, err) && parse_browse(doc.root(), page, out, err);
+    return yt.post("browse", fields, doc, err) && parse_browse(doc.root(), page, out, err);
 }
 
 bool parse_browse_more(Json response, BrowsePage &out, std::string &err) {
@@ -178,14 +194,17 @@ bool parse_browse_more(Json response, BrowsePage &out, std::string &err) {
         read_feed(list, out);
         return true;
     }
+    // a show's next episodes
+    if (Json shelf = response["continuationContents"]["musicShelfContinuation"]; !shelf.is_null()) {
+        read_rows(shelf["contents"], out);
+        out.continuation = shelf["continuations"][0]["nextContinuationData"]["continuation"].string();
+        return true;
+    }
     // a playlist's next tracks
     for (Json a : response["onResponseReceivedActions"].items()) {
         Json rows = a["appendContinuationItemsAction"]["continuationItems"];
         if (rows.is_null()) continue;
-        for (Json r : rows.items()) {
-            Item it;
-            if (parse_item(r, it) && (it.kind == "song" || it.kind == "video")) out.items.push_back(std::move(it));
-        }
+        read_rows(rows, out);
         out.continuation = rows_continuation(rows);
         return true;
     }

@@ -3,13 +3,16 @@ import bb.system 1.2
 
 // A page of shelves, as the engine's `browse` gives them: an artist (the picture and name, the
 // top songs, then Albums, Singles & EPs, Videos, Featured on, Fans might also like) or a feed
-// (Home: its shelves, and More while there are others). Each shelf under its header. A song plays
-// with its radio; an album or a playlist opens its page; an artist opens theirs. An artist's page
+// (Home: its shelves, and More while there are others; Home's Podcasts chip is the same feed
+// with `params`). Each shelf under its header. A song plays with its radio; a podcast episode
+// plays alone; an album or a playlist opens its page; an artist opens theirs. An artist's page
 // has Play (the Signature action) for the top songs.
 Page {
     id: page
     property variant navPane
     property string browseId: ""
+    property string params: ""       // sent with browseId: Home's Podcasts chip is FEmusic_home and this
+    property string podcastsParams: "ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB"
     property string browseReq: ""
     property string moreReq: ""
     property string continuation: ""
@@ -30,16 +33,21 @@ Page {
             return;
         }
         browseReq = engine.request("browse", {
-            "id": browseId
+            "id": browseId,
+            "params": params
         });
         busy = browseReq != "";
         failed = ! busy;
     }
 
     function makeRow(item) {
-        var playable = item.kind == "song" || item.kind == "video";
+        var episode = item.kind == "episode";
+        var playable = item.kind == "song" || item.kind == "video" || episode;
         var sub = item.subtitle ? item.subtitle : "";
-        if (item.kind == "song") {
+        if (episode && item.artist) {
+            // The show, then YouTube's "148K views \u2022 Apr 16".
+            sub = sub != "" ? item.artist + " \u2022 " + sub : item.artist;
+        } else if (item.kind == "song") {
             // Under the artist's own name, the album and the plays say more than the name again.
             var parts = [];
             if (! isArtist && item.artist) {
@@ -56,7 +64,7 @@ Page {
             }
         }
         return {
-            "rowType": playable ? "playable" : "other",
+            "rowType": episode && item.album_id ? "episode" : (playable ? "playable" : "other"),
             "title": item.title,
             "subtitle": sub,
             "durationText": playable && item.duration_s > 0 ? player.fmt(item.duration_s * 1000) : "",
@@ -108,7 +116,7 @@ Page {
                 "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
             });
         }
-        if (browseId == "FEmusic_home") {
+        if (browseId == "FEmusic_home" && params == "") {
             // What were tabs of their own until the bar could not hold them (main.qml).
             rows.push({
                 "rowType": "link",
@@ -123,6 +131,13 @@ Page {
                 "subtitle": "New releases, trending, new videos",
                 "image": "asset:///images/ic_explore.png",
                 "target": "FEmusic_explore"
+            });
+            rows.push({
+                "rowType": "link",
+                "title": "Podcasts",
+                "subtitle": "Episodes by genre",
+                "image": "asset:///images/ic_podcast.png",
+                "target": "podcasts"
             });
         }
         if (top.length > 0) {
@@ -179,9 +194,20 @@ Page {
     function openLink(target) {
         var p = target == "recent" ? recentPage.createObject() : artistPage.createObject();
         p.navPane = navPane;
-        if (target != "recent") {
+        if (target == "podcasts") {
+            p.params = podcastsParams;      // before browseId: setting that loads the page
+            p.browseId = "FEmusic_home";
+        } else if (target != "recent") {
             p.browseId = target;
         }
+        navPane.push(p);
+    }
+
+    // An episode's show: the page of its album_id, the same one an album has.
+    function openShow(item) {
+        var p = albumPage.createObject();
+        p.navPane = navPane;
+        p.browseId = item.album_id;
         navPane.push(p);
     }
 
@@ -333,6 +359,9 @@ Page {
                     "next": next
                 });
             }
+            function viewShow(indexPath) {
+                page.openShow(dataModel.data(indexPath).item);
+            }
 
             listItemComponents: [
                 ListItemComponent {
@@ -415,6 +444,43 @@ Page {
                     }
                 },
                 ListItemComponent {
+                    type: "episode"
+                    StandardListItem {
+                        id: ep
+                        title: ListItemData.title
+                        description: ListItemData.subtitle
+                        status: ListItemData.durationText
+                        imageSource: ListItemData.image
+                        contextActions: [
+                            ActionSet {
+                                title: ListItemData.title
+                                subtitle: ListItemData.subtitle
+                                ActionItem {
+                                    title: "Play Next"
+                                    imageSource: "asset:///images/ic_play_next.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.queueAdd(ep.ListItem.indexPath, true);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "Add to Queue"
+                                    imageSource: "asset:///images/ic_add_queue.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "View Podcast"
+                                    imageSource: "asset:///images/ic_podcast.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.viewShow(ep.ListItem.indexPath);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                ListItemComponent {
                     type: "other"
                     StandardListItem {
                         title: ListItemData.title
@@ -440,11 +506,11 @@ Page {
 
             onTriggered: {
                 var entry = dataModel.data(indexPath);
-                if (entry.rowType == "playable") {
+                if (entry.rowType == "playable" || entry.rowType == "episode") {
                     engine.request("play", {
                         "items": [ entry.item ],
                         "index": 0,
-                        "radio": true
+                        "radio": entry.item.kind != "episode"      // an episode has no radio worth having
                     });
                 } else if (entry.rowType == "other") {
                     page.open(entry.item);

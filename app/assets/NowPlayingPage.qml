@@ -153,7 +153,7 @@ Page {
             }
         },
         ActionItem {
-            title: "View Album"
+            title: player.track.kind == "episode" ? "View Podcast" : "View Album"
             imageSource: "asset:///images/ic_album.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -174,6 +174,7 @@ Page {
         ActionItem {
             title: "Start Radio"
             imageSource: "asset:///images/ic_radio.png"
+            enabled: player.track.kind != "episode"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
                 if (player.track.id) {

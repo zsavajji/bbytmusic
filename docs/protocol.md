@@ -37,12 +37,16 @@ file changes with it.
 ## Commands
 
 Every reply is `{"@":id,"ok":true,"result":{…}}` or an error. An **Item** is what a search or a
-queue returns for one thing: `{"kind":"song|video|album|artist|playlist|station","id":"…",
+queue returns for one thing: `{"kind":"song|video|episode|album|artist|playlist|station","id":"…",
 "title":"…","subtitle":"…","thumb":"https://…","artist":"…","album":"…","artist_id":"…",
 "album_id":"…","playlist_id":"…","params":"…","duration_s":214,"explicit":false,"plays":"2B plays",
-"year":"1998"}`. For a song or a video `id` is the video id; for the others a browse id. `plays`
+"year":"1998"}`. For a song, a video or an episode `id` is the video id; for the others a browse id. `plays`
 is YouTube's own text ("15M plays", "9.2M views") and `year` an album's or single's year; both
-are "" when unknown. A **Track** is an Item in the queue:
+are "" when unknown. An **episode** is a podcast episode (it streams like a video): `artist` is its
+show's name, `album_id` its show's browse id (`MPSP…`, which `browse` answers with a page of kind
+`show`; `artist_id` stays "" and `album` too), `subtitle` YouTube's own "148K views • Apr 16", `plays` the views, and
+`thumb` is a 16:9 video frame; `duration_s` is 0 for a live stream. Episodes come in a feed's shelves
+(Home's Podcasts chip, see `browse`) and in a show's page. A **Track** is an Item in the queue:
 the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thumb`,
 `duration_s`.
 
@@ -51,12 +55,12 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `status` | | `{"version":"…","state":"stopped\|loading\|playing\|paused","index":0,"track":Track or null,"position_ms":0,"duration_ms":0,"queue_len":0,"error":"","repeat":"off\|all\|one","shuffle":false,"eq":"off"}` |
 | `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists` | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
 | `search_more` | `continuation` | as `search` |
-| `browse` | `id`: the browse id of an album (`MPRE…`), a playlist (`VL…`), an artist (`UC…`) or a feed (`FEmusic_home`) | `{"kind":"album\|playlist","id":"…","title":"…","subtitle":"Album • 1998","second_subtitle":"11 songs • 40 minutes","artist":"…","artist_id":"…","year":"1998","thumb":"https://…","description":"…","playlist_id":"…","items":[Item]}`. An album's tracks carry the album's title, id and thumb, and the album's artist when the row names none. A playlist gives its first page (about 100 tracks) and, when there are more, a `continuation` for `browse_more`. An artist's id (a channel id, `UC…`) answers `{"kind":"artist","id":"…","title":"…","subtitle":"42.5K subscribers","thumb":"https://…","description":"…","items":[Item],"sections":[{"title":"Albums","items":[Item]}]}`: `items` are the top songs, `sections` the page's shelves in its own order and under its own titles (Albums, Singles & EPs, Videos, Featured on, Fans might also like), without the top songs. A feed (`FEmusic_home`, any `FE…`) answers `{"kind":"feed","id":"…","items":[],"sections":[…],"continuation":"…"}`: its shelves, and the token of the next ones ("" at the end). Every `browse` result carries `sections` and `continuation`, empty where they do not apply. |
-| `browse_more` | `continuation` | `{"items":[Item],"sections":[{"title":"…","items":[Item]}],"continuation":"…"}`: a feed's next shelves (in `sections`) or a playlist's next tracks (in `items`); the other is empty. `continuation` is "" at the end. |
+| `browse` | `id`: the browse id of an album (`MPRE…`), a playlist (`VL…`), an artist (`UC…`), a podcast show (`MPSP…`) or a feed (`FEmusic_home`); `params` (optional): a string passed to YouTube with the id | `{"kind":"album\|playlist\|show","id":"…","title":"…","subtitle":"Album • 1998","second_subtitle":"11 songs • 40 minutes","artist":"…","artist_id":"…","year":"1998","thumb":"https://…","description":"…","playlist_id":"…","items":[Item]}`. An album's tracks carry the album's title, id and thumb, and the album's artist when the row names none. A playlist gives its first page (about 100 tracks) and, when there are more, a `continuation` for `browse_more`. An artist's id (a channel id, `UC…`) answers `{"kind":"artist","id":"…","title":"…","subtitle":"42.5K subscribers","thumb":"https://…","description":"…","items":[Item],"sections":[{"title":"Albums","items":[Item]}]}`: `items` are the top songs, `sections` the page's shelves in its own order and under its own titles (Albums, Singles & EPs, Videos, Featured on, Fans might also like), without the top songs. A feed (`FEmusic_home`, any `FE…`) answers `{"kind":"feed","id":"…","items":[],"sections":[…],"continuation":"…"}`: its shelves, and the token of the next ones ("" at the end). A show (`MPSP…`, the `album_id` of its episodes) answers `{"kind":"show","id":"…","title":"…","artist":"…","artist_id":"UC…","thumb":"https://…","description":"…","items":[Item],"continuation":"…"}`: `title` is the show's name, `artist` its channel (`artist_id` the channel's page), `items` its episodes, the latest first, 20 of them and a `continuation` for `browse_more`; the page puts the show's name and `album_id` on every episode that carries none. `params` is only for a feed: Home's chip "Podcasts" is `FEmusic_home` with `params` `ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB` (taken from Home's own chips, 2026-11-15; there is no browse id of its own), answered as any feed: `sections` of episodes, a genre each (Fiction, Religion, Films, …), and a `continuation` for more genres. Every `browse` result carries `sections` and `continuation`, empty where they do not apply. |
+| `browse_more` | `continuation` | `{"items":[Item],"sections":[{"title":"…","items":[Item]}],"continuation":"…"}`: a feed's next shelves (in `sections`), a playlist's next tracks or a show's next episodes (in `items`; these carry no show name or `album_id`, the page's is theirs); the other is empty. `continuation` is "" at the end. |
 | `history` | `limit` (default 50, at most 200) | `{"items":[Item]}`: the tracks listened to, the latest first, each once, each with `"played_at"` (unix seconds of the last time). They come from the store, so they are as a restored queue's tracks are: kind `song`, no `explicit`, `playlist_id`, `params`, `plays` or `year`. |
 | `thumbs` | `urls`: [string], `size` (default 0: as the url says) | `{"files":{"<url>":"<path>"}}`: the urls already in the cache, each with its file's absolute path. The others are fetched in the background and each arrives as a `thumb` event. With a `size`, a `googleusercontent.com` url is asked for at `size` × `size` pixels as a JPEG. Files live in `<data_dir>/thumbs/`. |
 | `suggest` | `q` | `{"suggestions":["…"]}` |
-| `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and exactly one song or video, the engine appends its radio and goes on appending as the queue runs low; the reply then comes once the radio's first page is in (about 0.6 s; the sound has started by then). If the radio cannot be fetched the song still plays and the reply is still ok. |
+| `play` | `items`: [Item], `index` (default 0), `radio` (default false) | `{}`. Replaces the queue and starts. With `radio` true and exactly one song or video (an episode has no radio: `radio` is ignored for it), the engine appends its radio and goes on appending as the queue runs low; the reply then comes once the radio's first page is in (about 0.6 s; the sound has started by then). If the radio cannot be fetched the song still plays and the reply is still ok. |
 | `radio` | | `{}`. The current track plays on and the rest of the queue is replaced by its radio, which goes on being appended as the queue runs low, as with `play`; the reply comes once the radio's first page is in. If the radio cannot be fetched the track still plays on, alone, and the reply is still ok. `not_found` when the queue is empty. |
 | `pause`, `resume`, `toggle`, `stop`, `next`, `prev` | | `{}`. `resume` or `toggle` after `stop` plays the current track again from its start. `prev` restarts the track when more than 3 s in, else goes to the one before. |
 | `seek` | `ms` | `{}` |
@@ -75,13 +79,14 @@ the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thu
 | `repeat` | `mode`: `off`, `all` or `one` | `{}`. `all` goes back to the first track after the last; `one` plays the current track again when it ends (Next still moves on). Kept across restarts. |
 | `quit` | | `{}`, then the engine exits |
 
-Only songs and videos can be played or queued; an Item of another kind gets `code`
+Only songs, videos and episodes can be played or queued; an Item of another kind gets `code`
 `bad_request`, as does a missing or wrongly typed field. An index outside the queue gets
 `not_found`. `network` means YouTube could not be reached or answered with an error.
 
 In `status`, `index` is -1 when the queue is empty; `stopped` still carries the current track.
 After a restart the queue comes back paused, and its tracks have lost `explicit`,
-`playlist_id` and `params` (the store keeps no columns for them).
+`playlist_id` and `params` (the store keeps no columns for them) and `kind`: an episode comes back as a
+song, its `artist` and `album_id` still the show's.
 
 Commands answer without waiting for the sound: `seek`, `next` and the rest are acknowledged
 before anything changes, and what happens next comes as events. The exceptions are the ones

@@ -30,7 +30,7 @@ std::string browse_more_json(const BrowsePage &);
 std::string played_json(const PlayedTrack &);
 
 // A request's "items": every element an object with a kind and an id. False with `why` otherwise,
-// or when one is of a kind that cannot be played (only songs and videos can).
+// or when one is of a kind that cannot be played (only songs, videos and episodes can).
 bool parse_items(Json array, std::vector<Item> &out, std::string &why);
 bool playable(const Item &);
 
