@@ -12,6 +12,18 @@
         <image>icon.png</image>
     </icon>
     <asset path="icon.png">icon.png</asset>
+    <!-- Shown from the tap to the app's first frame: the icon's red and glyph, one per screen the
+         app meets in portrait (Q10/Q5/Q20, Z30, Z10, Passport); drawn by scripts/gen-icons.py. -->
+    <asset path="splash-720x720.png">splash-720x720.png</asset>
+    <asset path="splash-720x1280.png">splash-720x1280.png</asset>
+    <asset path="splash-768x1280.png">splash-768x1280.png</asset>
+    <asset path="splash-1440x1440.png">splash-1440x1440.png</asset>
+    <splashScreens>
+        <image>splash-720x720.png</image>
+        <image>splash-720x1280.png</image>
+        <image>splash-768x1280.png</image>
+        <image>splash-1440x1440.png</image>
+    </splashScreens>
 
     <initialWindow>
         <autoOrients>false</autoOrients>

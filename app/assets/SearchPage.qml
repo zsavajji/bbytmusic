@@ -16,6 +16,8 @@ Page {
     property bool busy: false
     property bool noResults: false
     property bool failed: false
+    // The engine is still waking, not down: the spinner, not the error.
+    property bool waking: failed && ! engine.connected && ! engine.down
     property bool showSuggestions: false
     // The ids of the requests whose answers this page wants.
     property string searchId: ""
@@ -155,7 +157,7 @@ Page {
         });
         busy = searchId != "";
         failed = ! busy;
-        if (! busy) {
+        if (! busy && engine.down) {
             notice.body = "The engine is not connected.";
             notice.show();
         }
@@ -292,8 +294,8 @@ Page {
             }
         }
         ActivityIndicator {
-            running: page.busy
-            visible: page.busy
+            running: page.busy || page.waking
+            visible: page.busy || page.waking
             horizontalAlignment: HorizontalAlignment.Center
             preferredWidth: ui.du(8)
             preferredHeight: ui.du(8)
@@ -304,7 +306,7 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
         }
         Container {
-            visible: page.failed && ! page.showSuggestions
+            visible: page.failed && ! page.waking && ! page.showSuggestions
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {

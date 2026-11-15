@@ -11,6 +11,8 @@ Page {
     property string historyReq: ""
     property bool asked: false
     property bool failed: false
+    // The engine is still waking, not down: the spinner, not the error.
+    property bool waking: failed && ! engine.connected && ! engine.down
 
     function art(url) {
         var f = url ? thumbs.file(url, 120) : "";
@@ -154,8 +156,15 @@ Page {
             visible: page.asked && page.tracks.length == 0 && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
         }
+        ActivityIndicator {
+            running: page.waking
+            visible: page.waking
+            horizontalAlignment: HorizontalAlignment.Center
+            preferredWidth: ui.du(8)
+            preferredHeight: ui.du(8)
+        }
         Container {
-            visible: page.failed
+            visible: page.failed && ! page.waking
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {

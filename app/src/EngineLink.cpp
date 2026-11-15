@@ -17,6 +17,7 @@ static const int QuickMs = 5000; // quick attempts for this long after a start o
 static const int RetryMs = 300;
 static const int SlowMs = 5000;
 static const int ReinvokeMs = 1500; // a START that finds the engine running does nothing
+static const int DownMs = 10000; // no link for this long: the engine is down, not waking
 
 // JS numbers can reach C++ as doubles: whole ones must go out as 1, not 1.0.
 static QVariant normalized(const QVariant &value)
@@ -45,6 +46,7 @@ EngineLink::EngineLink(QObject *parent)
     : QObject(parent)
     , m_invoker(new InvokeManager(this))
     , m_authed(false)
+    , m_down(false)
     , m_seq(0)
 {
     // Qt 4.8's QElapsedTimer holds garbage until started or invalidated.
@@ -52,6 +54,8 @@ EngineLink::EngineLink(QObject *parent)
     m_invokedAt.invalidate();
     m_retry.setSingleShot(true);
     connect(&m_retry, SIGNAL(timeout()), this, SLOT(attempt()));
+    m_downTimer.setSingleShot(true);
+    connect(&m_downTimer, SIGNAL(timeout()), this, SLOT(wentDown()));
     connect(&m_socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readLines()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(lost()));
@@ -68,6 +72,8 @@ void EngineLink::start()
     if (m_authed)
         return;
     m_began.start();
+    if (!m_down && !m_downTimer.isActive())
+        m_downTimer.start(DownMs); // from the launch; a Retry does not start it again
     attempt();
 }
 
@@ -145,6 +151,7 @@ void EngineLink::lost()
     if (was) {
         uiLog("disconnected");
         m_began.start(); // quick attempts again
+        m_downTimer.start(DownMs);
         emit connectedChanged();
     }
     // Whoever waits for an answer would wait for ever (a page's spinner, its request id).
@@ -153,6 +160,13 @@ void EngineLink::lost()
     foreach (const QString &id, unanswered)
         emit reply(id, false, QVariant(), "disconnected", "The engine is not connected.");
     scheduleAttempt();
+}
+
+void EngineLink::wentDown()
+{
+    m_down = true;
+    uiLog("engine not up after 10 s");
+    emit downChanged();
 }
 
 void EngineLink::readLines()
@@ -189,6 +203,11 @@ void EngineLink::handleLine(const QByteArray &line)
         }
         m_authed = true;
         uiLog("connected");
+        m_downTimer.stop();
+        if (m_down) {
+            m_down = false;
+            emit downChanged();
+        }
         emit connectedChanged();
         // A UI opened mid-song is then right (docs/protocol.md, last line).
         m_statusId = request("status", QVariantMap());

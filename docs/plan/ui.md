@@ -217,6 +217,14 @@ settings are ok." Their answers to what was still theirs to confirm:
   shelves of episodes by genre. An episode (kind `episode`, its show in `artist`/`album_id`)
   plays alone, never with a radio; View Podcast opens the show (`MPSP…`) in AlbumPage. Known
   gap: a restored episode comes back as a song (Start Radio is then offered).
+- **0.1.0.41, from four remarks:** "the error should only show if the engine does not wake after
+  10s": `engine.down` (EngineLink) is true after 10 s without a link; the connection bar and the
+  pages' failed states wait for it, a page shows its spinner meanwhile. "A splash (red with the
+  white glyph in the middle)": BB10's native splash screens, drawn by gen-icons.py. "a hint to
+  tap the status bar": a grey up-chevron at the strip's right end. "a fourth button on the tabs
+  as last ... if it fits": a Now Playing tab, last; **to be checked on the Q20** that the bar
+  keeps all four on every tab's first page, with and without ⋮; if a tab moves to the tab menu,
+  take it out (the user disliked tabs shuffling).
 - **Search's segments become All, Songs, Artists, Podcasts** ("remove albums, put podcasts at
   the end"): albums show under All.
 

@@ -1,8 +1,9 @@
 import bb.cascades 1.4
 
-// Shown at the top of a page while the engine is not connected.
+// Shown at the top of a page once the engine has been gone for 10 s (engine.down), not while it
+// is still waking: the pages show their spinner till then.
 Container {
-    visible: !engine.connected
+    visible: engine.down
     layout: StackLayout {
         orientation: LayoutOrientation.LeftToRight
     }

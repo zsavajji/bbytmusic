@@ -59,6 +59,19 @@ Container {
             textStyle.base: SystemDefaults.TextStyles.SmallText
             textStyle.color: Color.create("#969696")
         }
+        // A tap opens Now Playing, and nothing else says so: this is the hint, not a button (the
+        // whole strip takes the tap).
+        ImageView {
+            imageSource: "asset:///images/ic_expand_up.png"
+            filterColor: Color.create("#969696")
+            preferredWidth: ui.du(3)
+            preferredHeight: ui.du(3)
+            minWidth: ui.du(3)
+            scalingMethod: ScalingMethod.AspectFit
+            loadEffect: ImageViewLoadEffect.None
+            verticalAlignment: VerticalAlignment.Center
+            leftMargin: ui.du(1)
+        }
     }
     gestureHandlers: TapHandler {
         onTapped: {

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Draws the app's icons into app/assets/images with no library but zlib: action icons, white on
 transparent, 81 x 81 px (9 du on a Q10); and the artwork placeholder, a grey note on #262626 as
-the stock player shows for a track without a cover. Run again after changing a shape.
+the stock player shows for a track without a cover. Also the launcher icon and the splash screens
+(app/icon.png, app/splash-*.png). Run again after changing a shape.
 
     python3 scripts/gen-icons.py            # writes the icons
     python3 scripts/gen-icons.py sheet.png  # also one sheet of them all on grey, to look at
@@ -130,6 +131,7 @@ ICONS = {
                          seg(0.66, 0.20, 0.66, 0.66, W), head(0.66, 0.66, "d")),
     "ic_search": any_of(ring(0.43, 0.43, 0.22, W), seg(0.60, 0.60, 0.82, 0.82, 0.09)),
     "ic_note": NOTE,
+    "ic_expand_up": path([(0.14, 0.64), (0.50, 0.32), (0.86, 0.64)], 0.10),   # the strip's hint, tinted grey
     "ic_home": any_of(tri(0.50, 0.16, 0.14, 0.50, 0.86, 0.50),
                       minus(rect(0.24, 0.48, 0.76, 0.82), rect(0.43, 0.60, 0.57, 0.82))),
     "ic_recent": any_of(ring(0.50, 0.50, 0.33, W), path([(0.50, 0.30), (0.50, 0.50), (0.64, 0.60)], W)),
@@ -190,6 +192,10 @@ TILE = rrect(0.03, 0.03, 0.97, 0.97, 0.20)
 APP_FG = any_of(NOTE_BIG, minus(GLOBE, HALO))
 
 
+def tile_red(y):   # the tile's colour at height y, 0..1
+    return (255 - int(60 * y), int(40 * (1 - y)), int(40 * (1 - y)))
+
+
 def app_icon(path, size):
     pixels = []
     for py in range(size):
@@ -202,14 +208,46 @@ def app_icon(path, size):
                     if not TILE(x, y):
                         continue
                     n += 1
-                    c = (255, 255, 255) if APP_FG(x, y) else (255 - int(60 * y), int(40 * (1 - y)), int(40 * (1 - y)))
+                    c = (255, 255, 255) if APP_FG(x, y) else tile_red(y)
                     rgb = [s + v for s, v in zip(rgb, c)]
             row.append(tuple(v // n for v in rgb) + (n * 255 // (SS * SS),) if n else (0, 0, 0, 0))
         pixels.append(row)
     write_png(path, size, pixels)
 
 
-app_icon(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "icon.png"), 90)   # Q10 size
+GLYPH = (0.16125, 0.12625, 0.83875, 0.83875)   # APP_FG's box in the tile, measured on its pixels
+
+
+def splash(path, w, h):   # the tile's red over the screen, the glyph in the middle, a third of the short side
+    s = min(w, h) / 3 / (GLYPH[3] - GLYPH[1])   # pixels per tile unit
+    ox, oy = w / 2 - (GLYPH[0] + GLYPH[2]) / 2 * s, h / 2 - (GLYPH[1] + GLYPH[3]) / 2 * s
+
+    def at(fx, fy):
+        return APP_FG((fx - ox) / s, (fy - oy) / s)
+    x0, x1 = int(ox + GLYPH[0] * s) - 2, int(ox + GLYPH[2] * s) + 3   # the glyph's pixels, with a margin
+    y0, y1 = int(oy + GLYPH[1] * s) - 2, int(oy + GLYPH[3] * s) + 3
+    mid = {(px, py): at(px + 0.5, py + 0.5) for py in range(y0, y1) for px in range(x0, x1)}
+    pixels = []
+    for py in range(h):
+        bg = tile_red((py + 0.5) / h) + (255,)
+        row = [bg] * w
+        for px in range(x0, x1):
+            if not y0 <= py < y1:
+                break
+            if len({mid.get((px + a, py + b), False) for a in (-1, 0, 1) for b in (-1, 0, 1)}) == 1:
+                cover = 1.0 if mid[px, py] else 0.0   # only edge pixels are sampled finely
+            else:
+                cover = sum(at(px + (i + 0.5) / SS, py + (j + 0.5) / SS) for i in range(SS) for j in range(SS)) / (SS * SS)
+            if cover:
+                row[px] = tuple(int(c + (255 - c) * cover) for c in bg[:3]) + (255,)
+        pixels.append(row)
+    write_png(path, w, pixels)
+
+
+here = os.path.dirname(os.path.abspath(__file__))
+app_icon(os.path.join(here, "..", "app", "icon.png"), 90)   # Q10 size
+for w, h in ((720, 720), (720, 1280), (768, 1280), (1440, 1440)):   # Q10 Q5 Q20, Z30, Z10, Passport
+    splash(os.path.join(here, "..", "app", "splash-%dx%d.png" % (w, h)), w, h)
 
 out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "assets", "images")
 os.makedirs(out, exist_ok=True)

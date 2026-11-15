@@ -2,15 +2,17 @@ import bb.cascades 1.4
 import bb.system 1.2
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
-// bar of a tab's first page was all but empty), and there are three, Home, Search and Queue,
-// because three is what the Q10's bar shows beside the action menu: with five, the ones that
-// did not fit lived in the tab menu and took another's place on the bar when chosen ("i don't
-// like the fact that the tabs shuffle around"). Recent and Explore open from the top of Home.
+// bar of a tab's first page was all but empty), and there are four, Home, Search, Queue and Now
+// Playing (the user, 2026-11-15: a fourth tab, last, "if it fits"). Three is what the Q10's bar
+// showed beside the action menu: with five, the ones that did not fit lived in the tab menu and
+// took another's place on the bar when chosen ("i don't like the fact that the tabs shuffle
+// around"); look at the fourth on every tab's first page, with and without the action menu.
+// Recent and Explore open from the top of Home.
 // A tab's first page has its actions in the action menu; a pushed page has the bar to itself.
 // Home is first: it is the tab the app opens on. Each tab is a NavigationPane: albums, the
-// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home and
-// Queue are loaded by a delegate, so a fault in one of them costs that tab and not the app's
-// start.
+// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
+// Queue and Now Playing are loaded by a delegate, so a fault in one of them costs that tab and
+// not the app's start.
 TabbedPane {
     id: root
     showTabsOnActionBar: true
@@ -95,6 +97,19 @@ TabbedPane {
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
             source: "QueueTab.qml"
+            // A file that does not load leaves the tab empty: say why.
+            onErrorMessageChanged: {
+                root.delegateFailed(errorMessage);
+            }
+        }
+    }
+
+    Tab {
+        title: "Now Playing"
+        imageSource: "asset:///images/ic_note.png"
+        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
+        delegate: Delegate {
+            source: "NowPlayingTab.qml"
             // A file that does not load leaves the tab empty: say why.
             onErrorMessageChanged: {
                 root.delegateFailed(errorMessage);

@@ -21,6 +21,8 @@ Page {
     property bool isArtist: false
     property bool busy: false
     property bool failed: false
+    // The engine is still waking, not down: the spinner, not the error.
+    property bool waking: failed && ! engine.connected && ! engine.down
     property variant tracks: []      // the top songs
 
     function art(url, size, none) {
@@ -307,7 +309,7 @@ Page {
         // While the page loads: the spinner in the middle of what the list will fill (the
         // user, 2026-11-14: it sat at the top).
         Container {
-            visible: page.busy
+            visible: page.busy || page.waking
             horizontalAlignment: HorizontalAlignment.Fill
             layout: DockLayout {
             }
@@ -315,7 +317,7 @@ Page {
                 spaceQuota: 1
             }
             ActivityIndicator {
-                running: page.busy
+                running: page.busy || page.waking
                 horizontalAlignment: HorizontalAlignment.Center
                 verticalAlignment: VerticalAlignment.Center
                 preferredWidth: ui.du(12)
@@ -323,7 +325,7 @@ Page {
             }
         }
         Container {
-            visible: page.failed
+            visible: page.failed && ! page.waking
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {
