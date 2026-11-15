@@ -372,3 +372,31 @@ and whether a headless app's process is treated like the root shell's.
 | 0.5 controls | passed with the app open (overlay, through the UI) and, from a root shell, with no Qt at all; not yet from the headless engine itself |
 | 0.6 routing and interruptions | headphones passed; a phone call and Bluetooth untested |
 | 0.7 WebView sign-in | not started |
+
+## 0.7b The TV sign-in (device code) against music.youtube.com — 2026-11-15 (Mac, with the user)
+
+The user: "i know for a fact that the tv flow works in the Tube app, so i would likely mirror
+it". Probe (not committed; this session's scratch `tv/tvauth.py`): YouTube's TV web app's own
+OAuth client, taken from its JavaScript (`www.youtube.com/tv`, the kabuki base js: `clientId`,
+its secret, `scopes: "http://gdata.youtube.com https://www.googleapis.com/auth/youtube-paid-content"`;
+the older `youtube-paired-clients` scope is now `invalid_scope`). `POST
+www.youtube.com/o/oauth2/device/code` gives a code for google.com/device; the user entered it;
+`/o/oauth2/token` (grant `http://oauth.net/grant_type/device/1.0`) gave an access token (~22 h)
+and a refresh token. With `Authorization: Bearer`:
+
+| Client, host, browse | Answer |
+|---|---|
+| WEB_REMIX, music.youtube.com: VLLM, FEmusic_liked_playlists, FEmusic_home | 400 "Request contains an invalid argument" (Home too, which works without a token) |
+| ANDROID_MUSIC (music.youtube.com, youtubei.googleapis.com), IOS_MUSIC | 400, the same |
+| TVHTML5, music.youtube.com: FEmusic_liked_playlists | 200, logged in: the music library, in TV renderers (`tvBrowseRenderer`, `tvSurfaceContentRenderer`, tabs) |
+| TVHTML5, music.youtube.com / www.youtube.com: VLLM | 200, logged in: "Liked Music" (0 songs for this account) |
+| TVHTML5, www.youtube.com: FEplaylist_aggregation, FElibrary | 200, logged in: the account's playlists (`tileRenderer`) |
+| TVHTML5, music.youtube.com: FEmusic_home | 400 |
+
+So: a TV sign-in gives the library, playlists and Liked Music through the TV client, in TV
+renderers (a second parser), and very likely likes and playlist edits (the TV app does them);
+not a personalised music Home, which only WEB_REMIX serves and which refuses the TV token.
+Playback is untouched (VISIONOS, no sign-in). Untried: likes and edits with the TV client; a
+Google Cloud OAuth client of the user's own (ytmusicapi's way to WEB_REMIX with a token;
+refresh tokens expire after 7 days while such a project is in testing); cookies from a WebView
+(gate 0.7).
