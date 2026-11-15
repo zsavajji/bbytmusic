@@ -80,7 +80,7 @@ int main() {
         every_item_is_whole(p);
         std::string titles;
         for (const auto &s : p.sections) titles += s.title + "|";
-        CHECK_EQ(titles, std::string("Top result|Songs|Albums|Artists|Videos|Playlists|"));
+        CHECK_EQ(titles, std::string("Top result|Songs|Albums|Artists|Videos|Playlists|Podcasts|Episodes|"));
         CHECK_EQ(p.sections.at(0).title, std::string("Top result"));
         CHECK_EQ(p.sections[0].items.size(), size_t(1));
         for (const auto &s : p.sections) {
@@ -117,6 +117,64 @@ int main() {
         CHECK_EQ(a.year, std::string("1998"));
         CHECK_EQ(a.subtitle, std::string("Album \xE2\x80\xA2 Neutral Milk Hotel \xE2\x80\xA2 1998"));
         CHECK_EQ(a.id, std::string("MPREb_W0LXV3Jg2OV"));
+    }
+    {   // Podcasts filter: a shelf of shows (the publisher is the artist)
+        JsonDoc d;
+        SearchPage p;
+        CHECK(load("search_podcasts.json", d) && parse_search(d.root(), p, err));
+        CHECK_EQ(p.sections.size(), size_t(1));
+        CHECK_EQ(p.sections[0].title, std::string("Podcasts"));
+        CHECK(p.sections[0].items.size() >= 15);
+        CHECK(!p.continuation.empty());
+        every_item_is_whole(p);
+        for (const Item &it : p.sections[0].items) {
+            CHECK_EQ(it.kind, std::string("show"));
+            CHECK(it.id.rfind("MPSP", 0) == 0);
+            CHECK(!it.artist.empty() && it.thumb.rfind("https://", 0) == 0);
+        }
+        const Item &s = p.sections[0].items.at(1);
+        CHECK_EQ(s.title, std::string("The Restt Is History"));
+        CHECK_EQ(s.artist, std::string("Cave Production"));
+        CHECK_EQ(s.id, std::string("MPSPPLhGgTInWib7OR3rJ1EGKgIfKy_wi6wGpM"));
+    }
+    {   // No filter, a podcast query: the show on top (a shelf without a title), then the kinds, ending in
+        // Podcasts and Episodes (rows with a watchEndpoint of type PODCAST_EPISODE)
+        JsonDoc d;
+        SearchPage p;
+        CHECK(load("search_all_podcast.json", d) && parse_search(d.root(), p, err));
+        every_item_is_whole(p);
+        std::string titles;
+        for (const auto &s : p.sections) titles += s.title + "|";
+        CHECK_EQ(titles, std::string("Top result|Songs|Albums|Artists|Videos|Playlists|Podcasts|Episodes|"));
+        CHECK_EQ(p.sections[0].items.size(), size_t(1));
+        CHECK_EQ(p.sections[0].items[0].kind, std::string("show"));
+        CHECK_EQ(p.sections[0].items[0].id, std::string("MPSPPLEbAHi3fZpuEyBOPtr158TY-FW7P1l4Fg"));
+        CHECK_EQ(p.sections[0].items[0].artist, std::string("The Rest Is History"));
+        const auto &shows = p.sections.at(6), &episodes = p.sections.at(7);
+        CHECK(shows.items.size() >= 3);
+        for (const Item &it : shows.items) CHECK_EQ(it.kind, std::string("show"));
+        CHECK_EQ(episodes.items.size(), size_t(3));
+        const Item &e = episodes.items[0];
+        CHECK_EQ(e.kind, std::string("episode"));
+        CHECK_EQ(e.id, std::string("2dcT4tqPL_s"));
+        CHECK_EQ(e.title, std::string("Augustus: Visionary Statesman or Destroyer Of The Republic?"));
+        CHECK_EQ(e.artist, std::string("The Rest Is History"));      // the show
+        CHECK_EQ(e.album_id, std::string("MPSPPLEbAHi3fZpuEyBOPtr158TY-FW7P1l4Fg"));
+        CHECK(e.thumb.rfind("https://", 0) == 0);
+        for (const Item &it : episodes.items) CHECK_EQ(it.kind, std::string("episode"));
+    }
+    {   // An episode as the top result: a card whose title links to the episode's page
+        JsonDoc d;
+        SearchPage p;
+        CHECK(load("search_all_episode.json", d) && parse_search(d.root(), p, err));
+        every_item_is_whole(p);
+        CHECK_EQ(p.sections.at(0).title, std::string("Top result"));
+        const Item &top = p.sections[0].items.at(0);
+        CHECK_EQ(top.kind, std::string("episode"));
+        CHECK_EQ(top.id, std::string("MlPCmUiJd1Q"));
+        CHECK_EQ(top.title, std::string("Why does America have so many SERIAL KILLERS?"));
+        CHECK_EQ(top.artist, std::string("Where Did All The Serial Killers Go?"));
+        CHECK_EQ(top.album_id, std::string("MPSPPL1l34hkJI7_wejxtEhwhBtvAsdlYItEwj"));
     }
     {   // A continuation page
         JsonDoc d;

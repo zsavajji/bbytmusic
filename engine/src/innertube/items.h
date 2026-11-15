@@ -9,8 +9,8 @@
 namespace bbm {
 
 struct Item {
-    std::string kind;        // "song" "video" "episode" "album" "artist" "playlist" "station"
-    std::string id;          // videoId, or a browse id for the other kinds
+    std::string kind;        // "song" "video" "episode" "show" "album" "artist" "playlist" "station"
+    std::string id;          // videoId, or a browse id for the other kinds (a show's is MPSP...)
     std::string title, subtitle, thumb;   // subtitle: "Artist • Album" as YouTube gives it
     std::string artist, album, artist_id, album_id, playlist_id, params;
     std::string plays, year;   // YouTube's own text ("15M plays", "9.2M views"); an album's year
@@ -22,8 +22,10 @@ struct Item {
 // musicResponsiveListItemRenderer, musicTwoRowItemRenderer, playlistPanelVideoRenderer (also
 // inside playlistPanelVideoWrapperRenderer), musicCardShelfRenderer (its top result) and
 // musicMultiRowListItemRenderer (a podcast episode: kind "episode", its show as `artist` and
-// `album_id`). Returns false, leaving `out` untouched, for anything else, and for what has no kind
-// or no id (podcast episodes in the other renderers, headers, messages).
+// `album_id`; a search's episode row, a musicResponsiveListItemRenderer, is one too). A podcast
+// show (a search result that browses to MPSP...) is kind "show", its publisher the `artist`.
+// Returns false, leaving `out` untouched, for anything else, and for what has no kind or no id
+// (headers, messages).
 bool parse_item(Json renderer_parent, Item &out);
 
 // {"kind":"song","id":"...",...}: every field, strings through json_quote, duration_s as a

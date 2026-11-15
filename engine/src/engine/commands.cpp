@@ -43,7 +43,8 @@ bool index_field(Json req, const char *name, int n, int &out, Reply &err) {
 bool parse_filter(Json v, SearchFilter &out) {
     static const std::pair<const char *, SearchFilter> names[] = {
         {"all", SearchFilter::All},       {"songs", SearchFilter::Songs},     {"videos", SearchFilter::Videos},
-        {"albums", SearchFilter::Albums}, {"artists", SearchFilter::Artists}, {"playlists", SearchFilter::Playlists}};
+        {"albums", SearchFilter::Albums}, {"artists", SearchFilter::Artists}, {"playlists", SearchFilter::Playlists},
+        {"podcasts", SearchFilter::Podcasts}};
     if (v.is_null()) {
         out = SearchFilter::All;
         return true;
@@ -104,7 +105,7 @@ void Engine::add_commands() {
     server_.on("search", [this](Json req) {
         SearchFilter filter;
         if (!req["q"].is_string() || req["q"].str().empty()) return bad("q: a query is required");
-        if (!parse_filter(req["filter"], filter)) return bad("filter: all, songs, videos, albums, artists or playlists");
+        if (!parse_filter(req["filter"], filter)) return bad("filter: all, songs, videos, albums, artists, playlists or podcasts");
         SearchPage page;
         std::string err;
         const std::string q = req["q"].string();

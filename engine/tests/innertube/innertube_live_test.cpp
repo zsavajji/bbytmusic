@@ -17,7 +17,7 @@ int main() {
     struct F { SearchFilter f; const char *name, *kind; };
     for (F x : {F{SearchFilter::Songs, "songs", "song"}, F{SearchFilter::Videos, "videos", "video"},
                 F{SearchFilter::Albums, "albums", "album"}, F{SearchFilter::Artists, "artists", "artist"},
-                F{SearchFilter::Playlists, "playlists", "playlist"}}) {
+                F{SearchFilter::Playlists, "playlists", "playlist"}, F{SearchFilter::Podcasts, "podcasts", "show"}}) {
         SearchPage p;
         const bool ok = search(yt, q, x.f, p, err);
         if (!ok) std::fprintf(stderr, "%s: %s\n", x.name, err.c_str());
@@ -54,6 +54,18 @@ int main() {
 
     CHECK(search(yt, q, SearchFilter::All, all, err));
     CHECK(!all.sections.empty());
+
+    // A podcast query on All: the show first (an untitled shelf), its episodes grouped as kind episode.
+    SearchPage hist;
+    CHECK(search(yt, "joe rogan", SearchFilter::All, hist, err));
+    size_t shows = 0, episodes = 0;
+    for (const auto &s : hist.sections)
+        for (const Item &it : s.items) {
+            shows += it.kind == "show" && it.id.rfind("MPSP", 0) == 0;
+            episodes += it.kind == "episode" && it.album_id.rfind("MPSP", 0) == 0;
+        }
+    std::printf("all, \"joe rogan\": %zu shows, %zu episodes\n", shows, episodes);
+    CHECK(shows > 0 && episodes > 0);
 
     std::vector<std::string> sug;
     CHECK(suggestions(yt, "never gon", sug, err));

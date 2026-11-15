@@ -4,7 +4,8 @@ import bbmusic 1.0
 
 // The search field (focused when the page shows), suggestions while typing, the stock player's
 // segmented control as the filter, and the results under a header per kind (Songs, Albums, ...),
-// each row with its cover. A song plays with its radio; an album or a playlist opens its page.
+// each row with its cover. A song plays with its radio; a podcast episode plays alone; an album,
+// a playlist or a podcast show opens its page.
 Page {
     id: page
     property variant navPane
@@ -49,11 +50,13 @@ Page {
 
     function makeRow(item) {
         var playable = item.kind == "song" || item.kind == "video";
+        var episode = item.kind == "episode";
         return {
-            "rowType": playable ? "playable" : "other",
+            "rowType": playable ? "playable" : (episode ? "episode" : "other"),
             "title": item.title,
-            "subtitle": about(item, playable),
-            "durationText": playable && item.duration_s > 0 ? player.fmt(item.duration_s * 1000) : "",
+            // A show: its publisher. An episode: YouTube's "Episode \u2022 Jan 27, 2025 \u2022 The Rest Is History".
+            "subtitle": item.kind == "show" ? (item.artist ? item.artist : "") : about(item, playable),
+            "durationText": (playable || episode) && item.duration_s > 0 ? player.fmt(item.duration_s * 1000) : "",
             "thumbUrl": item.thumb ? item.thumb : "",
             "image": art(item.thumb),
             "item": item
@@ -68,8 +71,8 @@ Page {
     }
 
     function open(item) {
-        if (item.kind == "album" || item.kind == "playlist") {
-            openBrowse(item.id);
+        if (item.kind == "album" || item.kind == "playlist" || item.kind == "show") {
+            openBrowse(item.id);      // a show's id is the MPSP... page of AlbumPage
         } else if (item.kind == "artist") {
             var p = shelfPage.createObject();
             p.navPane = navPane;
@@ -82,6 +85,7 @@ Page {
         }
     }
 
+    // An episode's album_id is its show's page.
     function viewAlbum(item) {
         if (item.album_id) {
             openBrowse(item.album_id);
@@ -260,8 +264,8 @@ Page {
                 }
             }
         }
-        // All first, then the most used (the stock player's own control). Videos and playlists
-        // show under All.
+        // All first, then the most used (the stock player's own control). Albums, videos and
+        // playlists show under All.
         SegmentedControl {
             id: filter
             Option {
@@ -274,12 +278,12 @@ Page {
                 value: "songs"
             }
             Option {
-                text: "Albums"
-                value: "albums"
-            }
-            Option {
                 text: "Artists"
                 value: "artists"
+            }
+            Option {
+                text: "Podcasts"
+                value: "podcasts"
             }
             onSelectedValueChanged: {
                 if (page.query != "") {
@@ -408,6 +412,43 @@ Page {
                     }
                 },
                 ListItemComponent {
+                    type: "episode"
+                    StandardListItem {
+                        id: ep
+                        title: ListItemData.title
+                        description: ListItemData.subtitle
+                        status: ListItemData.durationText
+                        imageSource: ListItemData.image
+                        contextActions: [
+                            ActionSet {
+                                title: ListItemData.title
+                                subtitle: ListItemData.subtitle
+                                ActionItem {
+                                    title: "Play Next"
+                                    imageSource: "asset:///images/ic_play_next.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.queueAdd(ep.ListItem.indexPath, true);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "Add to Queue"
+                                    imageSource: "asset:///images/ic_add_queue.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: "View Podcast"
+                                    imageSource: "asset:///images/ic_podcast.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.viewAlbum(ep.ListItem.indexPath);
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                },
+                ListItemComponent {
                     type: "other"
                     StandardListItem {
                         title: ListItemData.title
@@ -425,11 +466,11 @@ Page {
 
             onTriggered: {
                 var entry = dataModel.data(indexPath);
-                if (entry.rowType == "playable") {
+                if (entry.rowType == "playable" || entry.rowType == "episode") {
                     engine.request("play", {
                         "items": [entry.item],
                         "index": 0,
-                        "radio": true
+                        "radio": entry.rowType == "playable"      // an episode has no radio worth having
                     });
                 } else if (entry.rowType == "more") {
                     page.searchMore();

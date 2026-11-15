@@ -30,6 +30,7 @@ void push_if_any(SearchPage &out, SearchSection &&sec) {
 void parse_section(Json c, SearchPage &out, SearchSection &flat) {
     if (Json shelf = c["musicShelfRenderer"]; !shelf.is_null()) {
         SearchSection sec{runs_text(shelf["title"]), {}};
+        if (sec.title.empty()) sec.title = "Top result";   // a podcast show as the top result is a shelf without a title
         add_items(shelf["contents"], sec);
         push_if_any(out, std::move(sec));
         if (out.continuation.empty()) out.continuation = shelf_continuation(shelf);
@@ -51,7 +52,7 @@ void parse_section(Json c, SearchPage &out, SearchSection &flat) {
 void group_by_kind(SearchSection &flat, SearchPage &out) {
     static const std::pair<const char *, std::vector<const char *>> groups[] = {
         {"Songs", {"song"}}, {"Albums", {"album"}}, {"Artists", {"artist"}},
-        {"Videos", {"video"}}, {"Playlists", {"playlist", "station"}}};
+        {"Videos", {"video"}}, {"Playlists", {"playlist", "station"}}, {"Podcasts", {"show"}}, {"Episodes", {"episode"}}};
     for (const auto &[title, kinds] : groups) {
         SearchSection sec{title, {}};
         for (Item &it : flat.items)
@@ -64,13 +65,16 @@ void group_by_kind(SearchSection &flat, SearchPage &out) {
 
 std::string_view search_params(SearchFilter f) {
     // From the filter chips of a live search response (2026-11-14); Playlists is the
-    // "Community playlists" chip, the one that returns user playlists rather than YouTube's.
+    // "Community playlists" chip, the one that returns user playlists rather than YouTube's;
+    // Podcasts (2026-11-15) is the "Podcasts" chip: shows (MPSP...), not episodes (those are
+    // EgWKAQJIAWoSEAQQAxAFEAoQEBAJEBUQDhAR).
     switch (f) {
         case SearchFilter::Songs:     return "EgWKAQIIAWoSEAQQAxAFEAoQEBAJEBUQDhAR";
         case SearchFilter::Videos:    return "EgWKAQIQAWoSEAQQAxAFEAoQEBAJEBUQDhAR";
         case SearchFilter::Albums:    return "EgWKAQIYAWoSEAQQAxAFEAoQEBAJEBUQDhAR";
         case SearchFilter::Artists:   return "EgWKAQIgAWoSEAQQAxAFEAoQEBAJEBUQDhAR";
         case SearchFilter::Playlists: return "EgeKAQQoAEABahIQBBADEAUQChAQEAkQFRAOEBE%3D";
+        case SearchFilter::Podcasts:  return "EgWKAQJQAWoSEAQQAxAFEAoQEBAJEBUQDhAR";
         case SearchFilter::All:       break;
     }
     return {};

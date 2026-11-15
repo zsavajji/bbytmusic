@@ -38,3 +38,10 @@ browse_podcasts.json  browse          "browseId":"FEmusic_home","params":"ggNCSg
 browse_show.json      browse          "browseId":"MPSPPLAU7ZtBFN5JI"   (a show listed in browse_podcasts.json: 20 episodes)
 browse_show_more.json browse          "continuation": the token of browse_show.json's shelf (its continuations[0]; 24 episodes, the last page),
                                       with that response's visitorData as for browse_home_more.json
+
+Added with the podcasts search (2026-11-15), the same way (hl en, gl US):
+search_podcasts.json  search          "query":"the rest is history","params":"EgWKAQJQAWoSEAQQAxAFEAoQEBAJEBUQDhAR"   (Podcasts: a shelf of shows)
+search_all_podcast.json search        same query, no params: the flat layout with the show as an untitled shelf (the top result),
+                                      three Episode rows and more shows
+search_all_episode.json search        "query":"serial"   (no params: the top result is an episode, a musicCardShelfRenderer whose title
+                                      links to MPED..., with its watchEndpoint on the Play button)

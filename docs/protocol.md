@@ -37,7 +37,7 @@ file changes with it.
 ## Commands
 
 Every reply is `{"@":id,"ok":true,"result":{…}}` or an error. An **Item** is what a search or a
-queue returns for one thing: `{"kind":"song|video|episode|album|artist|playlist|station","id":"…",
+queue returns for one thing: `{"kind":"song|video|episode|show|album|artist|playlist|station","id":"…",
 "title":"…","subtitle":"…","thumb":"https://…","artist":"…","album":"…","artist_id":"…",
 "album_id":"…","playlist_id":"…","params":"…","duration_s":214,"explicit":false,"plays":"2B plays",
 "year":"1998"}`. For a song, a video or an episode `id` is the video id; for the others a browse id. `plays`
@@ -46,14 +46,16 @@ are "" when unknown. An **episode** is a podcast episode (it streams like a vide
 show's name, `album_id` its show's browse id (`MPSP…`, which `browse` answers with a page of kind
 `show`; `artist_id` stays "" and `album` too), `subtitle` YouTube's own "148K views • Apr 16", `plays` the views, and
 `thumb` is a 16:9 video frame; `duration_s` is 0 for a live stream. Episodes come in a feed's shelves
-(Home's Podcasts chip, see `browse`) and in a show's page. A **Track** is an Item in the queue:
+(Home's Podcasts chip, see `browse`), in a show's page and in an `all` search. A **show** (a search result) is a
+podcast: `id` its browse id (`MPSP…`, which `browse` answers with a page of kind `show`), `title` its name, `artist` its
+publisher (with `artist_id` its channel's, when YouTube links it), `thumb` a square cover; it cannot be played. A **Track** is an Item in the queue:
 the same fields, of which the player uses `id`, `title`, `artist`, `album`, `thumb`,
 `duration_s`.
 
 | `cmd` | Fields | `result` |
 |---|---|---|
 | `status` | | `{"version":"…","state":"stopped\|loading\|playing\|paused","index":0,"track":Track or null,"position_ms":0,"duration_ms":0,"queue_len":0,"error":"","repeat":"off\|all\|one","shuffle":false,"eq":"off"}` |
-| `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists` | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
+| `search` | `q`, `filter`: `all` (default), `songs`, `videos`, `albums`, `artists`, `playlists`, `podcasts`; any other name is `bad_request`. Each name but `all` is a YouTube search chip, sent as `params` (`playlists` is the "Community playlists" chip; `podcasts` is the "Podcasts" chip, whose shelf "Podcasts" holds shows of kind `show`; there is no filter for episodes) | `{"sections":[{"title":"…","items":[Item]}],"continuation":"…"}` |
 | `search_more` | `continuation` | as `search` |
 | `browse` | `id`: the browse id of an album (`MPRE…`), a playlist (`VL…`), an artist (`UC…`), a podcast show (`MPSP…`) or a feed (`FEmusic_home`); `params` (optional): a string passed to YouTube with the id | `{"kind":"album\|playlist\|show","id":"…","title":"…","subtitle":"Album • 1998","second_subtitle":"11 songs • 40 minutes","artist":"…","artist_id":"…","year":"1998","thumb":"https://…","description":"…","playlist_id":"…","items":[Item]}`. An album's tracks carry the album's title, id and thumb, and the album's artist when the row names none. A playlist gives its first page (about 100 tracks) and, when there are more, a `continuation` for `browse_more`. An artist's id (a channel id, `UC…`) answers `{"kind":"artist","id":"…","title":"…","subtitle":"42.5K subscribers","thumb":"https://…","description":"…","items":[Item],"sections":[{"title":"Albums","items":[Item]}]}`: `items` are the top songs, `sections` the page's shelves in its own order and under its own titles (Albums, Singles & EPs, Videos, Featured on, Fans might also like), without the top songs. A feed (`FEmusic_home`, any `FE…`) answers `{"kind":"feed","id":"…","items":[],"sections":[…],"continuation":"…"}`: its shelves, and the token of the next ones ("" at the end). A show (`MPSP…`, the `album_id` of its episodes) answers `{"kind":"show","id":"…","title":"…","artist":"…","artist_id":"UC…","thumb":"https://…","description":"…","items":[Item],"continuation":"…"}`: `title` is the show's name, `artist` its channel (`artist_id` the channel's page), `items` its episodes, the latest first, 20 of them and a `continuation` for `browse_more`; the page puts the show's name and `album_id` on every episode that carries none. `params` is only for a feed: Home's chip "Podcasts" is `FEmusic_home` with `params` `ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB` (taken from Home's own chips, 2026-11-15; there is no browse id of its own), answered as any feed: `sections` of episodes, a genre each (Fiction, Religion, Films, …), and a `continuation` for more genres. Every `browse` result carries `sections` and `continuation`, empty where they do not apply. |
 | `browse_more` | `continuation` | `{"items":[Item],"sections":[{"title":"…","items":[Item]}],"continuation":"…"}`: a feed's next shelves (in `sections`), a playlist's next tracks or a show's next episodes (in `items`; these carry no show name or `album_id`, the page's is theirs); the other is empty. `continuation` is "" at the end. |
@@ -93,8 +95,9 @@ before anything changes, and what happens next comes as events. The exceptions a
 that ask YouTube (`search`, `search_more`, `suggest`, `radio`, and `play` with `radio`).
 
 A search for `all` that YouTube answers as one flat list comes back grouped by kind, in the
-sections "Top result", "Songs", "Albums", "Artists", "Videos" and "Playlists" (singles and EPs
-are albums; the empty ones are left out).
+sections "Top result", "Songs", "Albums", "Artists", "Videos", "Playlists", "Podcasts" (shows) and
+"Episodes" (singles and EPs are albums; the empty ones are left out). A podcast show that is the top
+result comes as a shelf without a title: it is the section "Top result" too.
 
 Every change to the queue (`play`, `radio`, `queue_add`, `queue_remove`, `queue_move`, `queue_clear`,
 `queue_shuffle`, `queue_sort`, `shuffle`, a radio page arriving) is followed by a `queue` event, and every `track` event by a `position` event.

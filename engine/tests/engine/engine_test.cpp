@@ -138,7 +138,7 @@ int main() {
         CHECK_EQ(parse(c.cmd("play", "\"items\":[]"), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("play", std::string(kTwo) + ",\"index\":5"), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("search"), d)["error"]["code"].string(), "bad_request");
-        CHECK_EQ(parse(c.cmd("search", "\"q\":\"x\",\"filter\":\"podcasts\""), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("search", "\"q\":\"x\",\"filter\":\"shows\""), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("seek"), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("jump", "\"index\":0"), d)["error"]["code"].string(), "not_found");
         CHECK_EQ(parse(c.cmd("radio"), d)["error"]["code"].string(), "not_found");   // no current track

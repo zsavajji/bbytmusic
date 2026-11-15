@@ -159,6 +159,18 @@ int main() {
         CHECK(c.hello(e->token()));
         CHECK(parse(c.cmd("stop"), d)["ok"].boolean());
         auto t0 = Clock::now();
+        Json s = parse(c.cmd("search", "\"q\":\"joe rogan\",\"filter\":\"podcasts\""), d)["result"];
+        step("search podcasts", t0);
+        size_t shows = 0, others = 0;
+        for (Json sec : s["sections"].items())
+            for (Json it : sec["items"].items()) {
+                if (it["kind"].str() == "show" && it["id"].str().rfind("MPSP", 0) == 0) ++shows;
+                else ++others;
+            }
+        std::printf("  podcasts search: %zu shows, %zu others\n", shows, others);
+        CHECK(shows > 0);
+        CHECK_EQ(others, size_t(0));
+        t0 = Clock::now();
         Json r = parse(c.cmd("browse", "\"id\":\"FEmusic_home\",\"params\":\"ggNCSgQIDBADSgQICRABSgQIBxABSgQICBABSgQIBBABSgQIDhABSgQIAxABSgQIDRABSgQIChABSgQIBhABSgQIBRAB\""), d)["result"];
         step("browse the Podcasts chip", t0);
         std::string item;

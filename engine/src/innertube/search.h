@@ -12,7 +12,7 @@ namespace bbm {
 struct SearchSection { std::string title; std::vector<Item> items; };
 struct SearchPage { std::vector<SearchSection> sections; std::string continuation; };
 
-enum class SearchFilter { All, Songs, Videos, Albums, Artists, Playlists };
+enum class SearchFilter { All, Songs, Videos, Albums, Artists, Playlists, Podcasts };
 
 // The `params` of a filter ("" for All), as the search page's own filter chips carry them.
 std::string_view search_params(SearchFilter);

@@ -69,13 +69,16 @@ void read_subtitle(Json runs, Item &it) {
         } else if (pt == "MUSIC_PAGE_TYPE_ALBUM") {
             it.album = texts[i];
             it.album_id = browse["browseId"].string();
+        } else if (pt == "MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE") {   // an episode's show
+            it.artist = texts[i];
+            it.album_id = browse["browseId"].string();
         } else if (plain_artist.empty() && !is_sep(texts[i]) && !is_label(texts[i]) && !texts[i].empty() &&
                    !std::isdigit(static_cast<unsigned char>(texts[i][0])) && browse.is_null()) {
             plain_artist = texts[i];
         }
     }
     // "Song • Rick Astley" carries no links: take the first plain run as the artist.
-    if (it.artist.empty() && (it.kind == "song" || it.kind == "video") && !plain_artist.empty())
+    if (it.artist.empty() && (it.kind == "song" || it.kind == "video" || it.kind == "show") && !plain_artist.empty())
         it.artist = plain_artist;
 }
 
@@ -83,7 +86,8 @@ void read_subtitle(Json runs, Item &it) {
 // `r` is searched for a play endpoint when nav has none.
 bool classify(Json nav, Json r, Item &it) {
     Json browse = nav["browseEndpoint"];
-    if (!browse.is_null()) {
+    // An episode's own title links to its page (MPED...): that is not what it plays, its watchEndpoint is.
+    if (!browse.is_null() && page_type(browse) != "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE") {
         it.id = browse["browseId"].string();
         const std::string pt = page_type(browse);
         if (pt == "MUSIC_PAGE_TYPE_ALBUM" || pt == "MUSIC_PAGE_TYPE_AUDIOBOOK") {
@@ -93,11 +97,13 @@ bool classify(Json nav, Json r, Item &it) {
         } else if (pt == "MUSIC_PAGE_TYPE_ARTIST" || pt == "MUSIC_PAGE_TYPE_USER_CHANNEL") {
             it.kind = "artist";
             it.artist_id = it.id;
+        } else if (pt == "MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE") {
+            it.kind = "show";   // its id is the MPSP... browse id
         } else if (pt == "MUSIC_PAGE_TYPE_PLAYLIST") {
             it.kind = "playlist";
             it.playlist_id = it.id.rfind("VL", 0) == 0 ? it.id.substr(2) : it.id;
         } else {
-            return false;   // podcasts, genres, ...
+            return false;   // genres, ...
         }
         return !it.id.empty();
     }
@@ -109,7 +115,7 @@ bool classify(Json nav, Json r, Item &it) {
         it.params = watch["params"].string();
         const std::string vt = watch.find("musicVideoType").string();
         if (vt == "MUSIC_VIDEO_TYPE_ATV") it.kind = "song";
-        else if (vt == "MUSIC_VIDEO_TYPE_PODCAST_EPISODE") return false;
+        else if (vt == "MUSIC_VIDEO_TYPE_PODCAST_EPISODE") it.kind = "episode";
         else it.kind = "video";
         return true;
     }

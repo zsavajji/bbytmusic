@@ -177,7 +177,7 @@ Page {
 
     function open(item) {
         var p;
-        if (item.kind == "album" || item.kind == "playlist") {
+        if (item.kind == "album" || item.kind == "playlist" || item.kind == "show") {   // a show: AlbumPage too
             p = albumPage.createObject();
         } else if (item.kind == "artist") {
             p = artistPage.createObject();
