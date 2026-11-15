@@ -25,6 +25,21 @@ TabbedPane {
         page.destroy();
     }
 
+    property variant lastTab: homeTab
+    onActiveTabChanged: {
+        if (activeTab != npTab) {
+            lastTab = activeTab;
+            return;
+        }
+        root.activeTab = lastTab;   // "root.": in this handler activeTab is the signal's argument
+        var nav = lastTab == searchTab ? searchNav : (lastTab == queueTab ? queueDelegate : homeDelegate).object;
+        if (nav && !(nav.top && nav.top.isNowPlaying)) {
+            var p = nowPlayingDef.createObject();
+            p.navPane = nav;
+            nav.push(p);
+        }
+    }
+
     function delegateFailed(message) {
         if (message != "") {
             errorToast.body = message;
@@ -60,10 +75,12 @@ TabbedPane {
     }
 
     Tab {
+        id: homeTab
         title: "Home"
         imageSource: "asset:///images/ic_home.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
+            id: homeDelegate
             source: "HomeTab.qml"
             // A file that does not load leaves the tab empty: say why.
             onErrorMessageChanged: {
@@ -73,6 +90,7 @@ TabbedPane {
     }
 
     Tab {
+        id: searchTab
         title: "Search"
         imageSource: "asset:///images/ic_search.png"
         // Back on this tab: type straight away.
@@ -92,10 +110,12 @@ TabbedPane {
     }
 
     Tab {
+        id: queueTab
         title: "Queue"
         imageSource: "asset:///images/ic_queue.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
+            id: queueDelegate
             source: "QueueTab.qml"
             // A file that does not load leaves the tab empty: say why.
             onErrorMessageChanged: {
@@ -104,17 +124,13 @@ TabbedPane {
         }
     }
 
+    // Not a page of its own: as a tab's first page its controls sat in the action menu. It goes
+    // back to the tab that was open and pushes Now Playing there, as the strip does (the user,
+    // 2026-11-15: "the same ui you have when tapping the bar, actions and all").
     Tab {
+        id: npTab
         title: "Now Playing"
         imageSource: "asset:///images/ic_note.png"
-        delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
-        delegate: Delegate {
-            source: "NowPlayingTab.qml"
-            // A file that does not load leaves the tab empty: say why.
-            onErrorMessageChanged: {
-                root.delegateFailed(errorMessage);
-            }
-        }
     }
 
     onCreationCompleted: {
@@ -153,6 +169,10 @@ TabbedPane {
         ComponentDefinition {
             id: settingsSheet
             source: "SettingsSheet.qml"
+        },
+        ComponentDefinition {
+            id: nowPlayingDef
+            source: "NowPlayingPage.qml"
         },
         ComponentDefinition {
             id: coverDef

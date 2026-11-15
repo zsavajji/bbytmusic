@@ -10,6 +10,7 @@ import bb.system 1.2
 Page {
     id: page
     property variant navPane
+    property bool isNowPlaying: true    // main.qml's Now Playing tab: not pushed twice
     property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
