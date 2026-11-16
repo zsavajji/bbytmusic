@@ -187,8 +187,9 @@ int main() {
         CHECK(parse(c.cmd("play", "\"items\":[" + item + "],\"radio\":true"), d)["ok"].boolean());   // radio is ignored
         CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "playing"; }, 30000, mark) >= 0);
         step("episode: playing", t0);
-        CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() > 3000; }, 30000, mark) >= 0);
-        step("  position past 3 s", t0);
+        // 6 s, not 3: an episode can open with seconds of digital silence (vQR5P1_YjHw: 2.57 s, 2026-11-16).
+        CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() > 6000; }, 30000, mark) >= 0);
+        step("  position past 6 s", t0);
         Json q = parse(c.cmd("queue"), d)["result"];
         CHECK_EQ(q["items"].size(), size_t(1));
         CHECK_EQ(q["items"][0]["kind"].string(), "episode");
@@ -197,7 +198,7 @@ int main() {
         run.join();
         const double ep_heard = audible_s(dir + "/out.wav");
         std::printf("  WAV: %.2f s of sound\n", ep_heard);
-        CHECK(ep_heard > 2.0);   // the position passed 3 s; a talk has quiet gaps
+        CHECK(ep_heard > 2.0);   // the position passed 6 s; a talk has quiet gaps
     }
     return check_done();
 }
