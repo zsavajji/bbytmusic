@@ -109,10 +109,43 @@ void truncate_file(const std::string &p, size_t keep) {
     if (f) { (void)::ftruncate(fileno(f), off_t(keep)); std::fclose(f); }
 }
 
+// A smaller cap evicts down to it at once; clear() drops every track but the open one.
+void resize_and_clear() {
+    const std::string dir = temp_dir();
+    Fake f;
+    SegmentCache c(dir, int64_t(1) << 30);
+    auto a = source(c, f, "trackA");   // stays open, and is the least recently used
+    std::string err;
+    CHECK(a->open(err));
+    for (int i = 0; i < 4; i++) { Segment s; CHECK(a->read(i, s, err)); }
+    CHECK(play(c, f, "trackB", {0, 1, 2, 3}));
+    CHECK(play(c, f, "trackC", {0, 1, 2, 3}));
+    const int64_t one = c.bytes() / 3;   // the fake tracks are all the same size
+
+    c.set_cap(one * 5 / 2);
+    CHECK_EQ(c.cap(), one * 5 / 2);
+    CHECK(c.bytes() <= c.cap());
+    CHECK(c.has("trackA.251"));
+    CHECK(!c.has("trackB.251"));
+    CHECK(c.has("trackC.251"));
+
+    c.clear();
+    CHECK(c.has("trackA.251"));
+    CHECK(!c.has("trackC.251"));
+    CHECK_EQ(c.bytes(), one);
+    CHECK_EQ(c.bytes(), disk_bytes(dir));
+
+    a.reset();
+    c.clear();
+    CHECK_EQ(c.bytes(), int64_t(0));
+    CHECK_EQ(disk_bytes(dir), int64_t(0));
+}
+
 }  // namespace
 
 int main() {
     const int64_t big = 1 << 30;
+    resize_and_clear();
 
     // A second run makes no inner call, even from a new SegmentCache over the same folder.
     {

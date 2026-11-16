@@ -298,6 +298,22 @@ void Engine::add_commands() {
         }
         return ok("{\"gl\":" + json_quote(yt_.gl()) + "}");
     });
+    server_.on("cache", [this](Json req) {
+        if (!req["cap_mb"].is_null()) {
+            if (!req["cap_mb"].is_number() || !valid_cache_mb(req["cap_mb"].i64())) return bad("cap_mb: one of 128, 256, 512, 1024, 2048");
+            const int mb = int(req["cap_mb"].i64());
+            cache_.set_cap(int64_t(mb) << 20);
+            post([this, mb] {
+                std::string err;
+                if (db_ok_ && !set_setting(db_, "cache_mb", std::to_string(mb), err)) log_warn("store: " + err);
+            });
+        }
+        if (req["clear"].boolean()) {
+            cache_.clear();   // what is open stays
+            log_info("cache: cleared, " + std::to_string(cache_.bytes() / 1024) + " KiB left");
+        }
+        return ok("{\"bytes\":" + std::to_string(cache_.bytes()) + ",\"cap_mb\":" + std::to_string(cache_.cap() >> 20) + "}");
+    });
     server_.on("skip", [this](Json req) { return skip_command(req); });
     server_.on("thumbs", [this](Json req) {
         std::vector<std::string> urls;

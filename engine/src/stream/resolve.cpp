@@ -1,6 +1,8 @@
 #include "stream/resolve.h"
 
+#include <chrono>
 #include <mutex>
+#include <thread>
 
 #include "net/http.h"
 #include "util/json.h"
@@ -119,7 +121,8 @@ bool parse_player_response(std::string_view json, const PlayerClient &client, St
     return true;
 }
 
-bool resolve_client(const std::string &video_id, const PlayerClient &c, StreamInfo &out, std::string &err) {
+bool resolve_client(const std::string &video_id, const PlayerClient &c, StreamInfo &out, std::string &err,
+                    bool *net_error) {
     Http http;
     const std::string visitor = visitor_data(http);
     HttpRequest req;
@@ -134,6 +137,7 @@ bool resolve_client(const std::string &video_id, const PlayerClient &c, StreamIn
     req.body = player_body(c, video_id, visitor);
     HttpResponse r = http.send(req);
     StreamInfo si;
+    if (net_error) *net_error = !r.error.empty();
     if (!r.error.empty()) {
         err = std::string(c.name) + ": " + r.error;
     } else if (r.status != 200) {
@@ -150,25 +154,42 @@ bool resolve_client(const std::string &video_id, const PlayerClient &c, StreamIn
 }
 
 bool resolve(const std::string &video_id, StreamInfo &out, std::string &err) {
+    // A network that drops for a moment (a car between cells, 2026-11-16: "Could not resolve
+    // host" from all three clients at once) is waited out rather than failing the track.
+    // ponytail: the waits cannot be cancelled, so a skip during them waits too (at most ~14 s
+    // of waits, and no retry once 10 s have gone).
+    static const int kWaitS[] = {2, 4, 8};
+    const auto t0 = std::chrono::steady_clock::now();
     std::string errs;
-    StreamInfo sabr;
-    for (const PlayerClient &c : player_clients()) {
-        StreamInfo si;
-        std::string e;
-        if (resolve_client(video_id, c, si, e)) {
-            if (!si.url.empty()) {
-                out = std::move(si);
-                return true;
+    for (int attempt = 0;; ++attempt) {
+        StreamInfo sabr;
+        bool net_down = false;
+        for (const PlayerClient &c : player_clients()) {
+            StreamInfo si;
+            std::string e;
+            if (resolve_client(video_id, c, si, e, &net_down)) {
+                if (!si.url.empty()) {
+                    out = std::move(si);
+                    return true;
+                }
+                if (sabr.sabr_url.empty()) sabr = std::move(si);
+                continue;
             }
-            if (sabr.sabr_url.empty()) sabr = std::move(si);
-            continue;
+            log_info("resolve " + video_id + ": " + e);
+            errs += (errs.empty() ? "" : "; ") + e;
+            if (net_down) break;   // the same host for every client: the next would fail the same way
         }
-        log_info("resolve " + video_id + ": " + e);
-        errs += (errs.empty() ? "" : "; ") + e;
-    }
-    if (!sabr.sabr_url.empty()) {
-        out = std::move(sabr);
-        return true;
+        if (!sabr.sabr_url.empty()) {
+            out = std::move(sabr);
+            return true;
+        }
+        // A slow failure (a 30 s connect timeout) is not retried: the open would block too long.
+        if (!net_down || attempt >= int(std::size(kWaitS)) ||
+            std::chrono::steady_clock::now() - t0 > std::chrono::seconds(10))
+            break;
+        log_info("resolve " + video_id + ": no network, again in " + std::to_string(kWaitS[attempt]) + " s");
+        std::this_thread::sleep_for(std::chrono::seconds(kWaitS[attempt]));
+        errs.clear();
     }
     err = "resolve " + video_id + ": " + errs;
     return false;

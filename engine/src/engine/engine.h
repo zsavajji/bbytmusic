@@ -8,11 +8,13 @@
 // writes, the radio's continuations, the now-playing calls, the idle exit and the quit.
 // Locks are taken in the order mu_, then the Player's or the Server's own; never the other way.
 #pragma once
+#include <algorithm>
 #include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <functional>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -34,6 +36,12 @@
 #include "stream/segment_cache.h"
 
 namespace bbm {
+
+// The sizes of the song cache the user can pick, in MB.
+inline constexpr int kCacheMbChoices[] = {128, 256, 512, 1024, 2048};
+inline bool valid_cache_mb(int64_t mb) {
+    return std::find(std::begin(kCacheMbChoices), std::end(kCacheMbChoices), mb) != std::end(kCacheMbChoices);
+}
 
 struct EngineOptions {
     std::string data_dir;                   // engine.json, music.db, cache/

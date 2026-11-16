@@ -2,6 +2,8 @@
 #include "engine/engine.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <cstdlib>
 #include <ctime>
 
 #include "engine/eq_sink.h"
@@ -18,7 +20,8 @@
 
 namespace bbm {
 
-Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/cache", opt_.cache_bytes) {
+// Unlimited until start() reads the stored cap: the startup scan must not evict down to the default first.
+Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/cache", INT64_MAX) {
     SourceFactory sources = opt_.sources;
     if (!sources) sources = [this](const Track &t, std::string &err) { return open_source(t, err); };
     player_ = std::make_unique<Player>(std::move(sources), [this]() -> std::unique_ptr<Sink> {
@@ -53,6 +56,16 @@ bool Engine::start(std::string &err) {
         err.clear();
     } else {
         db_ok_ = true;
+    }
+    {
+        int64_t cap = opt_.cache_bytes;
+        if (db_ok_) {
+            const std::string s = get_setting(db_, "cache_mb", "");
+            char *end = nullptr;
+            const long long mb = std::strtoll(s.c_str(), &end, 10);
+            if (!s.empty() && !*end && valid_cache_mb(mb)) cap = int64_t(mb) << 20;
+        }
+        cache_.set_cap(cap);
     }
     thumbs_ = std::make_unique<Thumbs>(opt_.data_dir + "/thumbs", [this](const std::string &url, int size, const std::string &file) {
         if (closing_) return;

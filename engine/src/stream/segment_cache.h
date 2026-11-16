@@ -1,8 +1,8 @@
 // The segment cache on disk (PLAN.md §4.5, step 1.10). Under one directory, a folder per
 // `<video_id>.<itag>` holding `init` (the file's head), `meta` (the numbers and the segment
 // table) and one file per segment (`0`, `1`, …); every file is written to a temp file and renamed.
-// A fixed cap in bytes, kept by evicting whole tracks, least recently used first, never one that
-// is pinned (open). Thread-safe.
+// A cap in bytes (set_cap changes it), kept by evicting whole tracks, least recently used first,
+// never one that is pinned (open); clear() keeps the open ones too. Thread-safe.
 #pragma once
 #include <atomic>
 #include <cstdint>
@@ -38,6 +38,11 @@ public:
     void unpin(const std::string &key);
     void remove(const std::string &key);
 
+    // The user's cap changes while running: evicts down to a smaller one at once.
+    void set_cap(int64_t cap_bytes);
+    int64_t cap() const;
+    void clear();   // every track that is not open
+
     // Segment `index` of key if its file holds exactly `size` bytes; a file of another size is deleted.
     bool get_segment(const std::string &key, int index, int64_t size, std::vector<uint8_t> &out);
     // Kept if it fits under the cap after evicting unpinned tracks; else dropped.
@@ -58,7 +63,7 @@ private:
     void scan();
 
     const std::string dir_;
-    const int64_t cap_;
+    int64_t cap_;   // m_
     mutable std::mutex m_;   // ponytail: one lock around the file IO too; per-entry locks if two tracks ever read at once
     std::map<std::string, Entry> entries_;
     int64_t total_ = 0;

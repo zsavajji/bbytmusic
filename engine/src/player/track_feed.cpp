@@ -1,6 +1,7 @@
 #include "player/track_feed.h"
 
 #include <algorithm>
+#include <chrono>
 
 namespace bbm {
 namespace {
@@ -146,10 +147,19 @@ void TrackFeed::open_entry(std::unique_lock<std::mutex> &lk) {
 void TrackFeed::open_next(std::unique_lock<std::mutex> &lk, const Track &t) {
     const uint64_t ep = epoch_, gen = next_gen_;
     opening_id_ = t.id;
-    lk.unlock();
     std::string err;
-    std::unique_ptr<Source> src = factory_(t, err);
-    lk.lock();
+    std::unique_ptr<Source> src;
+    // A next track that will not open (no network for a while) is tried again, 10 s, 20 s, 40 s...
+    // later, while the playing one still has more than 20 s to go, rather than skipped.
+    for (auto wait = std::chrono::seconds(10);; wait *= 2) {
+        lk.unlock();
+        err.clear();
+        src = factory_(t, err);
+        lk.lock();
+        const auto overtaken = [&] { return ep != epoch_ || gen != next_gen_ || quit_; };
+        if (src || overtaken() || buffered_ < 20000) break;
+        if (cv_.wait_for(lk, wait, overtaken)) break;
+    }
     opening_id_.clear();
     if (ep != epoch_ || gen != next_gen_ || quit_) return;
     add_entry(std::move(src), err, t, 0, true);

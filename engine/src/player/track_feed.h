@@ -1,7 +1,8 @@
-// The feed thread: calls the SourceFactory and Source::read, and keeps about 30 s of segments
-// ahead of the play position in a bounded buffer of chunks. When the playing track is fully
-// read it prepares the next one (factory, open, first segments) so playback can go on without
-// a gap. It shares the Player's mutex: every public method below expects the caller to hold it
+// The feed thread: calls the SourceFactory and Source::read, and keeps up to 10 min of segments
+// ahead of the play position in a bounded buffer of chunks: a song is read whole at once, so a
+// network that drops mid-song (a car in a tunnel) does not stop it. When the playing track is
+// fully read it prepares the next one (factory, open, first segments) so playback can go on
+// without a gap; a next track that will not open is tried again while there is time. It shares the Player's mutex: every public method below expects the caller to hold it
 // (the feed thread holds it too, except around blocking factory and read calls).
 #pragma once
 #include <condition_variable>
@@ -40,7 +41,9 @@ struct FeedChunk {
 class TrackFeed {
 public:
     using Successor = std::function<std::optional<Track>()>;   // the track after the current one
-    static constexpr int64_t kAheadMs = 30000;
+    // ponytail: in RAM, about 1.2 MB a minute of Opus (12 MB at most); a podcast is read 10 min
+    // at a time. Spill to the disk cache if that memory is ever wanted back.
+    static constexpr int64_t kAheadMs = 600000;
 
     TrackFeed(std::mutex &m, std::condition_variable &player_cv, SourceFactory factory, Successor next);
     ~TrackFeed();   // takes the mutex itself; joins the thread

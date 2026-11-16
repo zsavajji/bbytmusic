@@ -224,25 +224,49 @@ static void stop_and_destroy_are_quick() {
     CHECK(r3.sink->frames() < kB);
 }
 
-// A slow sink (real time) with a fast source: the feed stops about 30 s ahead.
+// A slow sink (real time) with a fast source: the feed stops kAheadMs ahead (10 min).
 static void read_ahead_is_bounded() {
     Rig r;
     r.sink->realtime = true;
-    r.tweak = [](const std::string &, FileSource::Options &o) { o.loops = 10; };   // 130 s
+    r.tweak = [](const std::string &, FileSource::Options &o) { o.loops = 60; };   // 780 s
+    // Clusters are 981 ms, but each 13 s loop ends on a short one: about 920 ms on average.
+    constexpr int kAheadReads = int(TrackFeed::kAheadMs / 981);
+    constexpr int kMaxReads = int(TrackFeed::kAheadMs / 900) + 1;
     auto t0 = std::chrono::steady_clock::now();
     r->play({mk("a")}, 0);
-    CHECK(wait_until([&] { return r->reads_for_test() >= 30; }));
+    CHECK(wait_until([&] { return r->reads_for_test() >= kAheadReads; }));
     std::this_thread::sleep_for(std::chrono::milliseconds(1200));
     const double played_s = ms_since(t0) / 1000;
-    // A loose bound on purpose: clusters are 981 ms, the clock is the wall's, and the count is
-    // read a moment after the time. The exact bound is the buffered time, two lines down.
-    CHECK(r->reads_for_test() <= 31 + int(played_s) + 4);
-    CHECK(r->reads_for_test() >= 30);
-    CHECK(r->buffered_ms_for_test() <= 31000);
-    CHECK(r->buffered_ms_for_test() >= 28000);
+    // A loose bound on purpose: the clock is the wall's, and the count is read a moment after the
+    // time. The exact bound is the buffered time, two lines down.
+    CHECK(r->reads_for_test() <= kMaxReads + int(played_s) + 4);
+    CHECK(r->reads_for_test() >= kAheadReads);
+    CHECK(r->buffered_ms_for_test() <= TrackFeed::kAheadMs + 1000);
+    CHECK(r->buffered_ms_for_test() >= TrackFeed::kAheadMs - 2000);
     CHECK(r->status().state == PlayState::Playing);
     // the sound is the sound: roughly real time, not racing ahead
     CHECK(r.sink->frames() < size_t(played_s * 48000 + 24000));
+}
+
+// The next track will not open once (a network gone a moment): with the playing one far from its
+// end, it is tried again 10 s later and opens, with no error and no skip.
+static void next_open_is_retried() {
+    Rig r;
+    r.sink->realtime = true;
+    int flaky = 0;
+    r.tweak = [&](const std::string &id, FileSource::Options &o) {
+        if (id == "a") o.loops = 3;                         // 36 s
+        if (id == "flaky") o.fail_open = flaky++ == 0;      // the first open only
+    };
+    r->play({mk("a"), mk("flaky")}, 0);
+    auto opens = [&] {
+        std::lock_guard<std::mutex> l(r.m);
+        return std::count(r.opened.begin(), r.opened.end(), "flaky");
+    };
+    CHECK(wait_until([&] { return opens() >= 1; }));
+    CHECK(wait_until([&] { return opens() >= 2; }, 14000));
+    for (auto &e : r.ev.all()) CHECK(e.kind != PlayerEvent::Error);
+    CHECK_EQ(r->status().index, 0);   // still on "a"
 }
 
 int main() {
@@ -253,5 +277,6 @@ int main() {
     queue_low();
     stop_and_destroy_are_quick();
     read_ahead_is_bounded();
+    next_open_is_retried();
     return check_done();
 }

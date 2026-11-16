@@ -87,7 +87,12 @@ void Engine::on_event(const PlayerEvent &e) {
                 save = true;
             }
         }
-        if (save) post([this, s] { save_state(s); });
+        post([this, s, save] {
+            // Over Bluetooth the car learns the elapsed time only from the metadata's position
+            // (AVRCP; the service has no position message of its own): send it each second.
+            if (bluetooth_route()) np_update(s, true);
+            if (save) save_state(s);
+        });
         skip_check(s);
         break;
     }
@@ -145,16 +150,18 @@ void Engine::np_update(const PlayerStatus &s, bool send_meta) {
     // with `title` in the message): there the artist line carries "Title – Artist", title first so a
     // cut keeps it. Over Bluetooth the same fields reach the car (AVRCP), which shows the title on
     // its own: plain fields then. A route change shows from the next update (state, queue).
-    const std::string line = bluetooth_route() || np_item_.title.empty() ? np_item_.artist
+    const bool bt = bluetooth_route();
+    if (bt) send_meta = true;   // the position too, after a pause or a seek (the car shows it)
+    const std::string line = bt || np_item_.title.empty() ? np_item_.artist
                              : np_item_.artist.empty()                     ? np_item_.title
                                                                            : np_item_.title + " \u2013 " + np_item_.artist;
     if (send_meta || has_next != np_sent_next_ || s.duration_ms != np_sent_ms_ || art != np_sent_art_ ||
         line != np_sent_line_) {
+        if (!art.empty() && art != np_sent_art_) log_info("now-playing: art " + art);
         np_sent_next_ = has_next;
         np_sent_ms_ = s.duration_ms;
         np_sent_art_ = art;
         np_sent_line_ = line;
-        if (!art.empty()) log_info("now-playing: art " + art);
         np_.set_metadata(np_item_.title, line, np_item_.album, s.duration_ms, s.position_ms, has_next, true, art);
     }
     np_.set_state(playing ? NowPlaying::State::Playing

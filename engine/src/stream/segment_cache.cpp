@@ -258,6 +258,25 @@ void SegmentCache::put_segment(const std::string &key, int index, const std::vec
     touch(key, it->second);
 }
 
+void SegmentCache::set_cap(int64_t cap_bytes) {
+    std::lock_guard<std::mutex> lk(m_);
+    cap_ = cap_bytes;
+    make_room(0, "");
+}
+
+int64_t SegmentCache::cap() const {
+    std::lock_guard<std::mutex> lk(m_);
+    return cap_;
+}
+
+void SegmentCache::clear() {
+    std::lock_guard<std::mutex> lk(m_);
+    std::vector<std::string> keys;   // erase() takes the entry out of the map: collect first
+    for (const auto &[key, e] : entries_)
+        if (e.pins == 0) keys.push_back(key);
+    for (const std::string &key : keys) erase(key);
+}
+
 int64_t SegmentCache::bytes() const {
     std::lock_guard<std::mutex> lk(m_);
     return total_;

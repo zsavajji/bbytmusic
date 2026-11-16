@@ -1,14 +1,17 @@
 import bb.cascades 1.4
 import "regions.js" as Regions
 
-// Settings, from the application menu: the country of the content, and which marked parts of a
-// track are skipped (SponsorBlock). All off, the default, means the service is never asked.
+// Settings, from the application menu: the country of the content, which marked parts of a
+// track are skipped (SponsorBlock) and the space kept for songs. All skips off, the default,
+// means the service is never asked.
 // Created when asked for, gone when closed; each choice is saved by the engine as it is made.
 Sheet {
     id: sheet
     property string listReq: ""
     property string regionReq: ""
+    property string cacheReq: ""
     property string gl: ""          // the country in use, as the engine last said or was told
+    property int capMb: 0           // the cache's cap, as the engine last said (0: not yet)
     property bool filling: false    // the controls are being set from the engine's answers
 
     function has(list, name) {
@@ -79,6 +82,21 @@ Sheet {
                 sheet.filling = false;
             }
         }
+        if (id != "" && id == sheet.cacheReq) {
+            sheet.cacheReq = "";
+            if (ok) {
+                sheet.capMb = result.cap_mb;
+                cacheUse.text = Math.round(result.bytes / 1048576) + " MB used of " +
+                    (result.cap_mb >= 1024 ? result.cap_mb / 1024 + " GB" : result.cap_mb + " MB");
+                sheet.filling = true;
+                for (var i = 0; i < cacheSize.count(); i ++) {
+                    if (cacheSize.at(i).value == result.cap_mb) {
+                        cacheSize.selectedIndex = i;
+                    }
+                }
+                sheet.filling = false;
+            }
+        }
     }
 
     function send() {
@@ -107,6 +125,7 @@ Sheet {
         engine.reply.connect(sheet.onReply);
         listReq = engine.request("skip", {});
         regionReq = engine.request("region", {});
+        cacheReq = engine.request("cache", {});
         sheet.open();
     }
 
@@ -245,6 +264,69 @@ Sheet {
                             onCheckedChanged: {
                                 sheet.send();
                             }
+                        }
+                    }
+                }
+                Header {
+                    title: "Storage"
+                }
+                Container {
+                    leftPadding: ui.du(2)
+                    rightPadding: ui.du(2)
+                    topPadding: ui.du(1)
+                    bottomPadding: ui.du(2)
+                    Label {
+                        text: "Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full."
+                        multiline: true
+                        textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                    }
+                    Label {
+                        id: cacheUse
+                        topMargin: ui.du(2)
+                    }
+                    DropDown {
+                        id: cacheSize
+                        title: "Space for songs"
+                        topMargin: ui.du(2)
+                        Option {
+                            text: "128 MB"
+                            value: 128
+                        }
+                        Option {
+                            text: "256 MB"
+                            value: 256
+                        }
+                        Option {
+                            text: "512 MB"
+                            value: 512
+                        }
+                        Option {
+                            text: "1 GB"
+                            value: 1024
+                        }
+                        Option {
+                            text: "2 GB"
+                            value: 2048
+                        }
+                        // The Options being added also fire "changed", before the engine has said what is in use.
+                        onSelectedIndexChanged: {
+                            if (sheet.filling || sheet.capMb == 0 || cacheSize.selectedIndex < 0 || cacheSize.selectedValue == sheet.capMb) {
+                                return;
+                            }
+                            sheet.cacheReq = engine.request("cache", {
+                                "cap_mb": cacheSize.selectedValue
+                            });
+                        }
+                    }
+                    Button {
+                        text: "Clear cache"
+                        topMargin: ui.du(2)
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        onClicked: {
+                            sheet.cacheReq = engine.request("cache", {
+                                "clear": true
+                            });
                         }
                     }
                 }
