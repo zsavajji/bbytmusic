@@ -246,6 +246,7 @@ def splash(path, w, h):   # the tile's red over the screen, the glyph in the mid
 
 here = os.path.dirname(os.path.abspath(__file__))
 app_icon(os.path.join(here, "..", "app", "icon.png"), 90)   # Q10 size
+app_icon(os.path.join(here, "..", "app", "assets", "images", "app_icon.png"), 144)   # the About sheet
 for w, h in ((720, 720), (720, 1280), (768, 1280), (1440, 1440)):   # Q10 Q5 Q20, Z30, Z10, Passport
     splash(os.path.join(here, "..", "app", "splash-%dx%d.png" % (w, h)), w, h)
 

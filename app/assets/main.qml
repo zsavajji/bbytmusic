@@ -68,7 +68,10 @@ TabbedPane {
                 title: "About"
                 imageSource: "asset:///images/ic_info.png"
                 onTriggered: {
-                    about.show();
+                    var sheet = aboutSheet.createObject();
+                    if (sheet) {
+                        sheet.open();
+                    }
                 }
             }
         ]
@@ -178,12 +181,9 @@ TabbedPane {
             id: coverDef
             source: "AppCover.qml"
         },
-        SystemDialog {
-            id: about
-            title: "BBMusic"
-            body: "A YouTube Music client.\nVersion 0.1.0"
-            confirmButton.label: "OK"
-            cancelButton.label: ""
+        ComponentDefinition {
+            id: aboutSheet
+            source: "AboutSheet.qml"
         }
     ]
 }

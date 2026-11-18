@@ -2,10 +2,10 @@
 <qnx xmlns="http://www.qnx.com/schemas/application/1.0">
     <id>com.zsavajji.bbmusic</id>
     <name>BBMusic</name>
-    <versionNumber>0.1.0</versionNumber>
+    <versionNumber>1.0.0</versionNumber>
     <!-- Overwritten at packaging by -buildIdFile (scripts/build-app.sh). -->
     <buildId>1</buildId>
-    <description>A YouTube Music client.</description>
+    <description>An unofficial YouTube Music client.</description>
     <author>zsavajji</author>
     <!-- 90 x 90, the Q10's size; drawn by scripts/gen-icons.py. -->
     <icon>
