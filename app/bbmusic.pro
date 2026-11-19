@@ -13,3 +13,8 @@ HEADERS += src/EngineLink.h src/PlayerState.h src/Thumbs.h src/UiLog.h
 DESTDIR = app
 OBJECTS_DIR = obj
 MOC_DIR = moc
+
+# The .ts files: scripts/build-app.sh updates them from the QML and compiles them to build/qm.
+TRANSLATIONS += translations/bbmusic_en.ts translations/bbmusic_it.ts translations/bbmusic_fr.ts translations/bbmusic_de.ts \
+    translations/bbmusic_pl.ts translations/bbmusic_ru.ts translations/bbmusic_uk.ts \
+    translations/bbmusic_hi.ts translations/bbmusic_vi.ts

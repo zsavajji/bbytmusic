@@ -16,23 +16,25 @@ Sheet {
     // track: an Item of docs/protocol.md.
     function show(track) {
         infoModel.clear();
-        row("Title", track.title);
-        row("Artist", track.artist);
-        row("Album", track.album);
-        row("Year", track.year);
-        row("Length", track.duration_s > 0 ? player.fmt(track.duration_s * 1000) : "");
-        row("Plays", track.plays);
-        row("Type", track.kind == "video" ? "Video" : (track.kind == "episode" ? "Episode" : "Song"));
-        row("Explicit", track.explicit ? "Yes" : "");
-        row("Link", track.id ? "https://music.youtube.com/watch?v=" + track.id : "");
+        row(qsTr("Title"), track.title);
+        row(qsTr("Artist"), track.artist);
+        row(qsTr("Album"), track.album);
+        row(qsTr("Year"), track.year);
+        row(qsTr("Length"), track.duration_s > 0 ? player.fmt(track.duration_s * 1000) : "");
+        row(qsTr("Plays"), track.plays);
+        var kind = track.kind == "video" ? qsTr("Video") : (track.kind == "episode" ? qsTr("Episode") : qsTr("Song"));
+        //: label of a row whose value says what kind of item it is (song, video, episode)
+        row(qsTr("Type"), kind);
+        row(qsTr("Explicit"), track.explicit ? qsTr("Yes") : "");
+        row(qsTr("Link"), track.id ? "https://music.youtube.com/watch?v=" + track.id : "");
         sheet.open();
     }
 
     Page {
         titleBar: TitleBar {
-            title: "Properties"
+            title: qsTr("Properties")
             dismissAction: ActionItem {
-                title: "Close"
+                title: qsTr("Close")
                 onTriggered: {
                     sheet.close();
                 }

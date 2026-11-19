@@ -2,9 +2,11 @@
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
 #include <QDir>
+#include <QLocale>
 #include <QFile>
 #include <QStringList>
 #include <QTimer>
+#include <QTranslator>
 #include <QtDeclarative>
 
 #include "EngineLink.h"
@@ -45,6 +47,12 @@ Q_DECL_EXPORT int main(int argc, char **argv)
 {
     Application app(argc, argv);
     uiLog("ui started");
+
+    // ponytail: the language is read once at start; a change in the system's settings shows on
+    // the next launch (bb::cascades::LocaleHandler would retranslate live).
+    QTranslator translator;
+    if (translator.load("bbmusic_" + QLocale().name(), "app/native/qm"))
+        app.installTranslator(&translator);
 
     EngineLink engine(&app);
     PlayerState player(&app);

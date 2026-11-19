@@ -97,7 +97,7 @@ Page {
         if (continuation != "") {
             rows.push({
                 "rowType": "more",
-                "title": "More"
+                "title": qsTr("More")
             });
         }
         return rows;
@@ -122,22 +122,22 @@ Page {
             // What were tabs of their own until the bar could not hold them (main.qml).
             rows.push({
                 "rowType": "link",
-                "title": "Recently played",
-                "subtitle": "What you listened to, the latest first",
+                "title": qsTr("Recently played"),
+                "subtitle": qsTr("What you listened to, the latest first"),
                 "image": "asset:///images/ic_recent.png",
                 "target": "recent"
             });
             rows.push({
                 "rowType": "link",
-                "title": "Explore",
-                "subtitle": "New releases, trending, new videos",
+                "title": qsTr("Explore"),
+                "subtitle": qsTr("New releases, trending, new videos"),
                 "image": "asset:///images/ic_explore.png",
                 "target": "FEmusic_explore"
             });
             rows.push({
                 "rowType": "link",
-                "title": "Podcasts",
-                "subtitle": "Episodes by genre",
+                "title": qsTr("Podcasts"),
+                "subtitle": qsTr("Episodes by genre"),
                 "image": "asset:///images/ic_podcast.png",
                 "target": "podcasts"
             });
@@ -145,7 +145,7 @@ Page {
         if (top.length > 0) {
             rows.push({
                 "rowType": "header",
-                "title": "Top songs"
+                "title": qsTr("Top songs")
             });
             for (var i = 0; i < top.length; i ++) {
                 rows.push(makeRow(top[i]));
@@ -184,7 +184,7 @@ Page {
         } else if (item.kind == "artist") {
             p = artistPage.createObject();
         } else {
-            notice.body = "Not yet";
+            notice.body = qsTr("Not yet");
             notice.show();
             return;
         }
@@ -329,11 +329,11 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {
-                text: "This page could not be loaded."
+                text: qsTr("This page could not be loaded.")
                 horizontalAlignment: HorizontalAlignment.Center
             }
             Button {
-                text: "Retry"
+                text: qsTr("Retry")
                 horizontalAlignment: HorizontalAlignment.Center
                 onClicked: {
                     page.load();
@@ -428,14 +428,15 @@ Page {
                                 title: ListItemData.title
                                 subtitle: ListItemData.subtitle
                                 ActionItem {
-                                    title: "Play Next"
+                                    //: puts the song right after the one playing
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, false);
@@ -458,21 +459,21 @@ Page {
                                 title: ListItemData.title
                                 subtitle: ListItemData.subtitle
                                 ActionItem {
-                                    title: "Play Next"
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
                                     }
                                 }
                                 ActionItem {
-                                    title: "View Podcast"
+                                    title: qsTr("View Podcast")
                                     imageSource: "asset:///images/ic_podcast.png"
                                     onTriggered: {
                                         ep.ListItem.view.viewShow(ep.ListItem.indexPath);
@@ -558,7 +559,8 @@ Page {
         },
         ActionItem {
             id: playAction
-            title: "Play"
+            //: verb, starts playback
+            title: qsTr("Play")
             imageSource: "asset:///images/ic_play.png"
             onTriggered: {
                 engine.request("play", {

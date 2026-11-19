@@ -48,7 +48,8 @@ Page {
             "current": current,
             "title": current ? "<html><span style='color:#ff4e45'>" + esc(title) + "</span></html>" : title,
             "subtitle": sub,
-            "status": editing ? "" : (current ? "Playing" : time),
+            //: shown on the row of the song that is playing now
+            "status": editing ? "" : (current ? qsTr("Playing") : time),
             "thumbUrl": t.thumb ? t.thumb : "",
             "image": art(t.thumb)
         };
@@ -248,7 +249,8 @@ Page {
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
-            title: page.editing ? "Done" : "Edit Order"
+            //: the button that switches the queue to a mode where rows can be dragged (Edit Order), and back (Done)
+            title: page.editing ? qsTr("Done") : qsTr("Edit Order")
             imageSource: "asset:///images/ic_reorder.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
@@ -259,7 +261,7 @@ Page {
             }
         },
         ActionItem {
-            title: player.shuffle ? "Shuffle: On" : "Shuffle: Off"
+            title: player.shuffle ? qsTr("Shuffle: On") : qsTr("Shuffle: Off")
             imageSource: "asset:///images/ic_shuffle.png"
             // An ordinary action, not the Signature one (the user, 2026-11-14): on the bar when
             // the page is pushed from Now Playing, in the action menu on the Queue tab, whose
@@ -275,7 +277,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Sort by Title"
+            title: qsTr("Sort by Title")
             imageSource: "asset:///images/ic_sort.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -283,7 +285,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Sort by Artist"
+            title: qsTr("Sort by Artist")
             imageSource: "asset:///images/ic_sort.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -291,7 +293,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Sort by Album"
+            title: qsTr("Sort by Album")
             imageSource: "asset:///images/ic_sort.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -299,7 +301,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Sort by Length"
+            title: qsTr("Sort by Length")
             imageSource: "asset:///images/ic_sort.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -307,7 +309,8 @@ Page {
             }
         },
         ActionItem {
-            title: player.playing ? "Pause" : "Play"
+            //: verbs, the button that pauses or starts playback
+            title: player.playing ? qsTr("Pause") : qsTr("Play")
             imageSource: player.playing ? "asset:///images/ic_pause.png" : "asset:///images/ic_play.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -318,7 +321,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Next"
+            title: qsTr("Next")
             imageSource: "asset:///images/ic_next.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -329,7 +332,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Previous"
+            title: qsTr("Previous")
             imageSource: "asset:///images/ic_previous.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -341,7 +344,8 @@ Page {
         },
         // Everything but the track that is playing.
         DeleteActionItem {
-            title: "Clear"
+            //: verb, empties the queue
+            title: qsTr("Clear")
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
                 engine.request("queue_clear", {});
@@ -356,11 +360,11 @@ Page {
         ConnectionBar {
         }
         Header {
-            title: page.editing ? "Drag a row to move it" : "Queue"
-            subtitle: page.tracks.length == 1 ? "1 track" : page.tracks.length + " tracks"
+            title: page.editing ? qsTr("Drag a row to move it") : qsTr("Queue")
+            subtitle: qsTr("%n track(s)", "", page.tracks.length)
         }
         Label {
-            text: "The queue is empty. Play something from Search."
+            text: qsTr("The queue is empty. Play something from Search.")
             multiline: true
             visible: page.tracks.length == 0
             horizontalAlignment: HorizontalAlignment.Center
@@ -430,14 +434,16 @@ Page {
                         ActionSet {
                             title: ListItemData.subtitle
                             ActionItem {
-                                title: "Play Next"
+                                //: puts the song right after the one playing
+                                title: qsTr("Play Next")
                                 imageSource: "asset:///images/ic_play_next.png"
                                 onTriggered: {
                                     row.ListItem.view.playNext(row.ListItem.indexPath[0]);
                                 }
                             }
                             DeleteActionItem {
-                                title: "Remove"
+                                //: removes the song from the queue
+                                title: qsTr("Remove")
                                 onTriggered: {
                                     row.ListItem.view.remove(row.ListItem.indexPath[0]);
                                 }

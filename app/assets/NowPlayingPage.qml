@@ -51,7 +51,7 @@ Page {
     function viewAlbum() {
         var id = player.track.album_id;
         if (! id || ! navPane) {
-            notice.body = "This track has no album page.";
+            notice.body = qsTr("This track has no album page.");
             notice.show();
             return;
         }
@@ -64,7 +64,7 @@ Page {
     function viewArtist() {
         var id = player.track.artist_id;
         if (! id || ! navPane) {
-            notice.body = "This artist has no page.";
+            notice.body = qsTr("This artist has no page.");
             notice.show();
             return;
         }
@@ -110,7 +110,7 @@ Page {
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
-            title: "Previous"
+            title: qsTr("Previous")
             imageSource: "asset:///images/ic_previous.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
@@ -121,7 +121,8 @@ Page {
             }
         },
         ActionItem {
-            title: player.playing ? "Pause" : "Play"
+            //: verbs, the button that pauses or starts playback
+            title: player.playing ? qsTr("Pause") : qsTr("Play")
             imageSource: player.playing ? "asset:///images/ic_pause.png" : "asset:///images/ic_play.png"
             ActionBar.placement: ActionBarPlacement.Signature
             shortcuts: Shortcut {
@@ -132,7 +133,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Next"
+            title: qsTr("Next")
             imageSource: "asset:///images/ic_next.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
@@ -143,7 +144,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Queue"
+            title: qsTr("Queue")
             imageSource: "asset:///images/ic_queue.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -154,7 +155,7 @@ Page {
             }
         },
         ActionItem {
-            title: player.track.kind == "episode" ? "View Podcast" : "View Album"
+            title: player.track.kind == "episode" ? qsTr("View Podcast") : qsTr("View Album")
             imageSource: "asset:///images/ic_album.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -165,7 +166,7 @@ Page {
             }
         },
         ActionItem {
-            title: "View Artist"
+            title: qsTr("View Artist")
             imageSource: "asset:///images/ic_artist.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -173,7 +174,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Start Radio"
+            title: qsTr("Start Radio")
             imageSource: "asset:///images/ic_radio.png"
             enabled: player.track.kind != "episode"
             ActionBar.placement: ActionBarPlacement.InOverflow
@@ -194,7 +195,7 @@ Page {
             }
         },
         ActionItem {
-            title: player.eq == "off" || player.eq == "" ? "Equalizer (Off)" : "Equalizer (On)"
+            title: player.eq == "off" || player.eq == "" ? qsTr("Equalizer (Off)") : qsTr("Equalizer (On)")
             imageSource: "asset:///images/ic_equalizer.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -205,7 +206,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Properties"
+            title: qsTr("Properties")
             imageSource: "asset:///images/ic_info.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
@@ -235,7 +236,7 @@ Page {
                 bottomMargin: 0
             }
             Label {
-                text: player.state == "loading" ? "Loading..." : player.artist
+                text: player.state == "loading" ? qsTr("Loading...") : player.artist
                 textStyle.fontSize: FontSize.Small
                 textStyle.color: Color.create("#969696")
                 topMargin: 0

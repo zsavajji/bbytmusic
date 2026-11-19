@@ -161,7 +161,7 @@ Page {
 
     function viewArtist() {
         if (! info || ! info.artist_id) {
-            notice.body = "This artist has no page.";
+            notice.body = qsTr("This artist has no page.");
             notice.show();
             return;
         }
@@ -177,7 +177,7 @@ Page {
                 "items": items,
                 "next": next
             });
-            notice.body = next ? "Plays next." : "Added to the queue.";
+            notice.body = next ? qsTr("Plays next.") : qsTr("Added to the queue.");
             notice.show();
         }
     }
@@ -249,7 +249,8 @@ Page {
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
-            title: "Shuffle"
+            //: verb, plays the list in random order
+            title: qsTr("Shuffle")
             imageSource: "asset:///images/ic_shuffle.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             shortcuts: Shortcut {
@@ -266,7 +267,8 @@ Page {
             }
         },
         ActionItem {
-            title: "Play"
+            //: verb, starts playback
+            title: qsTr("Play")
             imageSource: "asset:///images/ic_play.png"
             ActionBar.placement: ActionBarPlacement.Signature
             onTriggered: {
@@ -274,7 +276,8 @@ Page {
             }
         },
         ActionItem {
-            title: "Play Next"
+            //: puts the song right after the one playing
+            title: qsTr("Play Next")
             imageSource: "asset:///images/ic_play_next.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -282,7 +285,7 @@ Page {
             }
         },
         ActionItem {
-            title: "Add to Queue"
+            title: qsTr("Add to Queue")
             imageSource: "asset:///images/ic_add_queue.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -290,7 +293,7 @@ Page {
             }
         },
         ActionItem {
-            title: "View Artist"
+            title: qsTr("View Artist")
             imageSource: "asset:///images/ic_artist.png"
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
@@ -338,11 +341,11 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {
-                text: "This page could not be loaded."
+                text: qsTr("This page could not be loaded.")
                 horizontalAlignment: HorizontalAlignment.Center
             }
             Button {
-                text: "Retry"
+                text: qsTr("Retry")
                 horizontalAlignment: HorizontalAlignment.Center
                 onClicked: {
                     page.load();
@@ -448,21 +451,21 @@ Page {
                             ActionSet {
                                 title: ListItemData.title
                                 ActionItem {
-                                    title: "Play Next"
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         track.ListItem.view.queueAdd(track.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         track.ListItem.view.queueAdd(track.ListItem.indexPath, false);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Start Radio"
+                                    title: qsTr("Start Radio")
                                     imageSource: "asset:///images/ic_radio.png"
                                     onTriggered: {
                                         track.ListItem.view.radio(track.ListItem.indexPath);
@@ -484,14 +487,14 @@ Page {
                             ActionSet {
                                 title: ListItemData.title
                                 ActionItem {
-                                    title: "Play Next"
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         etrack.ListItem.view.queueAdd(etrack.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         etrack.ListItem.view.queueAdd(etrack.ListItem.indexPath, false);
@@ -513,21 +516,21 @@ Page {
                             ActionSet {
                                 title: ListItemData.title
                                 ActionItem {
-                                    title: "Play Next"
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         ptrack.ListItem.view.queueAdd(ptrack.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ptrack.ListItem.view.queueAdd(ptrack.ListItem.indexPath, false);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Start Radio"
+                                    title: qsTr("Start Radio")
                                     imageSource: "asset:///images/ic_radio.png"
                                     onTriggered: {
                                         ptrack.ListItem.view.radio(ptrack.ListItem.indexPath);

@@ -14,14 +14,14 @@ Container {
     bottomPadding: ui.du(1)
 
     Label {
-        text: "The engine is not connected."
+        text: qsTr("The engine is not connected.")
         verticalAlignment: VerticalAlignment.Center
         layoutProperties: StackLayoutProperties {
             spaceQuota: 1
         }
     }
     Button {
-        text: "Retry"
+        text: qsTr("Retry")
         preferredWidth: ui.du(18)
         onClicked: {
             engine.retry();

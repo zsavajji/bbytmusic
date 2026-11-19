@@ -37,6 +37,14 @@ docker run --rm -v "$ROOT:/src" -w /src "$IMAGE" bash -c '
 		echo "build-app.sh: QML that Qt 4.8 cannot parse" >&2
 		exit 1
 	fi
+	# The translations: new strings into app/translations/*.ts, then compiled for the bar.
+	# bbmusic_en.ts holds only the plurals ("1 track", "5 tracks").
+	lupdate -silent app/assets/*.qml app/assets/*.js app/src/*.cpp -ts $(ls app/translations/*.ts | grep -v _en.ts)
+	lupdate -silent -pluralonly app/assets/*.qml app/assets/*.js app/src/*.cpp -ts app/translations/bbmusic_en.ts
+	mkdir -p build/qm
+	for ts in app/translations/*.ts; do
+		lrelease -silent "$ts" -qm "build/qm/$(basename "${ts%.ts}").qm"
+	done
 	(cd build/app-ui && qmake -spec blackberry-armv7le-qcc CONFIG+=device ../../app/bbmusic.pro >/dev/null &&
 		make -j"$(nproc)" >/dev/null)
 	ls -l build/app-ui/app/bbmusic

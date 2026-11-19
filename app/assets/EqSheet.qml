@@ -7,8 +7,30 @@ Sheet {
     property string listReq: ""
     property variant presets: []
 
-    // "bass_boost" -> "Bass Boost"
+    // The engine's preset ids as the list shows them: the ones it ships, translated; any other
+    // as its id read aloud ("bass_boost" -> "Bass Boost").
     function pretty(name) {
+        if (name == "off") {
+            return qsTr("Off");
+        } else if (name == "bass_boost") {
+            return qsTr("Bass Boost");
+        } else if (name == "treble_boost") {
+            return qsTr("Treble Boost");
+        } else if (name == "vocal") {
+            return qsTr("Vocal");
+        } else if (name == "rock") {
+            return qsTr("Rock");
+        } else if (name == "pop") {
+            return qsTr("Pop");
+        } else if (name == "jazz") {
+            return qsTr("Jazz");
+        } else if (name == "classical") {
+            return qsTr("Classical");
+        } else if (name == "electronic") {
+            return qsTr("Electronic");
+        } else if (name == "loudness") {
+            return qsTr("Loudness");
+        }
         var words = name.split("_");
         for (var i = 0; i < words.length; i ++) {
             words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
@@ -23,7 +45,7 @@ Sheet {
             rows.push({
                 "name": names[i],
                 "title": pretty(names[i]),
-                "status": names[i] == player.eq ? "On" : ""
+                "status": names[i] == player.eq ? qsTr("On") : ""
             });
         }
         presetModel.clear();
@@ -68,9 +90,9 @@ Sheet {
 
     Page {
         titleBar: TitleBar {
-            title: "Equalizer"
+            title: qsTr("Equalizer")
             dismissAction: ActionItem {
-                title: "Close"
+                title: qsTr("Close")
                 onTriggered: {
                     sheet.close();
                 }

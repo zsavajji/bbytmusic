@@ -57,7 +57,7 @@ Page {
     function viewAlbum(index) {
         var id = tracks[index].album_id;
         if (! id) {
-            notice.body = "This track has no album page.";
+            notice.body = qsTr("This track has no album page.");
             notice.show();
             return;
         }
@@ -125,7 +125,8 @@ Page {
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
-            title: "Play All"
+            //: plays every song of the list
+            title: qsTr("Play All")
             imageSource: "asset:///images/ic_play.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
@@ -147,11 +148,11 @@ Page {
         ConnectionBar {
         }
         Header {
-            title: "Recently played"
-            subtitle: page.tracks.length == 1 ? "1 track" : page.tracks.length + " tracks"
+            title: qsTr("Recently played")
+            subtitle: qsTr("%n track(s)", "", page.tracks.length)
         }
         Label {
-            text: "Nothing yet. What you listen to shows up here."
+            text: qsTr("Nothing yet. What you listen to shows up here.")
             multiline: true
             visible: page.asked && page.tracks.length == 0 && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
@@ -168,11 +169,11 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {
-                text: "This page could not be loaded."
+                text: qsTr("This page could not be loaded.")
                 horizontalAlignment: HorizontalAlignment.Center
             }
             Button {
-                text: "Retry"
+                text: qsTr("Retry")
                 horizontalAlignment: HorizontalAlignment.Center
                 onClicked: {
                     page.refresh();
@@ -212,21 +213,22 @@ Page {
                             title: ListItemData.title
                             subtitle: ListItemData.subtitle
                             ActionItem {
-                                title: "Play Next"
+                                //: puts the song right after the one playing
+                                title: qsTr("Play Next")
                                 imageSource: "asset:///images/ic_play_next.png"
                                 onTriggered: {
                                     row.ListItem.view.queueAdd(row.ListItem.indexPath[0], true);
                                 }
                             }
                             ActionItem {
-                                title: "Add to Queue"
+                                title: qsTr("Add to Queue")
                                 imageSource: "asset:///images/ic_add_queue.png"
                                 onTriggered: {
                                     row.ListItem.view.queueAdd(row.ListItem.indexPath[0], false);
                                 }
                             }
                             ActionItem {
-                                title: "View Album"
+                                title: qsTr("View Album")
                                 imageSource: "asset:///images/ic_album.png"
                                 onTriggered: {
                                     row.ListItem.view.viewAlbum(row.ListItem.indexPath[0]);

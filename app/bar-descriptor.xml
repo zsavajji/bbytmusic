@@ -62,6 +62,8 @@
 
     <!-- The QML: app/native/assets. -->
     <asset path="assets">assets</asset>
+    <!-- The translations, compiled by scripts/build-app.sh: app/native/qm. -->
+    <asset path="../build/qm">qm</asset>
 
     <permission system="true">run_native</permission>
     <permission>access_internet</permission>

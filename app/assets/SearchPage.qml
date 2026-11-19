@@ -82,7 +82,7 @@ Page {
             navPane.push(p);
         } else {
             // A station: a later step.
-            notice.body = "Not yet";
+            notice.body = qsTr("Not yet");
             notice.show();
         }
     }
@@ -92,7 +92,7 @@ Page {
         if (item.album_id) {
             openBrowse(item.album_id);
         } else {
-            notice.body = "This track has no album page.";
+            notice.body = qsTr("This track has no album page.");
             notice.show();
         }
     }
@@ -134,7 +134,7 @@ Page {
         if (continuation != "") {
             rows.push({
                 "rowType": "more",
-                "title": "More"
+                "title": qsTr("More")
             });
         }
         if (rows.length > 0) {
@@ -158,7 +158,7 @@ Page {
         busy = searchId != "";
         failed = ! busy;
         if (! busy && engine.down) {
-            notice.body = "The engine is not connected.";
+            notice.body = qsTr("The engine is not connected.");
             notice.show();
         }
     }
@@ -254,7 +254,7 @@ Page {
             topPadding: ui.du(1)
             TextField {
                 id: field
-                hintText: "Search"
+                hintText: qsTr("Search")
                 clearButtonVisible: true
                 input.submitKey: SubmitKey.Search
                 input.flags: TextInputFlag.AutoCapitalizationOff | TextInputFlag.AutoCorrectionOff | TextInputFlag.SpellCheckOff
@@ -271,20 +271,20 @@ Page {
         SegmentedControl {
             id: filter
             Option {
-                text: "All"
+                text: qsTr("All")
                 value: "all"
                 selected: true
             }
             Option {
-                text: "Songs"
+                text: qsTr("Songs")
                 value: "songs"
             }
             Option {
-                text: "Artists"
+                text: qsTr("Artists")
                 value: "artists"
             }
             Option {
-                text: "Podcasts"
+                text: qsTr("Podcasts")
                 value: "podcasts"
             }
             onSelectedValueChanged: {
@@ -301,7 +301,7 @@ Page {
             preferredHeight: ui.du(8)
         }
         Label {
-            text: "No results."
+            text: qsTr("No results.")
             visible: page.noResults && ! page.busy && ! page.showSuggestions && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
         }
@@ -310,11 +310,11 @@ Page {
             horizontalAlignment: HorizontalAlignment.Center
             topPadding: ui.du(6)
             Label {
-                text: "The search could not be done."
+                text: qsTr("The search could not be done.")
                 horizontalAlignment: HorizontalAlignment.Center
             }
             Button {
-                text: "Retry"
+                text: qsTr("Retry")
                 horizontalAlignment: HorizontalAlignment.Center
                 onClicked: {
                     page.runSearch(page.query);
@@ -389,21 +389,22 @@ Page {
                                 title: ListItemData.title
                                 subtitle: ListItemData.subtitle
                                 ActionItem {
-                                    title: "Play Next"
+                                    //: puts the song right after the one playing
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, false);
                                     }
                                 }
                                 ActionItem {
-                                    title: "View Album"
+                                    title: qsTr("View Album")
                                     imageSource: "asset:///images/ic_album.png"
                                     onTriggered: {
                                         song.ListItem.view.viewAlbum(song.ListItem.indexPath);
@@ -426,21 +427,21 @@ Page {
                                 title: ListItemData.title
                                 subtitle: ListItemData.subtitle
                                 ActionItem {
-                                    title: "Play Next"
+                                    title: qsTr("Play Next")
                                     imageSource: "asset:///images/ic_play_next.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, true);
                                     }
                                 }
                                 ActionItem {
-                                    title: "Add to Queue"
+                                    title: qsTr("Add to Queue")
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
                                     }
                                 }
                                 ActionItem {
-                                    title: "View Podcast"
+                                    title: qsTr("View Podcast")
                                     imageSource: "asset:///images/ic_podcast.png"
                                     onTriggered: {
                                         ep.ListItem.view.viewAlbum(ep.ListItem.indexPath);

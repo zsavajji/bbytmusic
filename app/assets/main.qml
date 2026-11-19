@@ -58,14 +58,16 @@ TabbedPane {
         }
         actions: [
             ActionItem {
-                title: "Stop"
+                //: verb, stops playback
+                title: qsTr("Stop")
                 imageSource: "asset:///images/ic_stop.png"
                 onTriggered: {
                     engine.request("stop", {});
                 }
             },
             ActionItem {
-                title: "About"
+                //: menu item, opens the page about the app
+                title: qsTr("About")
                 imageSource: "asset:///images/ic_info.png"
                 onTriggered: {
                     var sheet = aboutSheet.createObject();
@@ -79,7 +81,7 @@ TabbedPane {
 
     Tab {
         id: homeTab
-        title: "Home"
+        title: qsTr("Home")
         imageSource: "asset:///images/ic_home.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
@@ -94,7 +96,7 @@ TabbedPane {
 
     Tab {
         id: searchTab
-        title: "Search"
+        title: qsTr("Search")
         imageSource: "asset:///images/ic_search.png"
         // Back on this tab: type straight away.
         onTriggered: {
@@ -114,7 +116,7 @@ TabbedPane {
 
     Tab {
         id: queueTab
-        title: "Queue"
+        title: qsTr("Queue")
         imageSource: "asset:///images/ic_queue.png"
         delegateActivationPolicy: TabDelegateActivationPolicy.ActivateWhenSelected
         delegate: Delegate {
@@ -132,7 +134,7 @@ TabbedPane {
     // 2026-11-15: "the same ui you have when tapping the bar, actions and all").
     Tab {
         id: npTab
-        title: "Now Playing"
+        title: qsTr("Now Playing")
         imageSource: "asset:///images/ic_note.png"
     }
 
@@ -148,13 +150,14 @@ TabbedPane {
             if (!ok && code != "disconnected") {
                 // "network" covers both an unreachable service and an answer the engine could
                 // not read: the engine's own words say which.
-                errorToast.body = (code == "network" ? "YouTube Music: " : "") + (message ? message : code);
+                var text = message ? message : code;
+                errorToast.body = code == "network" ? qsTr("YouTube Music: %1").arg(text) : text;
                 errorToast.show();
             }
         });
         engine.event.connect(function (name, fields) {
             if (name == "skipped") {
-                errorToast.body = fields.category == "music_offtopic" ? "Skipped a non-music part." : "Skipped: " + fields.category + ".";
+                errorToast.body = fields.category == "music_offtopic" ? qsTr("Skipped a non-music part.") : qsTr("Skipped: %1.").arg(fields.category);
                 errorToast.show();
             }
         });

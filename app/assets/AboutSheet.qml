@@ -11,9 +11,9 @@ Sheet {
 
     Page {
         titleBar: TitleBar {
-            title: "About"
+            title: qsTr("About")
             dismissAction: ActionItem {
-                title: "Close"
+                title: qsTr("Close")
                 onTriggered: {
                     sheet.close();
                 }
@@ -39,18 +39,18 @@ Sheet {
                     }
                     Label {
                         horizontalAlignment: HorizontalAlignment.Center
-                        text: "Version 1.0"
+                        text: qsTr("Version %1").arg("1.0")
                         textStyle.base: SystemDefaults.TextStyles.SubtitleText
                         textStyle.color: Color.create("#969696")
                     }
                     Label {
                         horizontalAlignment: HorizontalAlignment.Center
-                        text: "An unofficial YouTube Music client for BlackBerry 10."
+                        text: qsTr("An unofficial YouTube Music client for BlackBerry 10.")
                         multiline: true
                     }
                 }
                 Header {
-                    title: "Credits"
+                    title: qsTr("Credits")
                 }
                 Container {
                     leftPadding: ui.du(2)
@@ -58,7 +58,7 @@ Sheet {
                     topPadding: ui.du(1)
                     bottomPadding: ui.du(2)
                     Label {
-                        text: "BBMusic owes its feature set and its map of YouTube Music's protocol to YTMusicWP, the YouTube Music client for Windows Phone 8.1 by Yasukoisreal. Its InnerTube client and SABR streaming were ported from there."
+                        text: qsTr("BBMusic owes its feature set and its map of YouTube Music's protocol to YTMusicWP, the YouTube Music client for Windows Phone 8.1 by Yasukoisreal. Its InnerTube client and SABR streaming were ported from there.")
                         multiline: true
                     }
                     Label {
@@ -69,14 +69,14 @@ Sheet {
                     }
                     Label {
                         topMargin: ui.du(2)
-                        text: "Skipping uses SponsorBlock (sponsor.ajay.app). Built with libcurl, wolfSSL, libopus, SQLite and yyjson."
+                        text: qsTr("Skipping uses SponsorBlock (sponsor.ajay.app). Built with libcurl, wolfSSL, libopus, SQLite and yyjson.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
                     }
                 }
                 Header {
-                    title: "License"
+                    title: qsTr("License")
                 }
                 Container {
                     leftPadding: ui.du(2)
@@ -84,12 +84,12 @@ Sheet {
                     topPadding: ui.du(1)
                     bottomPadding: ui.du(4)
                     Label {
-                        text: "Copyright © 2026 Andrea Faggin. Free software under the GNU General Public License v3.0."
+                        text: qsTr("Copyright © 2026 Andrea Faggin. Free software under the GNU General Public License v3.0.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                     }
                     Label {
-                        text: "Not an official YouTube Music app. Not affiliated with or endorsed by YouTube or Google."
+                        text: qsTr("Not an official YouTube Music app. Not affiliated with or endorsed by YouTube or Google.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")

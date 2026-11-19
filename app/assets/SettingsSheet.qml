@@ -86,8 +86,8 @@ Sheet {
             sheet.cacheReq = "";
             if (ok) {
                 sheet.capMb = result.cap_mb;
-                cacheUse.text = Math.round(result.bytes / 1048576) + " MB used of " +
-                    (result.cap_mb >= 1024 ? result.cap_mb / 1024 + " GB" : result.cap_mb + " MB");
+                var cap = result.cap_mb >= 1024 ? qsTr("%1 GB").arg(result.cap_mb / 1024) : qsTr("%1 MB").arg(result.cap_mb);
+                cacheUse.text = qsTr("%1 used of %2").arg(qsTr("%1 MB").arg(Math.round(result.bytes / 1048576))).arg(cap);
                 sheet.filling = true;
                 for (var i = 0; i < cacheSize.count(); i ++) {
                     if (cacheSize.at(i).value == result.cap_mb) {
@@ -139,9 +139,9 @@ Sheet {
 
     Page {
         titleBar: TitleBar {
-            title: "Settings"
+            title: qsTr("Settings")
             dismissAction: ActionItem {
-                title: "Close"
+                title: qsTr("Close")
                 onTriggered: {
                     sheet.close();
                 }
@@ -150,7 +150,7 @@ Sheet {
         ScrollView {
             Container {
                 Header {
-                    title: "Content country"
+                    title: qsTr("Content country")
                 }
                 Container {
                     leftPadding: ui.du(2)
@@ -158,14 +158,14 @@ Sheet {
                     topPadding: ui.du(1)
                     bottomPadding: ui.du(2)
                     Label {
-                        text: "The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are."
+                        text: qsTr("The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
                     }
                     DropDown {
                         id: region
-                        title: "Country"
+                        title: qsTr("Country")
                         topMargin: ui.du(2)
                         onSelectedIndexChanged: {
                             sheet.sendRegion();
@@ -173,7 +173,7 @@ Sheet {
                     }
                 }
                 Header {
-                    title: "Skip in a track"
+                    title: qsTr("Skip in a track")
                 }
                 Container {
                     leftPadding: ui.du(2)
@@ -181,7 +181,7 @@ Sheet {
                     topPadding: ui.du(1)
                     bottomPadding: ui.du(2)
                     Label {
-                        text: "Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id."
+                        text: qsTr("Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
@@ -192,7 +192,7 @@ Sheet {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         Label {
-                            text: "Non-music parts of a video"
+                            text: qsTr("Non-music parts of a video")
                             verticalAlignment: VerticalAlignment.Center
                             layoutProperties: StackLayoutProperties {
                                 spaceQuota: 1
@@ -212,7 +212,7 @@ Sheet {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         Label {
-                            text: "Sponsors"
+                            text: qsTr("Sponsors")
                             verticalAlignment: VerticalAlignment.Center
                             layoutProperties: StackLayoutProperties {
                                 spaceQuota: 1
@@ -232,7 +232,7 @@ Sheet {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         Label {
-                            text: "Intros"
+                            text: qsTr("Intros")
                             verticalAlignment: VerticalAlignment.Center
                             layoutProperties: StackLayoutProperties {
                                 spaceQuota: 1
@@ -252,7 +252,7 @@ Sheet {
                             orientation: LayoutOrientation.LeftToRight
                         }
                         Label {
-                            text: "Outros"
+                            text: qsTr("Outros")
                             verticalAlignment: VerticalAlignment.Center
                             layoutProperties: StackLayoutProperties {
                                 spaceQuota: 1
@@ -268,7 +268,7 @@ Sheet {
                     }
                 }
                 Header {
-                    title: "Storage"
+                    title: qsTr("Storage")
                 }
                 Container {
                     leftPadding: ui.du(2)
@@ -276,7 +276,7 @@ Sheet {
                     topPadding: ui.du(1)
                     bottomPadding: ui.du(2)
                     Label {
-                        text: "Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full."
+                        text: qsTr("Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.")
                         multiline: true
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
@@ -287,26 +287,26 @@ Sheet {
                     }
                     DropDown {
                         id: cacheSize
-                        title: "Space for songs"
+                        title: qsTr("Space for songs")
                         topMargin: ui.du(2)
                         Option {
-                            text: "128 MB"
+                            text: qsTr("%1 MB").arg(128)
                             value: 128
                         }
                         Option {
-                            text: "256 MB"
+                            text: qsTr("%1 MB").arg(256)
                             value: 256
                         }
                         Option {
-                            text: "512 MB"
+                            text: qsTr("%1 MB").arg(512)
                             value: 512
                         }
                         Option {
-                            text: "1 GB"
+                            text: qsTr("%1 GB").arg(1)
                             value: 1024
                         }
                         Option {
-                            text: "2 GB"
+                            text: qsTr("%1 GB").arg(2)
                             value: 2048
                         }
                         // The Options being added also fire "changed", before the engine has said what is in use.
@@ -320,7 +320,7 @@ Sheet {
                         }
                     }
                     Button {
-                        text: "Clear cache"
+                        text: qsTr("Clear cache")
                         topMargin: ui.du(2)
                         horizontalAlignment: HorizontalAlignment.Fill
                         onClicked: {
