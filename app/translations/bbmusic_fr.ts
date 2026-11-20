@@ -349,109 +349,109 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <location filename="../assets/NowPlayingPage.qml" line="104"/>
         <source>Liked on YouTube</source>
         <translation>Liké sur YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <location filename="../assets/NowPlayingPage.qml" line="104"/>
         <source>Like removed on YouTube</source>
         <translation>Like retiré sur YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="106"/>
+        <location filename="../assets/NowPlayingPage.qml" line="135"/>
         <source>This track has no album page.</source>
         <translation>Ce titre n&apos;a pas de page d&apos;album.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="119"/>
+        <location filename="../assets/NowPlayingPage.qml" line="148"/>
         <source>This artist has no page.</source>
         <translation>Cet artiste n&apos;a pas de page.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="176"/>
+        <location filename="../assets/NowPlayingPage.qml" line="205"/>
         <source>Previous</source>
         <translation>Précédent</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="188"/>
+        <location filename="../assets/NowPlayingPage.qml" line="217"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="188"/>
+        <location filename="../assets/NowPlayingPage.qml" line="217"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Lire</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="199"/>
+        <location filename="../assets/NowPlayingPage.qml" line="228"/>
         <source>Next</source>
         <translation>Suivant</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="210"/>
+        <location filename="../assets/NowPlayingPage.qml" line="239"/>
         <source>Queue</source>
         <translation>File d&apos;attente</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="221"/>
+        <location filename="../assets/NowPlayingPage.qml" line="250"/>
         <source>View Podcast</source>
         <translation>Voir le podcast</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="221"/>
+        <location filename="../assets/NowPlayingPage.qml" line="250"/>
         <source>View Album</source>
         <translation>Voir l&apos;album</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="232"/>
+        <location filename="../assets/NowPlayingPage.qml" line="261"/>
         <source>View Artist</source>
         <translation>Voir l&apos;artiste</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="240"/>
+        <location filename="../assets/NowPlayingPage.qml" line="269"/>
         <source>Start Radio</source>
         <translation>Lancer la radio</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <location filename="../assets/NowPlayingPage.qml" line="280"/>
         <source>Remove from Favorites</source>
         <translation>Retirer des favoris</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <location filename="../assets/NowPlayingPage.qml" line="280"/>
         <source>Add to Favorites</source>
         <translation>Ajouter aux favoris</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="274"/>
+        <location filename="../assets/NowPlayingPage.qml" line="304"/>
         <source>Like on YouTube</source>
         <translation>Liker sur YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="287"/>
+        <location filename="../assets/NowPlayingPage.qml" line="304"/>
         <source>Remove Like on YouTube</source>
         <translation>Retirer le like sur YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="310"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Equalizer (Off)</source>
         <translation>Égaliseur (désactivé)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="310"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Equalizer (On)</source>
         <translation>Égaliseur (activé)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="321"/>
+        <location filename="../assets/NowPlayingPage.qml" line="339"/>
         <source>Properties</source>
         <translation>Propriétés</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="351"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Loading...</source>
         <translation>Chargement...</translation>
     </message>

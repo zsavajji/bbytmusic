@@ -119,14 +119,20 @@ Reply Engine::like_command(Json req) {
     const std::string id = req["id"].string();
     if (id.empty() || id.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-") != std::string::npos)
         return Reply::error("bad_request", "id: a video id is required");
-    if (!req["on"].is_bool()) return Reply::error("bad_request", "on: a boolean is required");
-    const bool on = req["on"].boolean();
+    if (!req["on"].is_null() && !req["on"].is_bool()) return Reply::error("bad_request", "on: a boolean");
     JsonDoc doc;
     Reply fail;
-    if (!tv_call("www.youtube.com", on ? "like/like" : "like/removelike", "\"target\":{\"videoId\":" + json_quote(id) + "}", doc, fail))
-        return fail;
-    log_info("like " + id + (on ? " on" : " off"));
-    return done("{}");
+    bool on;
+    if (req["on"].is_null()) {   // a question: the watch page's like button says (LIKE, DISLIKE or INDIFFERENT)
+        if (!tv_call("www.youtube.com", "next", "\"videoId\":" + json_quote(id), doc, fail)) return fail;
+        on = doc.root().find("likeButtonRenderer")["likeStatus"].string() == "LIKE";
+    } else {
+        on = req["on"].boolean();
+        if (!tv_call("www.youtube.com", on ? "like/like" : "like/removelike", "\"target\":{\"videoId\":" + json_quote(id) + "}", doc, fail))
+            return fail;
+        log_info("like " + id + (on ? " on" : " off"));
+    }
+    return done("{\"id\":" + json_quote(id) + ",\"on\":" + (on ? "true" : "false") + "}");
 }
 
 }  // namespace bbm

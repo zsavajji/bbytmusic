@@ -21,7 +21,9 @@ Page {
     property string favId: ""       // the track the flag is for
     property string favReq: ""
     property string likeReq: ""
-    property bool likeOn: false
+    property string likeSetReq: ""
+    property bool liked: false      // on YouTube, for the signed-in account
+    property string likeId: ""      // the track the flag is for
     property bool signedIn: false
     property string accountReq: ""
 
@@ -57,10 +59,24 @@ Page {
         });
     }
 
+    // Asks YouTube whether the account likes the track now playing; nothing to ask when signed out.
+    function askLike() {
+        var id = player.track.id;
+        if (! id || ! page.signedIn || id == page.likeId) {
+            return;
+        }
+        page.likeId = id;
+        page.liked = false;
+        page.likeReq = engine.request("like", {
+            "id": id
+        });
+    }
+
     function onPlayer() {
         refreshArt();
         sync();
         askFavorite();
+        askLike();
     }
 
     function onReply(id, ok, result, code, message) {
@@ -73,10 +89,19 @@ Page {
         } else if (id == page.accountReq) {
             page.accountReq = "";
             page.signedIn = ok && result.state == "in";
+            page.askLike();
         } else if (id == page.likeReq) {
             page.likeReq = "";
+            if (ok && result.id == page.likeId) {
+                page.liked = result.on;
+            }
+        } else if (id == page.likeSetReq) {
+            page.likeSetReq = "";
             if (ok) {
-                notice.body = page.likeOn ? qsTr("Liked on YouTube") : qsTr("Like removed on YouTube");
+                if (result.id == page.likeId) {
+                    page.liked = result.on;
+                }
+                notice.body = result.on ? qsTr("Liked on YouTube") : qsTr("Like removed on YouTube");
                 notice.show();
             }
         }
@@ -87,8 +112,12 @@ Page {
             page.favorite = fields.on;
         } else if (name == "account") {
             page.signedIn = fields.state == "in";
+            page.likeId = "";
+            page.liked = false;
+            page.askLike();
         } else if (name == "status") {
             page.accountReq = engine.request("account", {});
+            page.likeId = "";       // asked again once the account has answered
             page.favId = "";
             page.askFavorite();
         }
@@ -271,29 +300,18 @@ Page {
             }
         },
         ActionItem {
-            title: qsTr("Like on YouTube")
+            // One action for both (the user, 2026-11-20): it says what a tap will do.
+            title: page.liked ? qsTr("Remove Like on YouTube") : qsTr("Like on YouTube")
             imageSource: "asset:///images/ic_like.png"
             enabled: page.signedIn
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
-                page.likeOn = true;
-                page.likeReq = engine.request("like", {
-                    "id": player.track.id,
-                    "on": true
-                });
-            }
-        },
-        ActionItem {
-            title: qsTr("Remove Like on YouTube")
-            imageSource: "asset:///images/ic_like.png"
-            enabled: page.signedIn
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            onTriggered: {
-                page.likeOn = false;
-                page.likeReq = engine.request("like", {
-                    "id": player.track.id,
-                    "on": false
-                });
+                if (player.track.id) {
+                    page.likeSetReq = engine.request("like", {
+                        "id": player.track.id,
+                        "on": ! (page.liked && page.likeId == player.track.id)
+                    });
+                }
             }
         },
         InvokeActionItem {

@@ -350,109 +350,109 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <location filename="../assets/NowPlayingPage.qml" line="104"/>
         <source>Liked on YouTube</source>
         <translation>Отмечено как понравившееся на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <location filename="../assets/NowPlayingPage.qml" line="104"/>
         <source>Like removed on YouTube</source>
         <translation>Отметка «Нравится» снята на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="106"/>
+        <location filename="../assets/NowPlayingPage.qml" line="135"/>
         <source>This track has no album page.</source>
         <translation>У этого трека нет страницы альбома.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="119"/>
+        <location filename="../assets/NowPlayingPage.qml" line="148"/>
         <source>This artist has no page.</source>
         <translation>У этого исполнителя нет страницы.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="176"/>
+        <location filename="../assets/NowPlayingPage.qml" line="205"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="188"/>
+        <location filename="../assets/NowPlayingPage.qml" line="217"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="188"/>
+        <location filename="../assets/NowPlayingPage.qml" line="217"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Воспроизвести</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="199"/>
+        <location filename="../assets/NowPlayingPage.qml" line="228"/>
         <source>Next</source>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="210"/>
+        <location filename="../assets/NowPlayingPage.qml" line="239"/>
         <source>Queue</source>
         <translation>Очередь</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="221"/>
+        <location filename="../assets/NowPlayingPage.qml" line="250"/>
         <source>View Podcast</source>
         <translation>Перейти к подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="221"/>
+        <location filename="../assets/NowPlayingPage.qml" line="250"/>
         <source>View Album</source>
         <translation>Перейти к альбому</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="232"/>
+        <location filename="../assets/NowPlayingPage.qml" line="261"/>
         <source>View Artist</source>
         <translation>Перейти к исполнителю</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="240"/>
+        <location filename="../assets/NowPlayingPage.qml" line="269"/>
         <source>Start Radio</source>
         <translation>Запустить радио</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <location filename="../assets/NowPlayingPage.qml" line="280"/>
         <source>Remove from Favorites</source>
         <translation>Удалить из избранного</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <location filename="../assets/NowPlayingPage.qml" line="280"/>
         <source>Add to Favorites</source>
         <translation>Добавить в избранное</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="274"/>
+        <location filename="../assets/NowPlayingPage.qml" line="304"/>
         <source>Like on YouTube</source>
         <translation>Нравится на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="287"/>
+        <location filename="../assets/NowPlayingPage.qml" line="304"/>
         <source>Remove Like on YouTube</source>
         <translation>Снять отметку «Нравится» на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="310"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Equalizer (Off)</source>
         <translation>Эквалайзер (выкл.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="310"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Equalizer (On)</source>
         <translation>Эквалайзер (вкл.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="321"/>
+        <location filename="../assets/NowPlayingPage.qml" line="339"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="351"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Loading...</source>
         <translation>Загрузка...</translation>
     </message>

@@ -43,7 +43,8 @@ struct Fake {
                 o.body = "{\"contents\":[{\"accountSectionListRenderer\":{\"contents\":[{\"accountItemSectionRenderer\":{\"contents\":["
                          "{\"accountItem\":{\"accountName\":{\"simpleText\":\"Test User\"},\"isSelected\":true}}]}}]}}]}";
             } else if (r.url.rfind("https://music.youtube.com/youtubei/v1/browse", 0) == 0 ||
-                       r.url.rfind("https://www.youtube.com/youtubei/v1/like/", 0) == 0) {
+                       r.url.rfind("https://www.youtube.com/youtubei/v1/like/", 0) == 0 ||
+                       r.url.rfind("https://www.youtube.com/youtubei/v1/next", 0) == 0) {
                 {
                     std::lock_guard<std::mutex> lk(mu);
                     urls.push_back(r.url);
@@ -57,6 +58,9 @@ struct Fake {
                     o.status = 401;
                 } else if (r.url.find("/like/") != std::string::npos) {
                     o.body = "{}";
+                } else if (r.url.find("/next") != std::string::npos) {   // the first video is liked, any other is not
+                    o.body = std::string("{\"contents\":{\"x\":[{\"button\":{\"likeButtonRenderer\":{\"likeStatus\":\"") +
+                             (r.body.find("vid00001AAA") != std::string::npos ? "LIKE" : "INDIFFERENT") + "\"}}}]}}";
                 } else if (r.body.find("\"browseId\":\"FEmusic_liked_playlists\"") != std::string::npos) {
                     o.body = fixture("tv_library_playlists.json");
                 } else if (r.body.find("\"browseId\":\"FEmusic_liked_albums\"") != std::string::npos) {
@@ -175,7 +179,10 @@ int main() {
         CHECK_EQ(f.last_url(), std::string("https://www.youtube.com/youtubei/v1/like/removelike?prettyPrint=false"));
         CHECK_EQ(code(c.cmd("like", "\"id\":\"a b\",\"on\":true")), std::string("bad_request"));
         CHECK_EQ(code(c.cmd("like", "\"id\":\"\",\"on\":true")), std::string("bad_request"));
-        CHECK_EQ(code(c.cmd("like", "\"id\":\"vid00001AAA\"")), std::string("bad_request"));
+        // without `on` it asks: the watch page's like button
+        CHECK(parse(c.cmd("like", "\"id\":\"vid00001AAA\""), d)["result"]["on"].boolean());
+        CHECK_EQ(f.last_url(), std::string("https://www.youtube.com/youtubei/v1/next?prettyPrint=false"));
+        CHECK(!parse(c.cmd("like", "\"id\":\"vid00002BBB\""), d)["result"]["on"].boolean(true));
         CHECK_EQ(code(c.cmd("like", "\"id\":\"vid00001AAA\",\"on\":\"yes\"")), std::string("bad_request"));
     }
     e.stop();
