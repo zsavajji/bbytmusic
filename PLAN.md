@@ -275,6 +275,10 @@ engine turns them into one small item shape — `{kind, id, title, subtitle, thu
 
 ## 6. Auth
 
+**Superseded on 2026-11-20 by [docs/plan/phase4.md](docs/plan/phase4.md):** a TV device-code
+sign-in, shared with the Tube app, after gate 0.7b showed it opens the library. What follows is
+the plan as first written.
+
 Cookie login only. The UI opens a Cascades `WebView` on Google sign-in continuing to
 `music.youtube.com`, reads the cookie jar (bbtube's `GoogleLoginSheet`), and passes the cookies
 to the engine, which stores them and signs requests with SAPISIDHASH / 1PHASH / 3PHASH for origin
@@ -391,6 +395,9 @@ Driven with `socat` and a WAV sink; every step lands with its tests.
 - 3.9 Equalizer: biquad bands on the PCM stream in the engine, presets, a settings sheet
 
 ### Phase 4 — account
+
+Its steps are now the ones in [docs/plan/phase4.md](docs/plan/phase4.md) (2026-11-20); the list
+below is the first plan's.
 
 - 4.1 Sign-in sheet (WebView), cookie capture, sign-out
 - 4.2 Engine auth: the cookie store, the SAPISID hashes, signed requests, the signed-in home
