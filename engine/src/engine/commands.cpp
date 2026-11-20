@@ -315,6 +315,7 @@ void Engine::add_commands() {
         return ok("{\"bytes\":" + std::to_string(cache_.bytes()) + ",\"cap_mb\":" + std::to_string(cache_.cap() >> 20) + "}");
     });
     server_.on("skip", [this](Json req) { return skip_command(req); });
+    server_.on("account", [this](Json req) { return account_command(req); });
     server_.on("thumbs", [this](Json req) {
         std::vector<std::string> urls;
         if (!req["urls"].is_array()) return bad("urls: an array of strings is required");

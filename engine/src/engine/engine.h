@@ -26,6 +26,7 @@
 #include "innertube/client.h"
 #include "innertube/items.h"
 #include "platform/now_playing.h"
+#include "engine/account.h"
 #include "engine/np_art.h"
 #include "engine/sponsor.h"
 #include "engine/thumbs.h"
@@ -57,6 +58,8 @@ struct EngineOptions {
     // SponsorBlock's segments of a video, on the worker thread; empty: fetch_segments() on the engine's Http.
     std::function<bool(const std::string &video_id, const std::vector<std::string> &categories,
                        std::vector<SkipSegment> &out, std::string &err)> segments;
+    // The account's requests (the TV page, the token, the account's name); empty: an Http of its own.
+    HttpSendFn account_http;
 };
 
 class Engine {
@@ -103,6 +106,9 @@ private:
     void skip_new_track(const std::string &id);                  // mu_ held
     void skip_fetch(const std::string &id, std::vector<std::string> cats);
     void skip_check(const PlayerStatus &s);                      // not under mu_
+    // account_cmd.cpp
+    Reply account_command(Json req);
+    std::string account_json();   // the fields of the account event and of the command's result, no braces
     // engine.cpp
     void post(std::function<void()> job);
     void work();
@@ -161,6 +167,7 @@ private:
     std::thread worker_;
     std::atomic<bool> closing_{false};
 
+    std::unique_ptr<Account> account_;   // its on_change emits and posts: guarded by closing_
     Equalizer eq_;                     // the player's thread uses it through the sink
     std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_ and posts to the worker
     std::unique_ptr<Player> player_;   // last: its threads call into everything above

@@ -74,6 +74,22 @@ bool Engine::start(std::string &err) {
         if (size == kArtSize) post([this, url] { np_art(url); });
     });
     np_art_.clean();
+    {
+        HttpSendFn send = opt_.account_http;
+        if (!send) {
+            auto http = std::make_shared<Http>();
+            send = [http](const HttpRequest &r) { return http->send(r); };
+        }
+        account_ = std::make_unique<Account>(std::move(send));
+        account_->on_change = [this] {
+            if (closing_) return;
+            server_.emit("account", account_json());
+            post([this, stored = account_->stored()] {   // the store is the worker's alone
+                std::string err;
+                if (db_ok_ && !set_setting(db_, "account", stored, err)) log_warn("store: " + err);
+            });
+        };
+    }
     player_->set_listener([this](const PlayerEvent &e) { on_event(e); });
     restore();
     add_commands();
@@ -167,6 +183,7 @@ Item Engine::item_for(const Track &t) {
 // The queue as it was at the last stop, paused where it was.
 void Engine::restore() {
     if (!db_ok_) return;
+    account_->load(get_setting(db_, "account", ""));
     if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
     if (std::string gl = get_setting(db_, "region", ""); valid_region(gl)) {   // before any command runs
