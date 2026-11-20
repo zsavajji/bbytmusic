@@ -54,13 +54,6 @@ Page {
         return [
             {
                 "rowType": "link",
-                "title": qsTr("My library"),
-                "subtitle": qsTr("Favorites and your YouTube account"),
-                "image": "asset:///images/ic_library.png",
-                "target": "library"
-            },
-            {
-                "rowType": "link",
                 "title": qsTr("Recently played"),
                 "subtitle": qsTr("What you listened to, the latest first"),
                 "image": "asset:///images/ic_recent.png",
@@ -238,19 +231,12 @@ Page {
             load();
             return;
         }
-        var p;
-        if (target == "recent") {
-            p = recentPage.createObject();
-        } else if (target == "library") {
-            p = libraryPage.createObject();
-        } else {
-            p = artistPage.createObject();
-        }
+        var p = target == "recent" ? recentPage.createObject() : artistPage.createObject();
         p.navPane = navPane;
         if (target == "podcasts") {
             p.params = podcastsParams;      // before browseId: setting that loads the page
             p.browseId = "FEmusic_home";
-        } else if (target != "recent" && target != "library") {
+        } else if (target != "recent") {
             p.browseId = target;
         }
         navPane.push(p);
@@ -624,10 +610,6 @@ Page {
         ComponentDefinition {
             id: recentPage
             source: "RecentPage.qml"
-        },
-        ComponentDefinition {
-            id: libraryPage
-            source: "LibraryPage.qml"
         },
         InvokeActionItem {
             id: shareAction

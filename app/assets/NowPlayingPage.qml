@@ -209,17 +209,18 @@ Page {
         fadeIn.play();      // while the sheet slides up
     }
 
-    // Back closes the sheet: the page under this one in the sheet's pane is empty.
-    paneProperties: NavigationPaneProperties {
-        backButton: ActionItem {
-            onTriggered: {
-                page.closeSheet();
-            }
-        }
-    }
 
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
+        // Where a pushed page has Back: the sheet's own page has none.
+        ActionItem {
+            title: qsTr("Close")
+            imageSource: "asset:///images/ic_expand_down.png"
+            ActionBar.placement: ActionBarPlacement.OnBar
+            onTriggered: {
+                page.closeSheet();
+            }
+        },
         ActionItem {
             title: qsTr("Previous")
             imageSource: "asset:///images/ic_previous.png"

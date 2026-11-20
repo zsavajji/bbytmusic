@@ -379,89 +379,94 @@
         <translation>У цього виконавця немає сторінки.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="224"/>
+        <location filename="../assets/NowPlayingPage.qml" line="217"/>
+        <source>Close</source>
+        <translation>Закрити</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="225"/>
         <source>Previous</source>
         <translation>Попередній</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="236"/>
+        <location filename="../assets/NowPlayingPage.qml" line="237"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="236"/>
+        <location filename="../assets/NowPlayingPage.qml" line="237"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Відтворити</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="247"/>
+        <location filename="../assets/NowPlayingPage.qml" line="248"/>
         <source>Next</source>
         <translation>Наступний</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="258"/>
+        <location filename="../assets/NowPlayingPage.qml" line="259"/>
         <source>Queue</source>
         <translation>Черга</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="269"/>
+        <location filename="../assets/NowPlayingPage.qml" line="270"/>
         <source>View Podcast</source>
         <translation>Перейти до подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="269"/>
+        <location filename="../assets/NowPlayingPage.qml" line="270"/>
         <source>View Album</source>
         <translation>Перейти до альбому</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="280"/>
+        <location filename="../assets/NowPlayingPage.qml" line="281"/>
         <source>View Artist</source>
         <translation>Перейти до виконавця</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="288"/>
+        <location filename="../assets/NowPlayingPage.qml" line="289"/>
         <source>Start Radio</source>
         <translation>Запустити радіо</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="299"/>
+        <location filename="../assets/NowPlayingPage.qml" line="300"/>
         <source>Remove from Favorites</source>
         <translation>Видалити з обраного</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="299"/>
+        <location filename="../assets/NowPlayingPage.qml" line="300"/>
         <source>Add to Favorites</source>
         <translation>Додати до обраного</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="323"/>
+        <location filename="../assets/NowPlayingPage.qml" line="324"/>
         <source>Like on YouTube</source>
         <translation>Подобається на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="323"/>
+        <location filename="../assets/NowPlayingPage.qml" line="324"/>
         <source>Remove Like on YouTube</source>
         <translation>Зняти вподобання на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="347"/>
+        <location filename="../assets/NowPlayingPage.qml" line="348"/>
         <source>Equalizer (Off)</source>
         <translation>Еквалайзер (вимк.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="347"/>
+        <location filename="../assets/NowPlayingPage.qml" line="348"/>
         <source>Equalizer (On)</source>
         <translation>Еквалайзер (увімк.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="358"/>
+        <location filename="../assets/NowPlayingPage.qml" line="359"/>
         <source>Properties</source>
         <translation>Властивості</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="396"/>
+        <location filename="../assets/NowPlayingPage.qml" line="397"/>
         <source>Loading...</source>
         <translation>Завантаження...</translation>
     </message>
@@ -922,12 +927,12 @@
 <context>
     <name>ShelfPage</name>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="159"/>
+        <location filename="../assets/ShelfPage.qml" line="152"/>
         <source>More</source>
         <translation>Ще</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="64"/>
+        <location filename="../assets/ShelfPage.qml" line="57"/>
         <source>Recently played</source>
         <translation>Нещодавно прослухані</translation>
     </message>
@@ -936,93 +941,91 @@
         <translation type="obsolete">Бібліотека</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="58"/>
         <source>Favorites and your YouTube account</source>
-        <translation>Обране та ваш обліковий запис YouTube</translation>
+        <translation type="obsolete">Обране та ваш обліковий запис YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="65"/>
+        <location filename="../assets/ShelfPage.qml" line="58"/>
         <source>What you listened to, the latest first</source>
         <translation>Прослухане, спочатку найновіше</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="71"/>
+        <location filename="../assets/ShelfPage.qml" line="64"/>
         <source>Explore</source>
         <translation>Огляд</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="72"/>
+        <location filename="../assets/ShelfPage.qml" line="65"/>
         <source>New releases, trending, new videos</source>
         <translation>Нові релізи, тренди, нові відео</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="78"/>
+        <location filename="../assets/ShelfPage.qml" line="71"/>
         <source>Podcasts</source>
         <translation>Подкасти</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="79"/>
+        <location filename="../assets/ShelfPage.qml" line="72"/>
         <source>Episodes by genre</source>
         <translation>Випуски за жанрами</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="186"/>
+        <location filename="../assets/ShelfPage.qml" line="179"/>
         <source>Top songs</source>
         <translation>Найкращі пісні</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="227"/>
+        <location filename="../assets/ShelfPage.qml" line="220"/>
         <source>Not yet</source>
         <translation>Поки недоступно</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="92"/>
-        <location filename="../assets/ShelfPage.qml" line="390"/>
+        <location filename="../assets/ShelfPage.qml" line="85"/>
+        <location filename="../assets/ShelfPage.qml" line="376"/>
         <source>This page could not be loaded.</source>
         <translation>Не вдалося завантажити сторінку.</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="57"/>
         <source>My library</source>
-        <translation>Моя бібліотека</translation>
+        <translation type="obsolete">Моя бібліотека</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="91"/>
-        <location filename="../assets/ShelfPage.qml" line="394"/>
+        <location filename="../assets/ShelfPage.qml" line="84"/>
+        <location filename="../assets/ShelfPage.qml" line="380"/>
         <source>Retry</source>
         <translation>Повторити</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="381"/>
+        <location filename="../assets/ShelfPage.qml" line="367"/>
         <source>Nothing here yet.</source>
         <translation>Тут поки нічого немає.</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="496"/>
-        <location filename="../assets/ShelfPage.qml" line="533"/>
+        <location filename="../assets/ShelfPage.qml" line="482"/>
+        <location filename="../assets/ShelfPage.qml" line="519"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Відтворити наступним</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="503"/>
-        <location filename="../assets/ShelfPage.qml" line="540"/>
+        <location filename="../assets/ShelfPage.qml" line="489"/>
+        <location filename="../assets/ShelfPage.qml" line="526"/>
         <source>Add to Queue</source>
         <translation>Додати до черги</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="510"/>
-        <location filename="../assets/ShelfPage.qml" line="547"/>
+        <location filename="../assets/ShelfPage.qml" line="496"/>
+        <location filename="../assets/ShelfPage.qml" line="533"/>
         <source>Add to Favorites</source>
         <translation>Додати до обраного</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="554"/>
+        <location filename="../assets/ShelfPage.qml" line="540"/>
         <source>View Podcast</source>
         <translation>Перейти до подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="645"/>
+        <location filename="../assets/ShelfPage.qml" line="627"/>
         <source>Play</source>
         <extracomment>verb, starts playback</extracomment>
         <translation>Відтворити</translation>
@@ -1141,32 +1144,37 @@
         <translation type="obsolete">Зараз грає</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="128"/>
+        <location filename="../assets/main.qml" line="118"/>
+        <source>My library</source>
+        <translation>Моя бібліотека</translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="143"/>
         <source>Sign in to YouTube first, in Settings.</source>
         <translation>Спершу увійдіть у YouTube у налаштуваннях.</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="129"/>
+        <location filename="../assets/main.qml" line="144"/>
         <source>YouTube Music: %1</source>
         <translation>YouTube Music: %1</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="136"/>
+        <location filename="../assets/main.qml" line="151"/>
         <source>Added to Favorites</source>
         <translation>Додано до обраного</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="139"/>
+        <location filename="../assets/main.qml" line="154"/>
         <source>Removed from Favorites</source>
         <translation>Видалено з обраного</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="145"/>
+        <location filename="../assets/main.qml" line="160"/>
         <source>Skipped a non-music part.</source>
         <translation>Немузичний фрагмент пропущено.</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="145"/>
+        <location filename="../assets/main.qml" line="160"/>
         <source>Skipped: %1.</source>
         <translation>Пропущено: %1.</translation>
     </message>

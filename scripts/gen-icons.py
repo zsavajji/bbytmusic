@@ -136,6 +136,7 @@ ICONS = {
     "ic_search": any_of(ring(0.43, 0.43, 0.22, W), seg(0.60, 0.60, 0.82, 0.82, 0.09)),
     "ic_note": NOTE,
     "ic_expand_up": path([(0.14, 0.64), (0.50, 0.32), (0.86, 0.64)], 0.10),   # the strip's hint, tinted grey
+    "ic_expand_down": path([(0.14, 0.36), (0.50, 0.68), (0.86, 0.36)], 0.10),   # Now Playing's Close
     "ic_home": any_of(tri(0.50, 0.16, 0.14, 0.50, 0.86, 0.50),
                       minus(rect(0.24, 0.48, 0.76, 0.82), rect(0.43, 0.60, 0.57, 0.82))),
     "ic_recent": any_of(ring(0.50, 0.50, 0.33, W), path([(0.50, 0.30), (0.50, 0.50), (0.64, 0.60)], W)),
