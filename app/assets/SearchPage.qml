@@ -361,6 +361,12 @@ Page {
                     "next": next
                 });
             }
+            function favorite(indexPath) {
+                engine.request("favorite", {
+                    "item": dataModel.data(indexPath).item,
+                    "on": true
+                });
+            }
             function viewAlbum(indexPath) {
                 page.viewAlbum(dataModel.data(indexPath).item);
             }
@@ -404,6 +410,13 @@ Page {
                                     }
                                 }
                                 ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        song.ListItem.view.favorite(song.ListItem.indexPath);
+                                    }
+                                }
+                                ActionItem {
                                     title: qsTr("View Album")
                                     imageSource: "asset:///images/ic_album.png"
                                     onTriggered: {
@@ -438,6 +451,13 @@ Page {
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.favorite(ep.ListItem.indexPath);
                                     }
                                 }
                                 ActionItem {

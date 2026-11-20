@@ -371,6 +371,12 @@ Page {
             function queueAdd(indexPath, next) {
                 page.queueAdd([ page.tracks[indexPath[0] - 1] ], next);
             }
+            function favorite(indexPath) {
+                engine.request("favorite", {
+                    "item": page.tracks[indexPath[0] - 1],
+                    "on": true
+                });
+            }
             function radio(indexPath) {
                 engine.request("play", {
                     "items": [ page.tracks[indexPath[0] - 1] ],
@@ -465,6 +471,13 @@ Page {
                                     }
                                 }
                                 ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        track.ListItem.view.favorite(track.ListItem.indexPath);
+                                    }
+                                }
+                                ActionItem {
                                     title: qsTr("Start Radio")
                                     imageSource: "asset:///images/ic_radio.png"
                                     onTriggered: {
@@ -500,6 +513,13 @@ Page {
                                         etrack.ListItem.view.queueAdd(etrack.ListItem.indexPath, false);
                                     }
                                 }
+                                ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        etrack.ListItem.view.favorite(etrack.ListItem.indexPath);
+                                    }
+                                }
                             }
                         ]
                     }
@@ -527,6 +547,13 @@ Page {
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ptrack.ListItem.view.queueAdd(ptrack.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        ptrack.ListItem.view.favorite(ptrack.ListItem.indexPath);
                                     }
                                 }
                                 ActionItem {

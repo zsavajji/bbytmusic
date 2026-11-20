@@ -17,6 +17,13 @@ Page {
     property bool setting: false
     property bool moved: false
     property double holdUntil: 0
+    property bool favorite: false
+    property string favId: ""       // the track the flag is for
+    property string favReq: ""
+    property string likeReq: ""
+    property bool likeOn: false
+    property bool signedIn: false
+    property string accountReq: ""
 
     function sync() {
         if (dragging || new Date().getTime() < holdUntil) {
@@ -37,9 +44,54 @@ Page {
         }
     }
 
+    // Asks whether the track now playing is a favorite; the id guard makes repeated calls free.
+    function askFavorite() {
+        var id = player.track.id;
+        if (! id || id == page.favId) {
+            return;
+        }
+        page.favId = id;
+        page.favorite = false;
+        page.favReq = engine.request("favorite", {
+            "id": id
+        });
+    }
+
     function onPlayer() {
         refreshArt();
         sync();
+        askFavorite();
+    }
+
+    function onReply(id, ok, result, code, message) {
+        if (id == "") {
+            return;
+        }
+        if (id == page.favReq) {
+            page.favReq = "";
+            page.favorite = ok && result.on && result.id == page.favId;
+        } else if (id == page.accountReq) {
+            page.accountReq = "";
+            page.signedIn = ok && result.state == "in";
+        } else if (id == page.likeReq) {
+            page.likeReq = "";
+            if (ok) {
+                notice.body = page.likeOn ? qsTr("Liked on YouTube") : qsTr("Like removed on YouTube");
+                notice.show();
+            }
+        }
+    }
+
+    function onEvent(name, fields) {
+        if (name == "favorite" && fields.id == page.favId) {
+            page.favorite = fields.on;
+        } else if (name == "account") {
+            page.signedIn = fields.state == "in";
+        } else if (name == "status") {
+            page.accountReq = engine.request("account", {});
+            page.favId = "";
+            page.askFavorite();
+        }
     }
 
     function cycleRepeat() {
@@ -98,12 +150,23 @@ Page {
             thumbs.ready.disconnect(page.onThumb);
         } catch (e2) {
         }
+        try {
+            engine.reply.disconnect(page.onReply);
+        } catch (e3) {
+        }
+        try {
+            engine.event.disconnect(page.onEvent);
+        } catch (e4) {
+        }
     }
 
     onCreationCompleted: {
         player.positionChanged.connect(page.sync);
         player.changed.connect(page.onPlayer);
         thumbs.ready.connect(page.onThumb);
+        engine.reply.connect(page.onReply);
+        engine.event.connect(page.onEvent);
+        page.accountReq = engine.request("account", {});
         page.onPlayer();
     }
 
@@ -182,6 +245,55 @@ Page {
                 if (player.track.id) {
                     engine.request("radio", {});
                 }
+            }
+        },
+        ActionItem {
+            title: page.favorite ? qsTr("Remove from Favorites") : qsTr("Add to Favorites")
+            imageSource: "asset:///images/ic_favorite.png"
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            shortcuts: Shortcut {
+                key: "F"
+            }
+            onTriggered: {
+                if (player.track.id) {
+                    if (page.favorite) {
+                        engine.request("favorite", {
+                            "id": player.track.id,
+                            "on": false
+                        });
+                    } else {
+                        engine.request("favorite", {
+                            "item": player.track,
+                            "on": true
+                        });
+                    }
+                }
+            }
+        },
+        ActionItem {
+            title: qsTr("Like on YouTube")
+            imageSource: "asset:///images/ic_like.png"
+            enabled: page.signedIn
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                page.likeOn = true;
+                page.likeReq = engine.request("like", {
+                    "id": player.track.id,
+                    "on": true
+                });
+            }
+        },
+        ActionItem {
+            title: qsTr("Remove Like on YouTube")
+            imageSource: "asset:///images/ic_like.png"
+            enabled: page.signedIn
+            ActionBar.placement: ActionBarPlacement.InOverflow
+            onTriggered: {
+                page.likeOn = false;
+                page.likeReq = engine.request("like", {
+                    "id": player.track.id,
+                    "on": false
+                });
             }
         },
         InvokeActionItem {

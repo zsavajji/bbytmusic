@@ -10,6 +10,8 @@ Sheet {
     property string listReq: ""
     property string regionReq: ""
     property string cacheReq: ""
+    property string accountReq: ""
+    property variant acct: ({ "state": "out" })     // the last account answer or event
     property string gl: ""          // the country in use, as the engine last said or was told
     property int capMb: 0           // the cache's cap, as the engine last said (0: not yet)
     property bool filling: false    // the controls are being set from the engine's answers
@@ -62,7 +64,29 @@ Sheet {
         });
     }
 
+    function onEvent(name, fields) {
+        if (name == "account") {
+            sheet.acct = fields;
+        }
+    }
+
+    function refuse(e) {
+        if (e == "access_denied") {
+            return qsTr("the request was refused");
+        }
+        if (e == "expired_token") {
+            return qsTr("the code expired");
+        }
+        return e;
+    }
+
     function onReply(id, ok, result, code, message) {
+        if (id != "" && id == sheet.accountReq) {
+            sheet.accountReq = "";
+            if (ok) {
+                sheet.acct = result;
+            }
+        }
         if (id != "" && id == sheet.regionReq) {
             sheet.regionReq = "";
             if (ok && result.gl) {
@@ -123,6 +147,8 @@ Sheet {
 
     function show() {
         engine.reply.connect(sheet.onReply);
+        engine.event.connect(sheet.onEvent);
+        accountReq = engine.request("account", {});
         listReq = engine.request("skip", {});
         regionReq = engine.request("region", {});
         cacheReq = engine.request("cache", {});
@@ -133,6 +159,10 @@ Sheet {
         try {
             engine.reply.disconnect(sheet.onReply);
         } catch (e0) {
+        }
+        try {
+            engine.event.disconnect(sheet.onEvent);
+        } catch (e1) {
         }
         sheet.destroy();
     }
@@ -149,6 +179,102 @@ Sheet {
         }
         ScrollView {
             Container {
+                Header {
+                    title: qsTr("YouTube account")
+                }
+                Container {
+                    leftPadding: ui.du(2)
+                    rightPadding: ui.du(2)
+                    topPadding: ui.du(1)
+                    bottomPadding: ui.du(2)
+                    Label {
+                        text: qsTr("Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.")
+                        multiline: true
+                        visible: sheet.acct.state == "out"
+                        textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                    }
+                    Label {
+                        text: qsTr("The sign-in did not complete: %1").arg(sheet.refuse(sheet.acct.error))
+                        multiline: true
+                        topMargin: ui.du(2)
+                        visible: sheet.acct.state == "out" && sheet.acct.error != "" && sheet.acct.error != undefined
+                    }
+                    Button {
+                        text: qsTr("Sign in")
+                        topMargin: ui.du(2)
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        visible: sheet.acct.state == "out"
+                        onClicked: {
+                            sheet.accountReq = engine.request("account", {
+                                "sign_in": true
+                            });
+                        }
+                    }
+                    Container {
+                        visible: sheet.acct.state == "pending"
+                        Label {
+                            text: qsTr("On a phone or a computer, open")
+                            multiline: true
+                        }
+                        Label {
+                            text: sheet.acct.url ? sheet.acct.url : "google.com/device"
+                            textStyle.fontSize: FontSize.Large
+                        }
+                        Label {
+                            text: qsTr("and enter this code:")
+                            multiline: true
+                        }
+                        Label {
+                            text: sheet.acct.code
+                            visible: sheet.acct.code != "" && sheet.acct.code != undefined
+                            textStyle.fontSize: FontSize.Large
+                        }
+                        ActivityIndicator {
+                            running: sheet.acct.state == "pending" && ! sheet.acct.code
+                            visible: ! sheet.acct.code
+                        }
+                        Label {
+                            text: qsTr("This page signs in by itself once the code is entered. The code is valid for 30 minutes.")
+                            multiline: true
+                            topMargin: ui.du(2)
+                            textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                        }
+                        Button {
+                            text: qsTr("Cancel")
+                            topMargin: ui.du(2)
+                            horizontalAlignment: HorizontalAlignment.Fill
+                            onClicked: {
+                                sheet.accountReq = engine.request("account", {
+                                    "cancel": true
+                                });
+                            }
+                        }
+                    }
+                    Container {
+                        visible: sheet.acct.state == "in"
+                        Label {
+                            text: sheet.acct.name ? sheet.acct.name : qsTr("Signed in")
+                        }
+                        Label {
+                            text: qsTr("Shared by the Tube app")
+                            visible: sheet.acct.source == "tube"
+                            textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                        }
+                        Button {
+                            text: qsTr("Sign out")
+                            topMargin: ui.du(2)
+                            horizontalAlignment: HorizontalAlignment.Fill
+                            onClicked: {
+                                sheet.accountReq = engine.request("account", {
+                                    "sign_out": true
+                                });
+                            }
+                        }
+                    }
+                }
                 Header {
                     title: qsTr("Content country")
                 }
@@ -278,6 +404,13 @@ Sheet {
                     Label {
                         text: qsTr("Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.")
                         multiline: true
+                        textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                    }
+                    Label {
+                        text: qsTr("Favorites are downloaded and never removed to make room; they count toward this space.")
+                        multiline: true
+                        topMargin: ui.du(1)
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
                     }

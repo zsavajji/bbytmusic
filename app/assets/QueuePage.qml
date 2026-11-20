@@ -410,6 +410,12 @@ Page {
                     "index": index
                 });
             }
+            function favorite(index) {
+                engine.request("favorite", {
+                    "item": page.tracks[index],
+                    "on": true
+                });
+            }
             // Right after the current track; "to" is the index the row ends up at.
             function playNext(index) {
                 var cur = player.index;
@@ -439,6 +445,13 @@ Page {
                                 imageSource: "asset:///images/ic_play_next.png"
                                 onTriggered: {
                                     row.ListItem.view.playNext(row.ListItem.indexPath[0]);
+                                }
+                            }
+                            ActionItem {
+                                title: qsTr("Add to Favorites")
+                                imageSource: "asset:///images/ic_favorite.png"
+                                onTriggered: {
+                                    row.ListItem.view.favorite(row.ListItem.indexPath[0]);
                                 }
                             }
                             DeleteActionItem {

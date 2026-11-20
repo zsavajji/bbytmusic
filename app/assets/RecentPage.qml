@@ -197,6 +197,12 @@ Page {
                     "next": next
                 });
             }
+            function favorite(index) {
+                engine.request("favorite", {
+                    "item": page.tracks[index],
+                    "on": true
+                });
+            }
             function viewAlbum(index) {
                 page.viewAlbum(index);
             }
@@ -225,6 +231,13 @@ Page {
                                 imageSource: "asset:///images/ic_add_queue.png"
                                 onTriggered: {
                                     row.ListItem.view.queueAdd(row.ListItem.indexPath[0], false);
+                                }
+                            }
+                            ActionItem {
+                                title: qsTr("Add to Favorites")
+                                imageSource: "asset:///images/ic_favorite.png"
+                                onTriggered: {
+                                    row.ListItem.view.favorite(row.ListItem.indexPath[0]);
                                 }
                             }
                             ActionItem {
