@@ -150,12 +150,22 @@ TabbedPane {
             if (!ok && code != "disconnected") {
                 // "network" covers both an unreachable service and an answer the engine could
                 // not read: the engine's own words say which.
-                var text = message ? message : code;
+                var text = code == "signed_out" ? qsTr("Sign in to YouTube first, in Settings.") : (message ? message : code);
                 errorToast.body = code == "network" ? qsTr("YouTube Music: %1").arg(text) : text;
                 errorToast.show();
             }
         });
         engine.event.connect(function (name, fields) {
+            if (name == "favorite") {
+                if (fields.on && ! fields.offline) {
+                    errorToast.body = qsTr("Added to Favorites");
+                    errorToast.show();
+                } else if (! fields.on) {
+                    errorToast.body = qsTr("Removed from Favorites");
+                    errorToast.show();
+                }
+                return;
+            }
             if (name == "skipped") {
                 errorToast.body = fields.category == "music_offtopic" ? qsTr("Skipped a non-music part.") : qsTr("Skipped: %1.").arg(fields.category);
                 errorToast.show();

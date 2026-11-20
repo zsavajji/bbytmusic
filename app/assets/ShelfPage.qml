@@ -21,6 +21,8 @@ Page {
     property bool isArtist: false
     property bool busy: false
     property bool failed: false
+    property bool homeOffline: false   // Home failed to load: its links and a Retry row stand in
+    property bool empty: false         // a feed that came back with no rows
     // The engine is still waking, not down: the spinner, not the error.
     property bool waking: failed && ! engine.connected && ! engine.down
     property variant tracks: []      // the top songs
@@ -40,6 +42,61 @@ Page {
         });
         busy = browseReq != "";
         failed = ! busy;
+        homeOffline = false;
+    }
+
+    function isHome() {
+        return browseId == "FEmusic_home" && params == "";
+    }
+
+    // What were tabs of their own until the bar could not hold them (main.qml).
+    function linkRows() {
+        return [
+            {
+                "rowType": "link",
+                "title": qsTr("Library"),
+                "subtitle": qsTr("Favorites and your YouTube account"),
+                "image": "asset:///images/ic_library.png",
+                "target": "library"
+            },
+            {
+                "rowType": "link",
+                "title": qsTr("Recently played"),
+                "subtitle": qsTr("What you listened to, the latest first"),
+                "image": "asset:///images/ic_recent.png",
+                "target": "recent"
+            },
+            {
+                "rowType": "link",
+                "title": qsTr("Explore"),
+                "subtitle": qsTr("New releases, trending, new videos"),
+                "image": "asset:///images/ic_explore.png",
+                "target": "FEmusic_explore"
+            },
+            {
+                "rowType": "link",
+                "title": qsTr("Podcasts"),
+                "subtitle": qsTr("Episodes by genre"),
+                "image": "asset:///images/ic_podcast.png",
+                "target": "podcasts"
+            }
+        ];
+    }
+
+    // Home without the network: the links that work offline, and a way to try again.
+    function fillOffline() {
+        var rows = linkRows();
+        rows.push({
+            "rowType": "link",
+            "title": qsTr("Retry"),
+            "subtitle": qsTr("This page could not be loaded."),
+            "image": "asset:///images/ic_recent.png",
+            "target": "retry"
+        });
+        rowModel.clear();
+        rowModel.append(rows);
+        homeOffline = true;
+        failed = false;
     }
 
     function makeRow(item) {
@@ -85,10 +142,12 @@ Page {
             if (items.length == 0) {
                 continue;
             }
-            rows.push({
-                "rowType": "header",
-                "title": sections[s].title
-            });
+            if (sections[s].title != "") {
+                rows.push({
+                    "rowType": "header",
+                    "title": sections[s].title
+                });
+            }
             for (var k = 0; k < items.length; k ++) {
                 rows.push(makeRow(items[k]));
             }
@@ -118,29 +177,8 @@ Page {
                 "image": art(result.thumb, 226, "asset:///images/art_none_large.png")
             });
         }
-        if (browseId == "FEmusic_home" && params == "") {
-            // What were tabs of their own until the bar could not hold them (main.qml).
-            rows.push({
-                "rowType": "link",
-                "title": qsTr("Recently played"),
-                "subtitle": qsTr("What you listened to, the latest first"),
-                "image": "asset:///images/ic_recent.png",
-                "target": "recent"
-            });
-            rows.push({
-                "rowType": "link",
-                "title": qsTr("Explore"),
-                "subtitle": qsTr("New releases, trending, new videos"),
-                "image": "asset:///images/ic_explore.png",
-                "target": "FEmusic_explore"
-            });
-            rows.push({
-                "rowType": "link",
-                "title": qsTr("Podcasts"),
-                "subtitle": qsTr("Episodes by genre"),
-                "image": "asset:///images/ic_podcast.png",
-                "target": "podcasts"
-            });
+        if (isHome()) {
+            rows = rows.concat(linkRows());
         }
         if (top.length > 0) {
             rows.push({
@@ -156,6 +194,8 @@ Page {
         if (rows.length > 0) {
             rowModel.append(rows);
         }
+        homeOffline = false;
+        empty = ! isHome() && rows.length == 0;
         // ActionItem has no `visible`: Play is on the bar only when there is something to play,
         // Share in the menu only for an artist (a feed has no link worth sending).
         if (top.length > 0 && ! hasPlay) {
@@ -194,12 +234,23 @@ Page {
     }
 
     function openLink(target) {
-        var p = target == "recent" ? recentPage.createObject() : artistPage.createObject();
+        if (target == "retry") {
+            load();
+            return;
+        }
+        var p;
+        if (target == "recent") {
+            p = recentPage.createObject();
+        } else if (target == "library") {
+            p = libraryPage.createObject();
+        } else {
+            p = artistPage.createObject();
+        }
         p.navPane = navPane;
         if (target == "podcasts") {
             p.params = podcastsParams;      // before browseId: setting that loads the page
             p.browseId = "FEmusic_home";
-        } else if (target != "recent") {
+        } else if (target != "recent" && target != "library") {
             p.browseId = target;
         }
         navPane.push(p);
@@ -223,6 +274,8 @@ Page {
             page.failed = ! ok;      // main.qml shows why
             if (ok) {
                 page.fill(result);
+            } else if (page.isHome()) {
+                page.fillOffline();
             }
         } else if (id == page.moreReq) {
             page.moreReq = "";
@@ -262,7 +315,7 @@ Page {
 
     // The engine is back (or was not there yet when the page was made): try again.
     function onLink() {
-        if (engine.connected && page.failed) {
+        if (engine.connected && (page.failed || page.homeOffline)) {
             page.load();
         }
     }
@@ -324,6 +377,11 @@ Page {
                 preferredHeight: ui.du(12)
             }
         }
+        Label {
+            text: qsTr("Nothing here yet.")
+            visible: page.empty && ! page.busy && ! page.failed
+            horizontalAlignment: HorizontalAlignment.Center
+        }
         Container {
             visible: page.failed && ! page.waking
             horizontalAlignment: HorizontalAlignment.Center
@@ -359,6 +417,12 @@ Page {
                 engine.request("queue_add", {
                     "items": [ dataModel.data(indexPath).item ],
                     "next": next
+                });
+            }
+            function favorite(indexPath) {
+                engine.request("favorite", {
+                    "item": dataModel.data(indexPath).item,
+                    "on": true
                 });
             }
             function viewShow(indexPath) {
@@ -442,6 +506,13 @@ Page {
                                         song.ListItem.view.queueAdd(song.ListItem.indexPath, false);
                                     }
                                 }
+                                ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        song.ListItem.view.favorite(song.ListItem.indexPath);
+                                    }
+                                }
                             }
                         ]
                     }
@@ -470,6 +541,13 @@ Page {
                                     imageSource: "asset:///images/ic_add_queue.png"
                                     onTriggered: {
                                         ep.ListItem.view.queueAdd(ep.ListItem.indexPath, false);
+                                    }
+                                }
+                                ActionItem {
+                                    title: qsTr("Add to Favorites")
+                                    imageSource: "asset:///images/ic_favorite.png"
+                                    onTriggered: {
+                                        ep.ListItem.view.favorite(ep.ListItem.indexPath);
                                     }
                                 }
                                 ActionItem {
@@ -546,6 +624,10 @@ Page {
         ComponentDefinition {
             id: recentPage
             source: "RecentPage.qml"
+        },
+        ComponentDefinition {
+            id: libraryPage
+            source: "LibraryPage.qml"
         },
         InvokeActionItem {
             id: shareAction
