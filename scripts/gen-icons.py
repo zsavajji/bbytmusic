@@ -100,6 +100,10 @@ REPEAT = any_of(path([(0.20, 0.50), (0.20, 0.34), (0.66, 0.34)], W), head(0.66, 
 NOTE = any_of(ellipse(0.36, 0.72, 0.13, 0.10), rect(0.43, 0.24, 0.49, 0.72),
               tri(0.43, 0.20, 0.43, 0.38, 0.72, 0.30), tri(0.43, 0.20, 0.72, 0.30, 0.72, 0.14))
 
+# A five-pointed star's outline, tip up: outer and inner corners in turn around (0.50, 0.53).
+STAR = [(0.50 + r * math.sin(i * math.pi / 5), 0.53 - r * math.cos(i * math.pi / 5))
+        for i, r in ((i, 0.38 if i % 2 == 0 else 0.16) for i in range(10))]
+
 ICONS = {
     "ic_play": tri(0.30, 0.24, 0.30, 0.76, 0.76, 0.50),
     "ic_pause": any_of(rect(0.28, 0.24, 0.43, 0.76), rect(0.57, 0.24, 0.72, 0.76)),
@@ -145,6 +149,10 @@ ICONS = {
                          seg(0.50, 0.75, 0.50, 0.86, W), seg(0.36, 0.86, 0.64, 0.86, W)),
     "ic_artist": any_of(circle(0.50, 0.34, 0.15),
                         minus(ellipse(0.50, 0.86, 0.30, 0.30), rect(0.0, 0.84, 1.0, 1.0))),
+    # A star (the favourites, kept on the phone), a heart (a like, on YouTube), books (the library).
+    "ic_favorite": any_of(*[tri(0.50, 0.53, *STAR[i], *STAR[(i + 1) % 10]) for i in range(10)]),
+    "ic_like": any_of(circle(0.36, 0.38, 0.16), circle(0.64, 0.38, 0.16), tri(0.215, 0.45, 0.785, 0.45, 0.50, 0.82)),
+    "ic_library": any_of(rect(0.18, 0.22, 0.30, 0.80), rect(0.37, 0.22, 0.49, 0.80), seg(0.60, 0.28, 0.76, 0.76, 0.11)),
 }
 
 
