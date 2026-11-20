@@ -7,7 +7,7 @@ import "queue.js" as Q
 Page {
     id: page
     property variant navPane
-    property bool pushed: false     // pushed from Now Playing: no strip under it
+    property bool pushed: false     // opened from Now Playing, not the Queue tab's own page
     property variant tracks: []
     property int marked: -1         // the row currently shown as playing
     property string queueId: ""
@@ -477,7 +477,6 @@ Page {
 
         MiniPlayer {
             navPane: page.navPane
-            visible: player.loaded && ! page.pushed
         }
     }
 }

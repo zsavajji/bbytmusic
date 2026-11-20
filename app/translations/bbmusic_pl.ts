@@ -287,64 +287,73 @@
 <context>
     <name>LibraryPage</name>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="24"/>
+        <location filename="../assets/LibraryPage.qml" line="27"/>
         <source>Favorites</source>
         <translation>Ulubione</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="24"/>
+        <location filename="../assets/LibraryPage.qml" line="27"/>
         <source>Kept on the phone, play offline</source>
         <translation>Zapisane w telefonie, odtwarzane offline</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="27"/>
+        <location filename="../assets/LibraryPage.qml" line="30"/>
         <source>YouTube account</source>
         <translation>Konto YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="30"/>
+        <location filename="../assets/LibraryPage.qml" line="34"/>
         <source>Liked songs</source>
         <translation>Polubione utwory</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="31"/>
+        <location filename="../assets/LibraryPage.qml" line="35"/>
         <source>Playlists</source>
         <translation>Playlisty</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="32"/>
+        <location filename="../assets/LibraryPage.qml" line="36"/>
         <source>Albums</source>
         <translation>Albumy</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="33"/>
+        <location filename="../assets/LibraryPage.qml" line="37"/>
         <source>Artists</source>
         <translation>Wykonawcy</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="34"/>
+        <location filename="../assets/LibraryPage.qml" line="38"/>
         <source>Recent activity</source>
         <translation>Ostatnia aktywność</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="34"/>
+        <location filename="../assets/LibraryPage.qml" line="38"/>
         <source>What you played on YouTube</source>
         <translation>Co odtwarzano w YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="36"/>
+        <location filename="../assets/LibraryPage.qml" line="40"/>
         <source>Sign in to YouTube</source>
         <translation>Zaloguj się do YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="36"/>
+        <location filename="../assets/LibraryPage.qml" line="40"/>
         <source>Your playlists, liked songs and albums</source>
         <translation>Twoje playlisty, polubione utwory i albumy</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="124"/>
+        <location filename="../assets/LibraryPage.qml" line="144"/>
+        <source>My library</source>
+        <translation>Moja biblioteka</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="155"/>
+        <source>You&apos;re signed in. Your likes now sync with your YouTube profile.</source>
+        <translation>Zalogowano. Twoje polubienia są teraz synchronizowane z profilem YouTube.</translation>
+    </message>
+    <message>
         <source>Library</source>
-        <translation>Biblioteka</translation>
+        <translation type="obsolete">Biblioteka</translation>
     </message>
 </context>
 <context>
@@ -365,94 +374,94 @@
         <translation>Ten utwór nie ma strony albumu.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="148"/>
+        <location filename="../assets/NowPlayingPage.qml" line="149"/>
         <source>This artist has no page.</source>
         <translation>Ten wykonawca nie ma strony.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="205"/>
+        <location filename="../assets/NowPlayingPage.qml" line="224"/>
         <source>Previous</source>
         <translation>Poprzedni</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="217"/>
+        <location filename="../assets/NowPlayingPage.qml" line="236"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Wstrzymaj</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="217"/>
+        <location filename="../assets/NowPlayingPage.qml" line="236"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Odtwórz</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="228"/>
+        <location filename="../assets/NowPlayingPage.qml" line="247"/>
         <source>Next</source>
         <translation>Następny</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="239"/>
+        <location filename="../assets/NowPlayingPage.qml" line="258"/>
         <source>Queue</source>
         <translation>Kolejka</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="250"/>
+        <location filename="../assets/NowPlayingPage.qml" line="269"/>
         <source>View Podcast</source>
         <translation>Zobacz podcast</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="250"/>
+        <location filename="../assets/NowPlayingPage.qml" line="269"/>
         <source>View Album</source>
         <translation>Zobacz album</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="261"/>
+        <location filename="../assets/NowPlayingPage.qml" line="280"/>
         <source>View Artist</source>
         <translation>Zobacz wykonawcę</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="269"/>
+        <location filename="../assets/NowPlayingPage.qml" line="288"/>
         <source>Start Radio</source>
         <translation>Uruchom radio</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="280"/>
+        <location filename="../assets/NowPlayingPage.qml" line="299"/>
         <source>Remove from Favorites</source>
         <translation>Usuń z ulubionych</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="280"/>
+        <location filename="../assets/NowPlayingPage.qml" line="299"/>
         <source>Add to Favorites</source>
         <translation>Dodaj do ulubionych</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="304"/>
+        <location filename="../assets/NowPlayingPage.qml" line="323"/>
         <source>Like on YouTube</source>
         <translation>Polub w YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="304"/>
+        <location filename="../assets/NowPlayingPage.qml" line="323"/>
         <source>Remove Like on YouTube</source>
         <translation>Usuń polubienie w YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="328"/>
+        <location filename="../assets/NowPlayingPage.qml" line="347"/>
         <source>Equalizer (Off)</source>
         <translation>Korektor (wył.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="328"/>
+        <location filename="../assets/NowPlayingPage.qml" line="347"/>
         <source>Equalizer (On)</source>
         <translation>Korektor (wł.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="339"/>
+        <location filename="../assets/NowPlayingPage.qml" line="358"/>
         <source>Properties</source>
         <translation>Właściwości</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="369"/>
+        <location filename="../assets/NowPlayingPage.qml" line="396"/>
         <source>Loading...</source>
         <translation>Wczytywanie...</translation>
     </message>
@@ -923,9 +932,8 @@
         <translation>Ostatnio odtwarzane</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="57"/>
         <source>Library</source>
-        <translation>Biblioteka</translation>
+        <translation type="obsolete">Biblioteka</translation>
     </message>
     <message>
         <location filename="../assets/ShelfPage.qml" line="58"/>
@@ -972,6 +980,11 @@
         <location filename="../assets/ShelfPage.qml" line="390"/>
         <source>This page could not be loaded.</source>
         <translation>Nie udało się wczytać tej strony.</translation>
+    </message>
+    <message>
+        <location filename="../assets/ShelfPage.qml" line="57"/>
+        <source>My library</source>
+        <translation>Moja biblioteka</translation>
     </message>
     <message>
         <location filename="../assets/ShelfPage.qml" line="91"/>
@@ -1097,64 +1110,63 @@
 <context>
     <name>main</name>
     <message>
-        <location filename="../assets/main.qml" line="62"/>
+        <location filename="../assets/main.qml" line="46"/>
         <source>Stop</source>
         <extracomment>verb, stops playback</extracomment>
         <translation>Zatrzymaj</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="70"/>
+        <location filename="../assets/main.qml" line="54"/>
         <source>About</source>
         <extracomment>menu item, opens the page about the app</extracomment>
         <translation>O aplikacji</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="84"/>
+        <location filename="../assets/main.qml" line="68"/>
         <source>Home</source>
         <translation>Główna</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="99"/>
+        <location filename="../assets/main.qml" line="83"/>
         <source>Search</source>
         <translation>Szukaj</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="119"/>
+        <location filename="../assets/main.qml" line="103"/>
         <source>Queue</source>
         <translation>Kolejka</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="137"/>
         <source>Now Playing</source>
-        <translation>Odtwarzane</translation>
+        <translation type="obsolete">Odtwarzane</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="153"/>
+        <location filename="../assets/main.qml" line="128"/>
         <source>Sign in to YouTube first, in Settings.</source>
         <translation>Najpierw zaloguj się do YouTube w Ustawieniach.</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="154"/>
+        <location filename="../assets/main.qml" line="129"/>
         <source>YouTube Music: %1</source>
         <translation>YouTube Music: %1</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="161"/>
+        <location filename="../assets/main.qml" line="136"/>
         <source>Added to Favorites</source>
         <translation>Dodano do ulubionych</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="164"/>
+        <location filename="../assets/main.qml" line="139"/>
         <source>Removed from Favorites</source>
         <translation>Usunięto z ulubionych</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="170"/>
+        <location filename="../assets/main.qml" line="145"/>
         <source>Skipped a non-music part.</source>
         <translation>Pominięto fragment niemuzyczny.</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="170"/>
+        <location filename="../assets/main.qml" line="145"/>
         <source>Skipped: %1.</source>
         <translation>Pominięto: %1.</translation>
     </message>

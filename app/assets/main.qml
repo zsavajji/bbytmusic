@@ -2,17 +2,16 @@ import bb.cascades 1.4
 import bb.system 1.2
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
-// bar of a tab's first page was all but empty), and there are four, Home, Search, Queue and Now
-// Playing (the user, 2026-11-15: a fourth tab, last, "if it fits"). Three is what the Q10's bar
-// showed beside the action menu: with five, the ones that did not fit lived in the tab menu and
-// took another's place on the bar when chosen ("i don't like the fact that the tabs shuffle
-// around"); look at the fourth on every tab's first page, with and without the action menu.
-// Recent and Explore open from the top of Home.
+// bar of a tab's first page was all but empty), and there are three, Home, Search and Queue:
+// what the Q10's bar shows beside the action menu. With five, the ones that did not fit lived in
+// the tab menu and took another's place on the bar when chosen ("i don't like the fact that the
+// tabs shuffle around"). A fourth, Now Playing, was there from 2026-11-15 to 2026-11-21, when
+// the user had the strip open Now Playing as a sheet instead (NowPlayingSheet.qml).
+// The library, Recent and Explore open from the top of Home.
 // A tab's first page has its actions in the action menu; a pushed page has the bar to itself.
-// Home is first: it is the tab the app opens on. Each tab is a NavigationPane: albums, the
-// queue and Now Playing are pushed on whichever is open. Search is part of this file; Home,
-// Queue and Now Playing are loaded by a delegate, so a fault in one of them costs that tab and
-// not the app's start.
+// Home is first: it is the tab the app opens on. Each tab is a NavigationPane: albums and the
+// queue are pushed on whichever is open. Search is part of this file; Home and Queue are loaded
+// by a delegate, so a fault in one of them costs that tab and not the app's start.
 TabbedPane {
     id: root
     showTabsOnActionBar: true
@@ -23,21 +22,6 @@ TabbedPane {
             page.cleanup();
         }
         page.destroy();
-    }
-
-    property variant lastTab: homeTab
-    onActiveTabChanged: {
-        if (activeTab != npTab) {
-            lastTab = activeTab;
-            return;
-        }
-        root.activeTab = lastTab;   // "root.": in this handler activeTab is the signal's argument
-        var nav = lastTab == searchTab ? searchNav : (lastTab == queueTab ? queueDelegate : homeDelegate).object;
-        if (nav && !(nav.top && nav.top.isNowPlaying)) {
-            var p = nowPlayingDef.createObject();
-            p.navPane = nav;
-            nav.push(p);
-        }
     }
 
     function delegateFailed(message) {
@@ -129,15 +113,6 @@ TabbedPane {
         }
     }
 
-    // Not a page of its own: as a tab's first page its controls sat in the action menu. It goes
-    // back to the tab that was open and pushes Now Playing there, as the strip does (the user,
-    // 2026-11-15: "the same ui you have when tapping the bar, actions and all").
-    Tab {
-        id: npTab
-        title: qsTr("Now Playing")
-        imageSource: "asset:///images/ic_note.png"
-    }
-
     onCreationCompleted: {
         // The card shown while the app is minimised, made once. A fault in it costs the card, not the app.
         var card = coverDef.createObject();
@@ -185,10 +160,6 @@ TabbedPane {
         ComponentDefinition {
             id: settingsSheet
             source: "SettingsSheet.qml"
-        },
-        ComponentDefinition {
-            id: nowPlayingDef
-            source: "NowPlayingPage.qml"
         },
         ComponentDefinition {
             id: coverDef

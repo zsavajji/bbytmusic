@@ -1,13 +1,15 @@
 import bb.cascades 1.4
 
 // The strip at the bottom of a page: the title on one line, the time elapsed and the track's
-// length at the far end, over a fill that grows from the left as the track plays. A tap opens Now Playing on navPane, where every control is (the
-// user, 2026-11-14: "reduced to a strip with just the title to reserve more space"). Hidden when
-// nothing is loaded.
+// length at the far end, over a fill that grows from the left as the track plays. A tap opens Now
+// Playing, where every control is (the user, 2026-11-14: "reduced to a strip with just the title to
+// reserve more space"), as a sheet that slides up from here (NowPlayingSheet.qml); what the player
+// then opens (an album, the queue) is pushed on navPane. Hidden when nothing is loaded.
 Container {
     id: mini
     property variant navPane
     property int stripWidth: 720
+    property double openedAt: 0
     visible: player.loaded
     horizontalAlignment: HorizontalAlignment.Fill
     preferredHeight: ui.du(7.2)     // a fifth taller than the first strip (the user, 2026-11-14)
@@ -16,10 +18,15 @@ Container {
     }
 
     function open() {
-        if (navPane) {
-            var p = nowPlaying.createObject();
-            p.navPane = navPane;
-            navPane.push(p);
+        var now = new Date().getTime();
+        if (! navPane || now - openedAt < 800) {     // a double tap opens one sheet
+            return;
+        }
+        openedAt = now;
+        var s = nowPlaying.createObject();
+        if (s) {
+            s.hostPane = navPane;
+            s.show();
         }
     }
 
@@ -82,7 +89,7 @@ Container {
     attachedObjects: [
         ComponentDefinition {
             id: nowPlaying
-            source: "NowPlayingPage.qml"
+            source: "NowPlayingSheet.qml"
         },
         LayoutUpdateHandler {
             onLayoutFrameChanged: {

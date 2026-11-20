@@ -54,7 +54,7 @@ Page {
         return [
             {
                 "rowType": "link",
-                "title": qsTr("Library"),
+                "title": qsTr("My library"),
                 "subtitle": qsTr("Favorites and your YouTube account"),
                 "image": "asset:///images/ic_library.png",
                 "target": "library"

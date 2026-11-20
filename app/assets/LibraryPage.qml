@@ -7,6 +7,9 @@ Page {
     id: page
     property variant navPane
     property bool signedIn: false
+    property string accountName: ""
+    property bool sheetOpen: false      // our Settings sheet lies over the page
+    property bool welcome: false        // signed in a moment ago: the hint is owed
     property string accountReq: ""
 
     function link(title, subtitle, image, target) {
@@ -24,7 +27,8 @@ Page {
         rows.push(link(qsTr("Favorites"), qsTr("Kept on the phone, play offline"), "ic_favorite.png", "favorites"));
         rows.push({
             "rowType": "header",
-            "title": qsTr("YouTube account")
+            "title": qsTr("YouTube account"),
+            "subtitle": signedIn ? accountName : ""
         });
         if (signedIn) {
             rows.push(link(qsTr("Liked songs"), "", "ic_like.png", "VLLM"));
@@ -45,10 +49,12 @@ Page {
         }
     }
 
-    function setSignedIn(state) {
-        var now = state == "in";
-        if (now != signedIn) {
+    function setAccount(a) {
+        var now = a.state == "in";
+        var name = now && a.name ? a.name : "";
+        if (now != signedIn || name != accountName) {
             signedIn = now;
+            accountName = name;
             build();
         }
     }
@@ -58,6 +64,8 @@ Page {
         if (target == "signin") {
             var sheet = settingsSheet.createObject();
             if (sheet) {
+                sheetOpen = true;
+                sheet.closed.connect(page.onSheetClosed);
                 sheet.show();
             }
             return;
@@ -76,18 +84,35 @@ Page {
         navPane.push(p);
     }
 
+    // The sign-in happened under the Settings sheet: the hint waits until the page is seen again.
+    function onSheetClosed() {
+        sheetOpen = false;
+        greet();
+    }
+
+    function greet() {
+        if (welcome && ! sheetOpen) {
+            welcome = false;
+            hint.show(8000);
+        }
+    }
+
     function onReply(id, ok, result, code, message) {
         if (id != "" && id == page.accountReq) {
             page.accountReq = "";
             if (ok) {
-                page.setSignedIn(result.state);
+                page.setAccount(result);
             }
         }
     }
 
     function onEvent(name, fields) {
         if (name == "account") {
-            page.setSignedIn(fields.state);
+            if (fields.state == "in" && ! page.signedIn) {
+                page.welcome = true;
+            }
+            page.setAccount(fields);
+            page.greet();
         } else if (name == "status") {
             // The engine is back: ask again.
             page.askAccount();
@@ -114,14 +139,20 @@ Page {
         page.askAccount();
     }
 
+    // A title bar, not a list header: under one the page read as Home (the user, 2026-11-21).
+    titleBar: TitleBar {
+        title: qsTr("My library")
+    }
+
     Container {
         layout: StackLayout {
         }
 
         ConnectionBar {
         }
-        Header {
-            title: qsTr("Library")
+        Hint {
+            id: hint
+            text: qsTr("You're signed in. Your likes now sync with your YouTube profile.")
         }
         ListView {
             id: list
@@ -141,6 +172,7 @@ Page {
                     type: "header"
                     Header {
                         title: ListItemData.title
+                        subtitle: ListItemData.subtitle
                     }
                 },
                 ListItemComponent {

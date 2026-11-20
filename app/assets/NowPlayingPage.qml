@@ -9,8 +9,8 @@ import bb.system 1.2
 // Pause does that, the user, 2026-11-14.)
 Page {
     id: page
-    property variant navPane
-    property bool isNowPlaying: true    // main.qml's Now Playing tab: not pushed twice
+    property variant sheet          // NowPlayingSheet, which shows this page
+    property variant hostPane       // the tab under the sheet: albums, artists and the queue open there
     property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
@@ -131,40 +131,49 @@ Page {
 
     function viewAlbum() {
         var id = player.track.album_id;
-        if (! id || ! navPane) {
+        if (! id || ! hostPane) {
             notice.body = qsTr("This track has no album page.");
             notice.show();
             return;
         }
         var p = albumPage.createObject();
-        p.navPane = navPane;
+        p.navPane = hostPane;
         p.browseId = id;
-        navPane.push(p);
+        hostPane.push(p);
+        closeSheet();
     }
 
     function viewArtist() {
         var id = player.track.artist_id;
-        if (! id || ! navPane) {
+        if (! id || ! hostPane) {
             notice.body = qsTr("This artist has no page.");
             notice.show();
             return;
         }
         var p = shelfPage.createObject();
-        p.navPane = navPane;
+        p.navPane = hostPane;
         p.browseId = id;
-        navPane.push(p);
+        hostPane.push(p);
+        closeSheet();
     }
 
     function showQueue() {
-        if (navPane) {
+        if (hostPane) {
             var p = queuePage.createObject();
-            p.navPane = navPane;
+            p.navPane = hostPane;
             p.pushed = true;
-            navPane.push(p);
+            hostPane.push(p);
+            closeSheet();
         }
     }
 
-    // Called by main.qml when the page has been popped.
+    function closeSheet() {
+        if (sheet) {
+            sheet.close();
+        }
+    }
+
+    // Called by the sheet when it has closed.
     // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
@@ -197,6 +206,16 @@ Page {
         engine.event.connect(page.onEvent);
         page.accountReq = engine.request("account", {});
         page.onPlayer();
+        fadeIn.play();      // while the sheet slides up
+    }
+
+    // Back closes the sheet: the page under this one in the sheet's pane is empty.
+    paneProperties: NavigationPaneProperties {
+        backButton: ActionItem {
+            onTriggered: {
+                page.closeSheet();
+            }
+        }
     }
 
     // Letter shortcuts are safe here: no text field on this page.
@@ -352,6 +371,14 @@ Page {
         layout: StackLayout {
         }
         background: Color.Black
+        animations: [
+            FadeTransition {
+                id: fadeIn
+                fromOpacity: 0
+                toOpacity: 1
+                duration: 400
+            }
+        ]
 
         // Title and artist: 10 du on the Q10.
         Container {
