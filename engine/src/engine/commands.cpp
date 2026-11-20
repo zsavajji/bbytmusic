@@ -118,6 +118,7 @@ void Engine::add_commands() {
         SearchPage page;
         std::string err;
         const std::string c = req["continuation"].string();
+        if (c.compare(0, 4, "tvf:") == 0 || c.compare(0, 4, "tvp:") == 0) return tv_browse_more(c);
         if (!yt_call([&](InnerTube &yt, std::string &e) { return search_more(yt, c, page, e); }, err))
             return Reply::error("network", err);
         return ok(search_page_json(page));
@@ -212,8 +213,16 @@ void Engine::add_commands() {
         BrowsePage page;
         std::string err;
         const std::string id = req["id"].string(), params = req["params"].string();
-        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e, params); }, err))
+        if (library_id(id)) return tv_browse(id);
+        if (!yt_call([&](InnerTube &yt, std::string &e) { return browse(yt, id, page, e, params); }, err)) {
+            // a private playlist is not the anonymous client's to see; the account's token sees it
+            const std::string bid = browse_id(id);
+            if (account_->info().in && bid.compare(0, 2, "VL") == 0) {
+                Reply r = tv_browse(bid);
+                if (r.ok) return r;
+            }
             return Reply::error("network", err);
+        }
         return ok(browse_page_json(page));
     });
     server_.on("browse_more", [this](Json req) {
@@ -225,6 +234,7 @@ void Engine::add_commands() {
             return Reply::error("network", err);
         return ok(browse_more_json(page));
     });
+    server_.on("like", [this](Json req) { return like_command(req); });
     server_.on("history", [this](Json req) {
         // a limit that is not a number is the default
         const int n = int(std::clamp<int64_t>(req["limit"].is_number() ? req["limit"].i64() : 50, 1, 200));

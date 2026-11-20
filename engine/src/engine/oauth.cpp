@@ -5,10 +5,7 @@
 namespace bbm {
 namespace {
 
-const char *const kTvUserAgent =
-    "Mozilla/5.0 (ChromiumStylePlatform) Cobalt/25.lts.30.1034943-gold (unlike Gecko), Unknown_TV_Unknown_0/Unknown (Unknown, Unknown)";
 const char *const kOrigin = "https://www.youtube.com";
-const char *const kTvVersion = "7.20260707.07.00";
 
 bool word(char c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_'; }
 bool ends_with(std::string_view s, std::string_view suffix) { return s.size() >= suffix.size() && s.substr(s.size() - suffix.size()) == suffix; }

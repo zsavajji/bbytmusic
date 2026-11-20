@@ -119,6 +119,11 @@ private:
     void fav_fetch(const std::string &id);       // one track into the cache; marks it offline when whole
     void fav_event(const std::string &id, bool on, bool offline);
     bool on_store(std::function<void()> job);    // runs job on the worker and waits; false: no store, or too slow
+    // library.cpp
+    bool tv_call(const std::string &host, const std::string &endpoint, const std::string &fields, JsonDoc &out, Reply &fail);
+    Reply tv_browse(const std::string &id);          // a library tab, or a playlist, as a browse result
+    Reply tv_browse_more(const std::string &token);  // `token` still carries its "tvf:" or "tvp:" prefix
+    Reply like_command(Json req);
     // engine.cpp
     void post(std::function<void()> job);
     void work();
@@ -192,5 +197,8 @@ private:
     std::unique_ptr<Thumbs> thumbs_;   // its ready() emits through server_ and posts to the worker
     std::unique_ptr<Player> player_;   // last: its threads call into everything above
 };
+
+// library.cpp: the ids the account answers (its library tabs and Liked Music).
+bool library_id(const std::string &id);
 
 }  // namespace bbm

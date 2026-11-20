@@ -10,6 +10,11 @@
 
 namespace bbm {
 
+// What the TV client announces itself as, in every request to it.
+inline constexpr const char *kTvUserAgent =
+    "Mozilla/5.0 (ChromiumStylePlatform) Cobalt/25.lts.30.1034943-gold (unlike Gecko), Unknown_TV_Unknown_0/Unknown (Unknown, Unknown)";
+inline constexpr const char *kTvVersion = "7.20260707.07.00";
+
 using HttpSendFn = std::function<HttpResponse(const HttpRequest &)>;
 
 struct OAuthClient {

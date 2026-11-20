@@ -45,6 +45,11 @@ public:
     // A valid access token, refreshed when under 60 s are left. Refused: Google no longer accepts
     // the grant, so the account is signed out. Network: nothing changes.
     OAuthResult bearer(std::string &out, std::string &err);
+    // One request over the account's transport (one Http, not thread-safe: every use takes net_mu_).
+    HttpResponse send(const HttpRequest &r) {
+        std::lock_guard<std::mutex> lk(net_mu_);
+        return send_(r);
+    }
     void invalidate();   // forgets the access token: the next bearer() refreshes (after a 401)
 
     std::function<void()> on_change;   // set before use; after every change of info() or stored(), never under the mutex
