@@ -198,6 +198,9 @@ Sheet {
                     title: qsTr("YouTube account")
                 }
                 Container {
+                    // Fill, here and on the two below: a container is only as wide as what it holds,
+                    // and a button that fills a narrow one stays narrow (the user, 2026-11-20).
+                    horizontalAlignment: HorizontalAlignment.Fill
                     leftPadding: ui.du(2)
                     rightPadding: ui.du(2)
                     topPadding: ui.du(1)
@@ -228,6 +231,7 @@ Sheet {
                     }
                     Container {
                         visible: sheet.acctState == "pending"
+                        horizontalAlignment: HorizontalAlignment.Fill
                         Label {
                             text: qsTr("On a phone or a computer, open")
                             multiline: true
@@ -271,6 +275,7 @@ Sheet {
                     }
                     Container {
                         visible: sheet.acctState == "in"
+                        horizontalAlignment: HorizontalAlignment.Fill
                         Label {
                             text: sheet.acctName != "" ? sheet.acctName : qsTr("Signed in")
                         }
