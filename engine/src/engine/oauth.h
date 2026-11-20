@@ -40,4 +40,18 @@ OAuthResult refresh_token(const HttpSendFn &send, const OAuthClient &c, const st
 bool parse_account(std::string_view body, AccountInfo &out);
 OAuthResult fetch_account(const HttpSendFn &send, const std::string &access, AccountInfo &out, std::string &err);
 
+// The sign-in by a code the user enters at google.com/device.
+struct DeviceCode {
+    std::string device_code, user_code, url;
+    int64_t interval = 5, expires_in = 1800;
+};
+OAuthResult request_device_code(const HttpSendFn &send, const OAuthClient &c, const std::string &device_id, DeviceCode &out, std::string &err);
+
+enum class PollResult { Ok, Pending, SlowDown, Network, Refused };
+// Ok: a token with a refresh token. Refused: err is Google's word ("access_denied", "expired_token", ...).
+PollResult poll_device_token(const HttpSendFn &send, const OAuthClient &c, const std::string &device_code, OAuthToken &out, std::string &err);
+
+// Best effort: true on HTTP 200.
+bool revoke_token(const HttpSendFn &send, const std::string &token, std::string &err);
+
 }  // namespace bbm

@@ -107,5 +107,73 @@ int main() {
     CHECK(fetch_account(send, "AT9", a, err) == OAuthResult::Refused);
     answer.status = 500;
     CHECK(fetch_account(send, "AT9", a, err) == OAuthResult::Network);
+
+    // the device code
+    DeviceCode dc;
+    answer = {};
+    answer.status = 200;
+    answer.body = "{\"device_code\":\"DEV\",\"user_code\":\"AAA-BBB-CCC\",\"verification_url\":\"https://www.google.com/device\",\"interval\":7,\"expires_in\":600}";
+    CHECK(request_device_code(send, cl, "dev-id", dc, err) == OAuthResult::Ok);
+    CHECK_EQ(seen.url, std::string("https://www.youtube.com/o/oauth2/device/code"));
+    CHECK_EQ(dc.device_code, std::string("DEV"));
+    CHECK_EQ(dc.user_code, std::string("AAA-BBB-CCC"));
+    CHECK_EQ(dc.url, std::string("https://www.google.com/device"));
+    CHECK_EQ(dc.interval, int64_t(7));
+    CHECK_EQ(dc.expires_in, int64_t(600));
+    {
+        JsonDoc d;
+        std::string e;
+        CHECK(JsonDoc::parse(seen.body, d, e));
+        CHECK_EQ(d.root()["client_id"].string(), std::string("id-1"));
+        CHECK_EQ(d.root()["device_id"].string(), std::string("dev-id"));
+        CHECK_EQ(d.root()["model_name"].string(), std::string("ytlr::"));
+        CHECK(d.root()["scope"].str().find("youtube-paid-content") != std::string::npos);
+    }
+    answer.status = 503;
+    CHECK(request_device_code(send, cl, "d", dc, err) == OAuthResult::Network);
+    answer.status = 200;
+    answer.body = "<html>";
+    CHECK(request_device_code(send, cl, "d", dc, err) == OAuthResult::Network);
+    answer.status = 400;
+    answer.body = "{\"error\":\"invalid_client\"}";
+    CHECK(request_device_code(send, cl, "d", dc, err) == OAuthResult::Refused);
+    CHECK_EQ(err, std::string("invalid_client"));
+
+    // polling
+    auto poll = [&](int status, const std::string &body) {
+        answer = {};
+        answer.status = status;
+        answer.body = body;
+        return poll_device_token(send, cl, "DEV", t, err);
+    };
+    CHECK(poll(428, "{\"error\":\"authorization_pending\"}") == PollResult::Pending);
+    CHECK_EQ(seen.url, std::string("https://www.youtube.com/o/oauth2/token"));
+    {
+        JsonDoc d;
+        std::string e;
+        CHECK(JsonDoc::parse(seen.body, d, e));
+        CHECK_EQ(d.root()["code"].string(), std::string("DEV"));
+        CHECK_EQ(d.root()["client_secret"].string(), std::string("sec-1"));
+        CHECK_EQ(d.root()["grant_type"].string(), std::string("http://oauth.net/grant_type/device/1.0"));
+    }
+    CHECK(poll(400, "{\"error\":\"slow_down\"}") == PollResult::SlowDown);
+    CHECK(poll(400, "{\"error\":\"access_denied\"}") == PollResult::Refused);
+    CHECK_EQ(err, std::string("access_denied"));
+    CHECK(poll(200, "{\"access_token\":\"AT\",\"refresh_token\":\"RT\",\"expires_in\":3600}") == PollResult::Ok);
+    CHECK_EQ(t.refresh, std::string("RT"));
+    CHECK(poll(200, "{\"access_token\":\"AT\",\"expires_in\":3600}") == PollResult::Refused);
+    CHECK_EQ(err, std::string("no refresh_token"));
+    CHECK(poll(502, "{}") == PollResult::Network);
+    CHECK(poll(200, "nope") == PollResult::Network);
+
+    // revoke
+    answer = {};
+    answer.status = 200;
+    CHECK(revoke_token(send, "a/b+c=~._-9", err));
+    CHECK_EQ(seen.method, std::string("POST"));
+    CHECK_EQ(seen.url, std::string("https://oauth2.googleapis.com/revoke?token=a%2Fb%2Bc%3D~._-9"));
+    CHECK_EQ(seen.body, std::string("{}"));
+    answer.status = 400;
+    CHECK(!revoke_token(send, "x", err));
     return check_done();
 }

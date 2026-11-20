@@ -188,4 +188,83 @@ OAuthResult fetch_account(const HttpSendFn &send, const std::string &access, Acc
     return OAuthResult::Ok;
 }
 
+OAuthResult request_device_code(const HttpSendFn &send, const OAuthClient &c, const std::string &device_id, DeviceCode &out, std::string &err) {
+    HttpRequest req = request("POST", std::string(kOrigin) + "/o/oauth2/device/code");
+    req.headers.push_back({"Content-Type", "application/json"});
+    req.body = "{\"client_id\":" + json_quote(c.id) + ",\"device_id\":" + json_quote(device_id) +
+               ",\"model_name\":\"ytlr::\",\"scope\":\"http://gdata.youtube.com https://www.googleapis.com/auth/youtube-paid-content\"}";
+    const HttpResponse r = send(req);
+    if (transport_failed(r) || r.status >= 500) {
+        err = r.error.empty() ? "device code: HTTP " + std::to_string(r.status) : "device code: " + r.error;
+        return OAuthResult::Network;
+    }
+    JsonDoc doc;
+    std::string e;
+    if (!JsonDoc::parse(r.body, doc, e)) {
+        err = "device code: HTTP " + std::to_string(r.status) + ", " + e;
+        return OAuthResult::Network;
+    }
+    const Json j = doc.root();
+    if (!j["device_code"].is_string() || j["device_code"].str().empty() || !j["user_code"].is_string() || j["user_code"].str().empty()) {
+        err = j["error"].is_string() && !j["error"].str().empty() ? j["error"].string() : "device code: HTTP " + std::to_string(r.status);
+        return OAuthResult::Refused;
+    }
+    out.device_code = j["device_code"].string();
+    out.user_code = j["user_code"].string();
+    out.url = j["verification_url"].string();
+    if (!j["interval"].is_null() && j["interval"].i64() >= 0) out.interval = j["interval"].i64();
+    if (j["expires_in"].i64() > 0) out.expires_in = j["expires_in"].i64();
+    return OAuthResult::Ok;
+}
+
+PollResult poll_device_token(const HttpSendFn &send, const OAuthClient &c, const std::string &device_code, OAuthToken &out, std::string &err) {
+    HttpRequest req = request("POST", std::string(kOrigin) + "/o/oauth2/token");
+    req.headers.push_back({"Content-Type", "application/json"});
+    req.body = "{\"code\":" + json_quote(device_code) + ",\"client_id\":" + json_quote(c.id) + ",\"client_secret\":" +
+               json_quote(c.secret) + ",\"grant_type\":\"http://oauth.net/grant_type/device/1.0\"}";
+    const HttpResponse r = send(req);
+    if (transport_failed(r) || r.status >= 500) {
+        err = r.error.empty() ? "token: HTTP " + std::to_string(r.status) : "token: " + r.error;
+        return PollResult::Network;
+    }
+    JsonDoc doc;
+    std::string e;
+    if (!JsonDoc::parse(r.body, doc, e)) {
+        err = "token: HTTP " + std::to_string(r.status) + ", " + e;
+        return PollResult::Network;
+    }
+    out = {};
+    if (parse_token(r.body, out, e)) {
+        if (out.refresh.empty()) {
+            err = "no refresh_token";
+            return PollResult::Refused;
+        }
+        return PollResult::Ok;
+    }
+    if (e == "authorization_pending") return PollResult::Pending;
+    if (e == "slow_down") return PollResult::SlowDown;
+    err = e;
+    return PollResult::Refused;
+}
+
+bool revoke_token(const HttpSendFn &send, const std::string &token, std::string &err) {
+    static const char *hex = "0123456789ABCDEF";
+    std::string enc;
+    for (unsigned char ch : token) {
+        if (word(static_cast<char>(ch)) || ch == '.' || ch == '~' || ch == '-') enc += static_cast<char>(ch);
+        else {
+            enc += '%';
+            enc += hex[ch >> 4];
+            enc += hex[ch & 15];
+        }
+    }
+    HttpRequest req = request("POST", "https://oauth2.googleapis.com/revoke?token=" + enc);
+    req.headers.push_back({"Content-Type", "application/json"});
+    req.body = "{}";
+    const HttpResponse r = send(req);
+    if (r.status == 200 && r.error.empty()) return true;
+    err = r.error.empty() ? "revoke: HTTP " + std::to_string(r.status) : "revoke: " + r.error;
+    return false;
+}
+
 }  // namespace bbm

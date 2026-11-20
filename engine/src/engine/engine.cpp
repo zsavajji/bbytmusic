@@ -37,6 +37,7 @@ Engine::Engine(EngineOptions o) : opt_(std::move(o)), cache_(opt_.data_dir + "/c
 Engine::~Engine() {
     closing_ = true;
     stop();
+    if (account_) account_->cancel_sign_in();
     {
         std::lock_guard<std::mutex> lk(fav_mu_);
         fav_quit_ = true;
