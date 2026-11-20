@@ -736,25 +736,25 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="90"/>
+        <location filename="../assets/SettingsSheet.qml" line="91"/>
         <source>the request was refused</source>
         <translation>żądanie zostało odrzucone</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="93"/>
+        <location filename="../assets/SettingsSheet.qml" line="94"/>
         <source>the code expired</source>
         <translation>kod wygasł</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
+        <location filename="../assets/SettingsSheet.qml" line="129"/>
         <location filename="../assets/SettingsSheet.qml" line="460"/>
         <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
         <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <location filename="../assets/SettingsSheet.qml" line="448"/>
         <location filename="../assets/SettingsSheet.qml" line="452"/>
         <location filename="../assets/SettingsSheet.qml" line="456"/>
@@ -762,72 +762,75 @@
         <translation>%1 MB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <source>%1 used of %2</source>
         <translation>Użyto %1 z %2</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="187"/>
+        <location filename="../assets/SettingsSheet.qml" line="188"/>
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="189"/>
+        <location filename="../assets/SettingsSheet.qml" line="190"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="198"/>
+        <location filename="../assets/SettingsSheet.qml" line="199"/>
         <source>YouTube account</source>
         <translation>Konto YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="209"/>
+        <location filename="../assets/SettingsSheet.qml" line="210"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Zaloguj się, aby zobaczyć swoje playlisty, polubione utwory i albumy. Wyszukiwanie, odtwarzanie i ulubione działają bez konta.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="216"/>
+        <location filename="../assets/SettingsSheet.qml" line="217"/>
         <source>The sign-in did not complete: %1</source>
         <translation>Logowanie nie zostało ukończone: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="222"/>
+        <location filename="../assets/SettingsSheet.qml" line="223"/>
         <source>Sign in</source>
         <translation>Zaloguj się</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="236"/>
+        <location filename="../assets/SettingsSheet.qml" line="237"/>
         <source>On a phone or a computer, open</source>
         <translation>Na telefonie lub komputerze otwórz</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="244"/>
+        <location filename="../assets/SettingsSheet.qml" line="245"/>
         <source>and enter this code:</source>
         <translation>i wpisz ten kod:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="259"/>
+        <location filename="../assets/SettingsSheet.qml" line="260"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Ta strona zaloguje się sama po wpisaniu kodu. Kod jest ważny przez 30 minut.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="266"/>
+        <location filename="../assets/SettingsSheet.qml" line="267"/>
+        <location filename="../assets/SettingsSheet.qml" line="496"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="280"/>
+        <location filename="../assets/SettingsSheet.qml" line="281"/>
         <source>Signed in</source>
         <translation>Zalogowano</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="283"/>
+        <location filename="../assets/SettingsSheet.qml" line="284"/>
         <source>Shared by the Tube app</source>
         <translation>Udostępnione przez aplikację Tube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="289"/>
+        <location filename="../assets/SettingsSheet.qml" line="290"/>
+        <location filename="../assets/SettingsSheet.qml" line="493"/>
+        <location filename="../assets/SettingsSheet.qml" line="495"/>
         <source>Sign out</source>
         <translation>Wyloguj się</translation>
     </message>
@@ -900,6 +903,11 @@
         <location filename="../assets/SettingsSheet.qml" line="478"/>
         <source>Clear cache</source>
         <translation>Wyczyść pamięć podręczną</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="494"/>
+        <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
+        <translation>Wylogować się z YouTube na tym telefonie? Ulubione pozostaną.</translation>
     </message>
 </context>
 <context>

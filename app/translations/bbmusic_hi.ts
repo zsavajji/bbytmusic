@@ -733,25 +733,25 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="90"/>
+        <location filename="../assets/SettingsSheet.qml" line="91"/>
         <source>the request was refused</source>
         <translation>अनुरोध अस्वीकार कर दिया गया</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="93"/>
+        <location filename="../assets/SettingsSheet.qml" line="94"/>
         <source>the code expired</source>
         <translation>कोड की समय-सीमा समाप्त हो गई</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
+        <location filename="../assets/SettingsSheet.qml" line="129"/>
         <location filename="../assets/SettingsSheet.qml" line="460"/>
         <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
         <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <location filename="../assets/SettingsSheet.qml" line="448"/>
         <location filename="../assets/SettingsSheet.qml" line="452"/>
         <location filename="../assets/SettingsSheet.qml" line="456"/>
@@ -759,72 +759,75 @@
         <translation>%1 MB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <source>%1 used of %2</source>
         <translation>%2 में से %1 उपयोग में</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="187"/>
+        <location filename="../assets/SettingsSheet.qml" line="188"/>
         <source>Settings</source>
         <translation>सेटिंग</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="189"/>
+        <location filename="../assets/SettingsSheet.qml" line="190"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="198"/>
+        <location filename="../assets/SettingsSheet.qml" line="199"/>
         <source>YouTube account</source>
         <translation>YouTube खाता</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="209"/>
+        <location filename="../assets/SettingsSheet.qml" line="210"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>अपनी प्लेलिस्ट, पसंद किए गए गाने और एल्बम देखने के लिए साइन इन करें। खोज, प्लेबैक और पसंदीदा बिना खाते के भी काम करते हैं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="216"/>
+        <location filename="../assets/SettingsSheet.qml" line="217"/>
         <source>The sign-in did not complete: %1</source>
         <translation>साइन-इन पूरा नहीं हुआ: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="222"/>
+        <location filename="../assets/SettingsSheet.qml" line="223"/>
         <source>Sign in</source>
         <translation>साइन इन करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="236"/>
+        <location filename="../assets/SettingsSheet.qml" line="237"/>
         <source>On a phone or a computer, open</source>
         <translation>किसी फ़ोन या कंप्यूटर पर खोलें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="244"/>
+        <location filename="../assets/SettingsSheet.qml" line="245"/>
         <source>and enter this code:</source>
         <translation>और यह कोड दर्ज करें:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="259"/>
+        <location filename="../assets/SettingsSheet.qml" line="260"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>कोड दर्ज होते ही यह पेज अपने-आप साइन इन हो जाता है। कोड 30 मिनट तक मान्य है।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="266"/>
+        <location filename="../assets/SettingsSheet.qml" line="267"/>
+        <location filename="../assets/SettingsSheet.qml" line="496"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="280"/>
+        <location filename="../assets/SettingsSheet.qml" line="281"/>
         <source>Signed in</source>
         <translation>साइन इन है</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="283"/>
+        <location filename="../assets/SettingsSheet.qml" line="284"/>
         <source>Shared by the Tube app</source>
         <translation>Tube ऐप से साझा किया गया</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="289"/>
+        <location filename="../assets/SettingsSheet.qml" line="290"/>
+        <location filename="../assets/SettingsSheet.qml" line="493"/>
+        <location filename="../assets/SettingsSheet.qml" line="495"/>
         <source>Sign out</source>
         <translation>साइन आउट करें</translation>
     </message>
@@ -897,6 +900,11 @@
         <location filename="../assets/SettingsSheet.qml" line="478"/>
         <source>Clear cache</source>
         <translation>कैश साफ़ करें</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="494"/>
+        <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
+        <translation>इस फ़ोन पर YouTube से साइन आउट करें? आपके पसंदीदा बने रहेंगे।</translation>
     </message>
 </context>
 <context>

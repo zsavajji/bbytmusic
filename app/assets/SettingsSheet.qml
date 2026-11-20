@@ -1,4 +1,5 @@
 import bb.cascades 1.4
+import bb.system 1.2
 import "regions.js" as Regions
 
 // Settings, from the application menu: the country of the content, which marked parts of a
@@ -287,12 +288,11 @@ Sheet {
                         }
                         Button {
                             text: qsTr("Sign out")
+                            color: Color.create("#CC0000")   // the theme's red: it ends the session (the user, 2026-11-20)
                             topMargin: ui.du(2)
                             horizontalAlignment: HorizontalAlignment.Fill
                             onClicked: {
-                                sheet.accountReq = engine.request("account", {
-                                    "sign_out": true
-                                });
+                                signOutDialog.show();   // asks first (the user, 2026-11-20)
                             }
                         }
                     }
@@ -488,6 +488,20 @@ Sheet {
             }
         }
         attachedObjects: [
+            SystemDialog {
+                id: signOutDialog
+                title: qsTr("Sign out")
+                body: qsTr("Sign out of YouTube on this phone? Your Favorites stay.")
+                confirmButton.label: qsTr("Sign out")
+                cancelButton.label: qsTr("Cancel")
+                onFinished: {
+                    if (value == SystemUiResult.ConfirmButtonSelection) {
+                        sheet.accountReq = engine.request("account", {
+                            "sign_out": true
+                        });
+                    }
+                }
+            },
             ComponentDefinition {
                 id: optionDef
                 Option {

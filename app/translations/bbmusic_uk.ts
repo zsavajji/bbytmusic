@@ -736,25 +736,25 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="90"/>
+        <location filename="../assets/SettingsSheet.qml" line="91"/>
         <source>the request was refused</source>
         <translation>запит відхилено</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="93"/>
+        <location filename="../assets/SettingsSheet.qml" line="94"/>
         <source>the code expired</source>
         <translation>термін дії коду минув</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
+        <location filename="../assets/SettingsSheet.qml" line="129"/>
         <location filename="../assets/SettingsSheet.qml" line="460"/>
         <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>%1 GB</source>
         <translation>%1 ГБ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="128"/>
         <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <location filename="../assets/SettingsSheet.qml" line="448"/>
         <location filename="../assets/SettingsSheet.qml" line="452"/>
         <location filename="../assets/SettingsSheet.qml" line="456"/>
@@ -762,72 +762,75 @@
         <translation>%1 МБ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="130"/>
         <source>%1 used of %2</source>
         <translation>Використано %1 з %2</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="187"/>
+        <location filename="../assets/SettingsSheet.qml" line="188"/>
         <source>Settings</source>
         <translation>Налаштування</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="189"/>
+        <location filename="../assets/SettingsSheet.qml" line="190"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="198"/>
+        <location filename="../assets/SettingsSheet.qml" line="199"/>
         <source>YouTube account</source>
         <translation>Обліковий запис YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="209"/>
+        <location filename="../assets/SettingsSheet.qml" line="210"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Увійдіть, щоб побачити свої плейлисти, вподобані пісні та альбоми. Пошук, відтворення й обране працюють без облікового запису.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="216"/>
+        <location filename="../assets/SettingsSheet.qml" line="217"/>
         <source>The sign-in did not complete: %1</source>
         <translation>Вхід не завершено: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="222"/>
+        <location filename="../assets/SettingsSheet.qml" line="223"/>
         <source>Sign in</source>
         <translation>Увійти</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="236"/>
+        <location filename="../assets/SettingsSheet.qml" line="237"/>
         <source>On a phone or a computer, open</source>
         <translation>На телефоні або комп&apos;ютері відкрийте</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="244"/>
+        <location filename="../assets/SettingsSheet.qml" line="245"/>
         <source>and enter this code:</source>
         <translation>і введіть цей код:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="259"/>
+        <location filename="../assets/SettingsSheet.qml" line="260"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Ця сторінка увійде сама, щойно буде введено код. Код дійсний 30 хвилин.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="266"/>
+        <location filename="../assets/SettingsSheet.qml" line="267"/>
+        <location filename="../assets/SettingsSheet.qml" line="496"/>
         <source>Cancel</source>
         <translation>Скасувати</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="280"/>
+        <location filename="../assets/SettingsSheet.qml" line="281"/>
         <source>Signed in</source>
         <translation>Вхід виконано</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="283"/>
+        <location filename="../assets/SettingsSheet.qml" line="284"/>
         <source>Shared by the Tube app</source>
         <translation>Надано застосунком Tube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="289"/>
+        <location filename="../assets/SettingsSheet.qml" line="290"/>
+        <location filename="../assets/SettingsSheet.qml" line="493"/>
+        <location filename="../assets/SettingsSheet.qml" line="495"/>
         <source>Sign out</source>
         <translation>Вийти</translation>
     </message>
@@ -900,6 +903,11 @@
         <location filename="../assets/SettingsSheet.qml" line="478"/>
         <source>Clear cache</source>
         <translation>Очистити кеш</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="494"/>
+        <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
+        <translation>Вийти з YouTube на цьому телефоні? Обране залишиться.</translation>
     </message>
 </context>
 <context>
