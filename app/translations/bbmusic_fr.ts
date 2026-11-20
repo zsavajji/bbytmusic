@@ -744,17 +744,17 @@
     </message>
     <message>
         <location filename="../assets/SettingsSheet.qml" line="128"/>
-        <location filename="../assets/SettingsSheet.qml" line="455"/>
-        <location filename="../assets/SettingsSheet.qml" line="459"/>
+        <location filename="../assets/SettingsSheet.qml" line="460"/>
+        <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
         <location filename="../assets/SettingsSheet.qml" line="128"/>
         <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="443"/>
-        <location filename="../assets/SettingsSheet.qml" line="447"/>
-        <location filename="../assets/SettingsSheet.qml" line="451"/>
+        <location filename="../assets/SettingsSheet.qml" line="448"/>
+        <location filename="../assets/SettingsSheet.qml" line="452"/>
+        <location filename="../assets/SettingsSheet.qml" line="456"/>
         <source>%1 MB</source>
         <translation>%1 MB</translation>
     </message>
@@ -779,122 +779,122 @@
         <translation>Compte YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="206"/>
+        <location filename="../assets/SettingsSheet.qml" line="209"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Connectez-vous pour voir vos playlists, titres likés et albums. La recherche, la lecture et les favoris fonctionnent sans compte.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="213"/>
+        <location filename="../assets/SettingsSheet.qml" line="216"/>
         <source>The sign-in did not complete: %1</source>
         <translation>La connexion n&apos;a pas abouti : %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="219"/>
+        <location filename="../assets/SettingsSheet.qml" line="222"/>
         <source>Sign in</source>
         <translation>Se connecter</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="232"/>
+        <location filename="../assets/SettingsSheet.qml" line="236"/>
         <source>On a phone or a computer, open</source>
         <translation>Sur un téléphone ou un ordinateur, ouvrez</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="240"/>
+        <location filename="../assets/SettingsSheet.qml" line="244"/>
         <source>and enter this code:</source>
         <translation>et saisissez ce code :</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="255"/>
+        <location filename="../assets/SettingsSheet.qml" line="259"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Cette page se connecte toute seule dès que le code est saisi. Le code est valable 30 minutes.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="262"/>
+        <location filename="../assets/SettingsSheet.qml" line="266"/>
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="275"/>
+        <location filename="../assets/SettingsSheet.qml" line="280"/>
         <source>Signed in</source>
         <translation>Connecté</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="278"/>
+        <location filename="../assets/SettingsSheet.qml" line="283"/>
         <source>Shared by the Tube app</source>
         <translation>Partagé par l&apos;application Tube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="284"/>
+        <location filename="../assets/SettingsSheet.qml" line="289"/>
         <source>Sign out</source>
         <translation>Se déconnecter</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="296"/>
+        <location filename="../assets/SettingsSheet.qml" line="301"/>
         <source>Content country</source>
         <translation>Pays du contenu</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="304"/>
+        <location filename="../assets/SettingsSheet.qml" line="309"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>Le pays pour lequel YouTube Music choisit les titres et les tendances. Les nouveautés et les playlists à la une dépendent toujours de la position actuelle.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="311"/>
+        <location filename="../assets/SettingsSheet.qml" line="316"/>
         <source>Country</source>
         <translation>Pays</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="319"/>
+        <location filename="../assets/SettingsSheet.qml" line="324"/>
         <source>Skip in a track</source>
         <translation>Ignorer dans un titre</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="327"/>
+        <location filename="../assets/SettingsSheet.qml" line="332"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>Parties signalées par d&apos;autres auditeurs, via SponsorBlock. Tant que l&apos;une d&apos;elles est activée, sponsor.ajay.app est interrogé sur chaque titre au moyen d&apos;un court hash de son identifiant, jamais avec l&apos;identifiant lui-même.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="338"/>
+        <location filename="../assets/SettingsSheet.qml" line="343"/>
         <source>Non-music parts of a video</source>
         <translation>Parties non musicales d&apos;une vidéo</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="358"/>
+        <location filename="../assets/SettingsSheet.qml" line="363"/>
         <source>Sponsors</source>
         <translation>Sponsors</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="378"/>
+        <location filename="../assets/SettingsSheet.qml" line="383"/>
         <source>Intros</source>
         <translation>Intros</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="398"/>
+        <location filename="../assets/SettingsSheet.qml" line="403"/>
         <source>Outros</source>
         <translation>Outros</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="414"/>
+        <location filename="../assets/SettingsSheet.qml" line="419"/>
         <source>Storage</source>
         <translation>Stockage</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="422"/>
+        <location filename="../assets/SettingsSheet.qml" line="427"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>Les titres restent sur le téléphone après leur lecture et peuvent être relus sans réseau. Quand l&apos;espace est plein, les moins récemment lus sont supprimés en premier.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="428"/>
+        <location filename="../assets/SettingsSheet.qml" line="433"/>
         <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
         <translation>Les favoris sont téléchargés et jamais supprimés pour faire de la place ; ils comptent dans cet espace.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="440"/>
+        <location filename="../assets/SettingsSheet.qml" line="445"/>
         <source>Space for songs</source>
         <translation>Espace pour les titres</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="473"/>
+        <location filename="../assets/SettingsSheet.qml" line="478"/>
         <source>Clear cache</source>
         <translation>Vider le cache</translation>
     </message>

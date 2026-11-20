@@ -741,17 +741,17 @@
     </message>
     <message>
         <location filename="../assets/SettingsSheet.qml" line="128"/>
-        <location filename="../assets/SettingsSheet.qml" line="455"/>
-        <location filename="../assets/SettingsSheet.qml" line="459"/>
+        <location filename="../assets/SettingsSheet.qml" line="460"/>
+        <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
         <location filename="../assets/SettingsSheet.qml" line="128"/>
         <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="443"/>
-        <location filename="../assets/SettingsSheet.qml" line="447"/>
-        <location filename="../assets/SettingsSheet.qml" line="451"/>
+        <location filename="../assets/SettingsSheet.qml" line="448"/>
+        <location filename="../assets/SettingsSheet.qml" line="452"/>
+        <location filename="../assets/SettingsSheet.qml" line="456"/>
         <source>%1 MB</source>
         <translation>%1 MB</translation>
     </message>
@@ -776,122 +776,122 @@
         <translation>Tài khoản YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="206"/>
+        <location filename="../assets/SettingsSheet.qml" line="209"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Đăng nhập để xem danh sách phát, bài hát đã thích và album của bạn. Tìm kiếm, phát nhạc và mục yêu thích hoạt động mà không cần tài khoản.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="213"/>
+        <location filename="../assets/SettingsSheet.qml" line="216"/>
         <source>The sign-in did not complete: %1</source>
         <translation>Đăng nhập chưa hoàn tất: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="219"/>
+        <location filename="../assets/SettingsSheet.qml" line="222"/>
         <source>Sign in</source>
         <translation>Đăng nhập</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="232"/>
+        <location filename="../assets/SettingsSheet.qml" line="236"/>
         <source>On a phone or a computer, open</source>
         <translation>Trên điện thoại hoặc máy tính, hãy mở</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="240"/>
+        <location filename="../assets/SettingsSheet.qml" line="244"/>
         <source>and enter this code:</source>
         <translation>và nhập mã này:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="255"/>
+        <location filename="../assets/SettingsSheet.qml" line="259"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Trang này tự đăng nhập sau khi mã được nhập. Mã có hiệu lực trong 30 phút.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="262"/>
+        <location filename="../assets/SettingsSheet.qml" line="266"/>
         <source>Cancel</source>
         <translation>Hủy</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="275"/>
+        <location filename="../assets/SettingsSheet.qml" line="280"/>
         <source>Signed in</source>
         <translation>Đã đăng nhập</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="278"/>
+        <location filename="../assets/SettingsSheet.qml" line="283"/>
         <source>Shared by the Tube app</source>
         <translation>Được chia sẻ bởi ứng dụng Tube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="284"/>
+        <location filename="../assets/SettingsSheet.qml" line="289"/>
         <source>Sign out</source>
         <translation>Đăng xuất</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="296"/>
+        <location filename="../assets/SettingsSheet.qml" line="301"/>
         <source>Content country</source>
         <translation>Quốc gia nội dung</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="304"/>
+        <location filename="../assets/SettingsSheet.qml" line="309"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>Quốc gia mà YouTube Music dùng để chọn bài hát và xu hướng. Bản phát hành mới và danh sách phát nổi bật vẫn dựa theo vị trí hiện tại của bạn.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="311"/>
+        <location filename="../assets/SettingsSheet.qml" line="316"/>
         <source>Country</source>
         <translation>Quốc gia</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="319"/>
+        <location filename="../assets/SettingsSheet.qml" line="324"/>
         <source>Skip in a track</source>
         <translation>Bỏ qua trong bài hát</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="327"/>
+        <location filename="../assets/SettingsSheet.qml" line="332"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>Các đoạn do người nghe khác đánh dấu, lấy từ SponsorBlock. Khi bất kỳ mục nào trong số này đang bật, sponsor.ajay.app sẽ được hỏi về từng bài hát bằng một mã băm ngắn của ID bài hát, không bao giờ bằng chính ID.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="338"/>
+        <location filename="../assets/SettingsSheet.qml" line="343"/>
         <source>Non-music parts of a video</source>
         <translation>Các đoạn không phải nhạc trong video</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="358"/>
+        <location filename="../assets/SettingsSheet.qml" line="363"/>
         <source>Sponsors</source>
         <translation>Nhà tài trợ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="378"/>
+        <location filename="../assets/SettingsSheet.qml" line="383"/>
         <source>Intros</source>
         <translation>Phần mở đầu</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="398"/>
+        <location filename="../assets/SettingsSheet.qml" line="403"/>
         <source>Outros</source>
         <translation>Phần kết</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="414"/>
+        <location filename="../assets/SettingsSheet.qml" line="419"/>
         <source>Storage</source>
         <translation>Bộ nhớ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="422"/>
+        <location filename="../assets/SettingsSheet.qml" line="427"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>Bài hát được giữ lại trên điện thoại sau khi phát, nên có thể phát lại mà không cần mạng. Khi bộ nhớ đầy, những bài lâu chưa được phát nhất sẽ bị xóa trước.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="428"/>
+        <location filename="../assets/SettingsSheet.qml" line="433"/>
         <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
         <translation>Bài yêu thích được tải xuống và không bao giờ bị xóa để lấy chỗ trống; chúng được tính vào dung lượng này.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="440"/>
+        <location filename="../assets/SettingsSheet.qml" line="445"/>
         <source>Space for songs</source>
         <translation>Dung lượng cho bài hát</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="473"/>
+        <location filename="../assets/SettingsSheet.qml" line="478"/>
         <source>Clear cache</source>
         <translation>Xóa bộ nhớ đệm</translation>
     </message>
