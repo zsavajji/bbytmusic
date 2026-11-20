@@ -1,0 +1,405 @@
+{
+ "contents": {
+  "tvBrowseRenderer": {
+   "content": {
+    "tvSurfaceContentRenderer": {
+     "content": {
+      "twoColumnRenderer": {
+       "leftColumn": {
+        "entityMetadataRenderer": {
+         "title": {
+          "simpleText": "Text 15"
+         },
+         "description": {},
+         "buttonLayout": "ENTITY_METADATA_BUTTON_LAYOUT_HORIZONTAL",
+         "bylines": [
+          {
+           "lineRenderer": {
+            "items": [
+             {
+              "lineItemRenderer": {
+               "text": {
+                "simpleText": "Text 16"
+               }
+              }
+             },
+             {
+              "lineItemRenderer": {
+               "text": {
+                "simpleText": "\u2022"
+               }
+              }
+             },
+             {
+              "lineItemRenderer": {
+               "text": {
+                "runs": [
+                 {
+                  "text": "Text 17"
+                 },
+                 {
+                  "text": "Text 18"
+                 }
+                ]
+               }
+              }
+             },
+             {
+              "lineItemRenderer": {
+               "text": {
+                "simpleText": "\u2022"
+               }
+              }
+             },
+             {
+              "lineItemRenderer": {
+               "text": {
+                "runs": [
+                 {
+                  "text": "Text 19"
+                 }
+                ]
+               }
+              }
+             }
+            ]
+           }
+          }
+         ]
+        }
+       },
+       "rightColumn": {
+        "playlistVideoListRenderer": {
+         "contents": [
+          {
+           "tileRenderer": {
+            "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+            "header": {
+             "tileHeaderRenderer": {
+              "thumbnail": {
+               "thumbnails": [
+                {
+                 "url": "https://i.ytimg.com/fake/13/img.jpg",
+                 "width": 640,
+                 "height": 480
+                }
+               ]
+              },
+              "thumbnailOverlays": [
+               {
+                "thumbnailOverlayResumePlaybackRenderer": {
+                 "percentDurationWatched": 0
+                }
+               },
+               {
+                "thumbnailOverlayTimeStatusRenderer": {
+                 "text": {
+                  "simpleText": "1:33:41"
+                 },
+                 "style": "x5"
+                }
+               }
+              ]
+             }
+            },
+            "metadata": {
+             "tileMetadataRenderer": {
+              "title": {
+               "simpleText": "Text 20"
+              },
+              "lines": [
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "runs": [
+                      {
+                       "text": "Text 16"
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 ]
+                }
+               },
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "badge": {
+                     "metadataBadgeRenderer": {
+                      "style": "BADGE_STYLE_TYPE_SIMPLE",
+                      "label": "Text 21"
+                     }
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 22"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "\u2022"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 23"
+                    }
+                   }
+                  }
+                 ]
+                }
+               }
+              ]
+             }
+            },
+            "onSelectCommand": {
+             "watchEndpoint": {
+              "videoId": "vid00012AAA",
+              "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+             }
+            },
+            "contentId": "vid00012AAA",
+            "contentType": "TILE_CONTENT_TYPE_VIDEO"
+           }
+          },
+          {
+           "tileRenderer": {
+            "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+            "header": {
+             "tileHeaderRenderer": {
+              "thumbnail": {
+               "thumbnails": [
+                {
+                 "url": "https://i.ytimg.com/fake/14/img.jpg",
+                 "width": 640,
+                 "height": 480
+                }
+               ]
+              },
+              "thumbnailOverlays": [
+               {
+                "thumbnailOverlayResumePlaybackRenderer": {
+                 "percentDurationWatched": 0
+                }
+               },
+               {
+                "thumbnailOverlayTimeStatusRenderer": {
+                 "text": {
+                  "simpleText": "2:08:20"
+                 },
+                 "style": "x5"
+                }
+               }
+              ]
+             }
+            },
+            "metadata": {
+             "tileMetadataRenderer": {
+              "title": {
+               "simpleText": "Text 24"
+              },
+              "lines": [
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "runs": [
+                      {
+                       "text": "Text 16"
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 ]
+                }
+               },
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "badge": {
+                     "metadataBadgeRenderer": {
+                      "style": "BADGE_STYLE_TYPE_SIMPLE",
+                      "label": "Text 21"
+                     }
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 25"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "\u2022"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 26"
+                    }
+                   }
+                  }
+                 ]
+                }
+               }
+              ]
+             }
+            },
+            "onSelectCommand": {
+             "watchEndpoint": {
+              "videoId": "vid00014AAA",
+              "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+             }
+            },
+            "contentId": "vid00014AAA",
+            "contentType": "TILE_CONTENT_TYPE_VIDEO"
+           }
+          },
+          {
+           "tileRenderer": {
+            "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+            "header": {
+             "tileHeaderRenderer": {
+              "thumbnail": {
+               "thumbnails": [
+                {
+                 "url": "https://i.ytimg.com/fake/15/img.jpg",
+                 "width": 640,
+                 "height": 480
+                }
+               ]
+              },
+              "thumbnailOverlays": [
+               {
+                "thumbnailOverlayResumePlaybackRenderer": {
+                 "percentDurationWatched": 0
+                }
+               },
+               {
+                "thumbnailOverlayTimeStatusRenderer": {
+                 "text": {
+                  "simpleText": "1:24:46"
+                 },
+                 "style": "x5"
+                }
+               }
+              ]
+             }
+            },
+            "metadata": {
+             "tileMetadataRenderer": {
+              "title": {
+               "simpleText": "Text 27"
+              },
+              "lines": [
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "runs": [
+                      {
+                       "text": "Text 16"
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 ]
+                }
+               },
+               {
+                "lineRenderer": {
+                 "items": [
+                  {
+                   "lineItemRenderer": {
+                    "badge": {
+                     "metadataBadgeRenderer": {
+                      "style": "BADGE_STYLE_TYPE_SIMPLE",
+                      "label": "Text 21"
+                     }
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 28"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "\u2022"
+                    }
+                   }
+                  },
+                  {
+                   "lineItemRenderer": {
+                    "text": {
+                     "simpleText": "Text 29"
+                    }
+                   }
+                  }
+                 ]
+                }
+               }
+              ]
+             }
+            },
+            "onSelectCommand": {
+             "watchEndpoint": {
+              "videoId": "vid00015AAA",
+              "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+             }
+            },
+            "contentId": "vid00015AAA",
+            "contentType": "TILE_CONTENT_TYPE_VIDEO"
+           }
+          }
+         ],
+         "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+         "isEditable": false,
+         "continuations": [
+          {
+           "nextContinuationData": {
+            "continuation": "CONTINUATION_6"
+           }
+          }
+         ],
+         "targetId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

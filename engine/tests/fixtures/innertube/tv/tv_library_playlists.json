@@ -1,0 +1,224 @@
+{
+ "contents": {
+  "tvBrowseRenderer": {
+   "content": {
+    "tvSecondaryNavRenderer": {
+     "sections": [
+      {
+       "tvSecondaryNavSectionRenderer": {
+        "tabs": [
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_last_played"
+            }
+           },
+           "title": "Recent activity",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_1"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SEARCH_HISTORY"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_playlists"
+            }
+           },
+           "title": "Playlists",
+           "selected": true,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "content": {
+              "gridRenderer": {
+               "items": [
+                {
+                 "tileRenderer": {
+                  "style": "TILE_STYLE_YTLR_SQUARE",
+                  "header": {
+                   "tileHeaderRenderer": {
+                    "thumbnail": {
+                     "thumbnails": [
+                      {
+                       "url": "https://www.gstatic.com/fake/10/img.jpg",
+                       "width": 192,
+                       "height": 192
+                      },
+                      {
+                       "url": "https://www.gstatic.com/fake/11/img.jpg",
+                       "width": 384,
+                       "height": 384
+                      },
+                      {
+                       "url": "https://www.gstatic.com/fake/12/img.jpg",
+                       "width": 576,
+                       "height": 576
+                      }
+                     ]
+                    },
+                    "style": "TILE_HEADER_STYLE_RECTANGULAR"
+                   }
+                  },
+                  "metadata": {
+                   "tileMetadataRenderer": {
+                    "title": {
+                     "runs": [
+                      {
+                       "text": "Text 12",
+                       "navigationEndpoint": {
+                        "browseEndpoint": {
+                         "browseId": "VLRD0011",
+                         "browseEndpointContextSupportedConfigs": {
+                          "browseEndpointContextMusicConfig": {
+                           "pageType": "MUSIC_PAGE_TYPE_PLAYLIST"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     ]
+                    },
+                    "lines": [
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 13"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     }
+                    ]
+                   }
+                  },
+                  "onSelectCommand": {
+                   "browseEndpoint": {
+                    "browseId": "VLRD0011",
+                    "browseEndpointContextSupportedConfigs": {
+                     "browseEndpointContextMusicConfig": {
+                      "pageType": "MUSIC_PAGE_TYPE_PLAYLIST"
+                     }
+                    }
+                   }
+                  },
+                  "contentId": "RD0011",
+                  "contentType": "TILE_CONTENT_TYPE_PLAYLIST"
+                 }
+                }
+               ]
+              }
+             },
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_2"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "PLAYLISTS"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_albums"
+            }
+           },
+           "title": "Albums",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_3"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "ALBUM"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_videos"
+            }
+           },
+           "title": "Liked songs",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_4"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "LIKE"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_library_corpus_artists"
+            }
+           },
+           "title": "Subscriptions",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_5"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SUBSCRIPTIONS"
+           }
+          }
+         }
+        ]
+       }
+      }
+     ],
+     "title": {
+      "runs": [
+       {
+        "text": "Text 11"
+       }
+      ]
+     },
+     "style": "TV_SECONDARY_NAV_RENDERER_STYLE_CHIPS"
+    }
+   }
+  }
+ }
+}

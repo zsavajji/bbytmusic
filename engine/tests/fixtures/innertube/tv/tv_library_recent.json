@@ -1,0 +1,511 @@
+{
+ "contents": {
+  "tvBrowseRenderer": {
+   "content": {
+    "tvSecondaryNavRenderer": {
+     "sections": [
+      {
+       "tvSecondaryNavSectionRenderer": {
+        "tabs": [
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_last_played"
+            }
+           },
+           "title": "Recent activity",
+           "selected": true,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "content": {
+              "gridRenderer": {
+               "items": [
+                {
+                 "tileRenderer": {
+                  "style": "TILE_STYLE_YTLR_DEFAULT",
+                  "header": {
+                   "tileHeaderRenderer": {
+                    "thumbnail": {
+                     "thumbnails": [
+                      {
+                       "url": "https://i.ytimg.com/fake/1/img.jpg",
+                       "width": 400,
+                       "height": 225
+                      },
+                      {
+                       "url": "https://i.ytimg.com/fake/2/img.jpg",
+                       "width": 800,
+                       "height": 450
+                      }
+                     ]
+                    },
+                    "thumbnailOverlays": [
+                     {
+                      "thumbnailOverlayTimeStatusRenderer": {
+                       "text": {
+                        "simpleText": "1:50:49"
+                       },
+                       "icon": {
+                        "iconType": "AUDIO"
+                       }
+                      }
+                     }
+                    ],
+                    "style": "TILE_HEADER_STYLE_RECTANGULAR"
+                   }
+                  },
+                  "metadata": {
+                   "tileMetadataRenderer": {
+                    "title": {
+                     "runs": [
+                      {
+                       "text": "Text 1",
+                       "navigationEndpoint": {
+                        "browseEndpoint": {
+                         "browseId": "vid00001AAAAAAA",
+                         "params": "x1",
+                         "browseEndpointContextSupportedConfigs": {
+                          "browseEndpointContextMusicConfig": {
+                           "pageType": "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     ]
+                    },
+                    "lines": [
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 2"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     }
+                    ]
+                   }
+                  },
+                  "onSelectCommand": {
+                   "watchEndpoint": {
+                    "videoId": "vid00002AAA",
+                    "playlistId": "RD0003AAAAAAAAAAA",
+                    "params": "x2",
+                    "watchEndpointMusicSupportedConfigs": {
+                     "watchEndpointMusicConfig": {
+                      "musicVideoType": "MUSIC_VIDEO_TYPE_PODCAST_EPISODE"
+                     }
+                    }
+                   }
+                  },
+                  "contentId": "vid00002AAA",
+                  "contentType": "TILE_CONTENT_TYPE_VIDEO"
+                 }
+                },
+                {
+                 "tileRenderer": {
+                  "style": "TILE_STYLE_YTLR_DEFAULT",
+                  "header": {
+                   "tileHeaderRenderer": {
+                    "thumbnail": {
+                     "thumbnails": [
+                      {
+                       "url": "https://i.ytimg.com/fake/3/img.jpg",
+                       "width": 400,
+                       "height": 225
+                      },
+                      {
+                       "url": "https://i.ytimg.com/fake/4/img.jpg",
+                       "width": 800,
+                       "height": 450
+                      }
+                     ]
+                    },
+                    "thumbnailOverlays": [
+                     {
+                      "thumbnailOverlayTimeStatusRenderer": {
+                       "text": {
+                        "simpleText": "1:12:35"
+                       },
+                       "icon": {
+                        "iconType": "AUDIO"
+                       }
+                      }
+                     }
+                    ],
+                    "style": "TILE_HEADER_STYLE_RECTANGULAR"
+                   }
+                  },
+                  "metadata": {
+                   "tileMetadataRenderer": {
+                    "title": {
+                     "runs": [
+                      {
+                       "text": "Text 3",
+                       "navigationEndpoint": {
+                        "browseEndpoint": {
+                         "browseId": "vid00004AAAAAAA",
+                         "params": "x3",
+                         "browseEndpointContextSupportedConfigs": {
+                          "browseEndpointContextMusicConfig": {
+                           "pageType": "MUSIC_PAGE_TYPE_NON_MUSIC_AUDIO_TRACK_PAGE"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     ]
+                    },
+                    "lines": [
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 4"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     }
+                    ]
+                   }
+                  },
+                  "onSelectCommand": {
+                   "watchEndpoint": {
+                    "videoId": "vid00005AAA",
+                    "playlistId": "RD0006AAAAAAAAAAA",
+                    "params": "x2",
+                    "watchEndpointMusicSupportedConfigs": {
+                     "watchEndpointMusicConfig": {
+                      "musicVideoType": "MUSIC_VIDEO_TYPE_PODCAST_EPISODE"
+                     }
+                    }
+                   }
+                  },
+                  "contentId": "vid00005AAA",
+                  "contentType": "TILE_CONTENT_TYPE_VIDEO"
+                 }
+                },
+                {
+                 "tileRenderer": {
+                  "style": "TILE_STYLE_YTLR_DEFAULT",
+                  "header": {
+                   "tileHeaderRenderer": {
+                    "thumbnail": {
+                     "thumbnails": [
+                      {
+                       "url": "https://i.ytimg.com/fake/5/img.jpg",
+                       "width": 400,
+                       "height": 225
+                      },
+                      {
+                       "url": "https://i.ytimg.com/fake/6/img.jpg",
+                       "width": 800,
+                       "height": 450
+                      }
+                     ]
+                    },
+                    "thumbnailOverlays": [
+                     {
+                      "thumbnailOverlayTimeStatusRenderer": {
+                       "text": {
+                        "simpleText": "8:44"
+                       },
+                       "icon": {
+                        "iconType": "AUDIO"
+                       }
+                      }
+                     }
+                    ],
+                    "style": "TILE_HEADER_STYLE_RECTANGULAR"
+                   }
+                  },
+                  "metadata": {
+                   "tileMetadataRenderer": {
+                    "title": {
+                     "runs": [
+                      {
+                       "text": "Text 5",
+                       "navigationEndpoint": {
+                        "watchEndpoint": {
+                         "videoId": "vid00007AAA",
+                         "playlistId": "RD0008AAAAAAAAAAA",
+                         "watchEndpointMusicSupportedConfigs": {
+                          "watchEndpointMusicConfig": {
+                           "musicVideoType": "MUSIC_VIDEO_TYPE_OMV"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     ]
+                    },
+                    "lines": [
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 6"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     },
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 7"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     }
+                    ]
+                   }
+                  },
+                  "onSelectCommand": {
+                   "watchEndpoint": {
+                    "videoId": "vid00007AAA",
+                    "playlistId": "RD0008AAAAAAAAAAA",
+                    "params": "x4",
+                    "watchEndpointMusicSupportedConfigs": {
+                     "watchEndpointMusicConfig": {
+                      "musicVideoType": "MUSIC_VIDEO_TYPE_OMV"
+                     }
+                    }
+                   }
+                  },
+                  "contentId": "vid00007AAA",
+                  "contentType": "TILE_CONTENT_TYPE_VIDEO"
+                 }
+                },
+                {
+                 "tileRenderer": {
+                  "style": "TILE_STYLE_YTLR_DEFAULT",
+                  "header": {
+                   "tileHeaderRenderer": {
+                    "thumbnail": {
+                     "thumbnails": [
+                      {
+                       "url": "https://yt3.googleusercontent.com/fake/7/img.jpg",
+                       "width": 226,
+                       "height": 226
+                      },
+                      {
+                       "url": "https://yt3.googleusercontent.com/fake/8/img.jpg",
+                       "width": 302,
+                       "height": 302
+                      },
+                      {
+                       "url": "https://yt3.googleusercontent.com/fake/9/img.jpg",
+                       "width": 544,
+                       "height": 544
+                      }
+                     ]
+                    },
+                    "style": "TILE_HEADER_STYLE_PADDED"
+                   }
+                  },
+                  "metadata": {
+                   "tileMetadataRenderer": {
+                    "title": {
+                     "runs": [
+                      {
+                       "text": "Text 8",
+                       "navigationEndpoint": {
+                        "browseEndpoint": {
+                         "browseId": "MPRE0009AAAAAAAAA",
+                         "browseEndpointContextSupportedConfigs": {
+                          "browseEndpointContextMusicConfig": {
+                           "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     ]
+                    },
+                    "lines": [
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 9"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     },
+                     {
+                      "lineRenderer": {
+                       "items": [
+                        {
+                         "lineItemRenderer": {
+                          "text": {
+                           "simpleText": "Text 10"
+                          }
+                         }
+                        }
+                       ]
+                      }
+                     }
+                    ]
+                   }
+                  },
+                  "onSelectCommand": {
+                   "browseEndpoint": {
+                    "browseId": "VLOL0010AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                    "browseEndpointContextSupportedConfigs": {
+                     "browseEndpointContextMusicConfig": {
+                      "pageType": "MUSIC_PAGE_TYPE_ALBUM"
+                     }
+                    }
+                   }
+                  },
+                  "contentId": "OL0010AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+                  "contentType": "TILE_CONTENT_TYPE_PLAYLIST"
+                 }
+                }
+               ]
+              }
+             },
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_1"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SEARCH_HISTORY"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_playlists"
+            }
+           },
+           "title": "Playlists",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_2"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "PLAYLISTS"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_albums"
+            }
+           },
+           "title": "Albums",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_3"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "ALBUM"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_videos"
+            }
+           },
+           "title": "Liked songs",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_4"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "LIKE"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_library_corpus_artists"
+            }
+           },
+           "title": "Subscriptions",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_5"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SUBSCRIPTIONS"
+           }
+          }
+         }
+        ]
+       }
+      }
+     ],
+     "title": {
+      "runs": [
+       {
+        "text": "Text 11"
+       }
+      ]
+     },
+     "style": "TV_SECONDARY_NAV_RENDERER_STYLE_CHIPS"
+    }
+   }
+  }
+ }
+}

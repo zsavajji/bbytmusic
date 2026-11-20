@@ -1,0 +1,152 @@
+{
+ "contents": {
+  "tvBrowseRenderer": {
+   "content": {
+    "tvSecondaryNavRenderer": {
+     "sections": [
+      {
+       "tvSecondaryNavSectionRenderer": {
+        "tabs": [
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_last_played"
+            }
+           },
+           "title": "Recent activity",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_1"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SEARCH_HISTORY"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_playlists"
+            }
+           },
+           "title": "Playlists",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_2"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "PLAYLISTS"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_albums"
+            }
+           },
+           "title": "Albums",
+           "selected": true,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "content": {
+              "genericPromoRenderer": {
+               "bodyText": {
+                "runs": [
+                 {
+                  "text": "Text 14"
+                 }
+                ]
+               }
+              }
+             },
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_3"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "ALBUM"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_liked_videos"
+            }
+           },
+           "title": "Liked songs",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_4"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "LIKE"
+           }
+          }
+         },
+         {
+          "tabRenderer": {
+           "endpoint": {
+            "browseEndpoint": {
+             "browseId": "FEmusic_library_corpus_artists"
+            }
+           },
+           "title": "Subscriptions",
+           "selected": false,
+           "content": {
+            "tvSurfaceContentRenderer": {
+             "continuation": {
+              "reloadContinuationData": {
+               "continuation": "CONTINUATION_5"
+              }
+             }
+            }
+           },
+           "icon": {
+            "iconType": "SUBSCRIPTIONS"
+           }
+          }
+         }
+        ]
+       }
+      }
+     ],
+     "title": {
+      "runs": [
+       {
+        "text": "Text 11"
+       }
+      ]
+     },
+     "style": "TV_SECONDARY_NAV_RENDERER_STYLE_CHIPS"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,330 @@
+{
+ "continuationContents": {
+  "playlistVideoListContinuation": {
+   "contents": [
+    {
+     "tileRenderer": {
+      "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+      "header": {
+       "tileHeaderRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://i.ytimg.com/fake/16/img.jpg",
+           "width": 640,
+           "height": 480
+          }
+         ]
+        },
+        "thumbnailOverlays": [
+         {
+          "thumbnailOverlayResumePlaybackRenderer": {
+           "percentDurationWatched": 0
+          }
+         },
+         {
+          "thumbnailOverlayTimeStatusRenderer": {
+           "text": {
+            "simpleText": "1:23:20"
+           },
+           "style": "x5"
+          }
+         }
+        ]
+       }
+      },
+      "metadata": {
+       "tileMetadataRenderer": {
+        "title": {
+         "simpleText": "Text 30"
+        },
+        "lines": [
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "text": {
+               "runs": [
+                {
+                 "text": "Text 16"
+                }
+               ]
+              }
+             }
+            }
+           ]
+          }
+         },
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "badge": {
+               "metadataBadgeRenderer": {
+                "style": "BADGE_STYLE_TYPE_SIMPLE",
+                "label": "Text 21"
+               }
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 31"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "\u2022"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 32"
+              }
+             }
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      "onSelectCommand": {
+       "watchEndpoint": {
+        "videoId": "vid00016AAA",
+        "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+       }
+      },
+      "contentId": "vid00016AAA",
+      "contentType": "TILE_CONTENT_TYPE_VIDEO"
+     }
+    },
+    {
+     "tileRenderer": {
+      "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+      "header": {
+       "tileHeaderRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://i.ytimg.com/fake/17/img.jpg",
+           "width": 640,
+           "height": 480
+          }
+         ]
+        },
+        "thumbnailOverlays": [
+         {
+          "thumbnailOverlayResumePlaybackRenderer": {
+           "percentDurationWatched": 0
+          }
+         },
+         {
+          "thumbnailOverlayTimeStatusRenderer": {
+           "text": {
+            "simpleText": "2:09:05"
+           },
+           "style": "x5"
+          }
+         }
+        ]
+       }
+      },
+      "metadata": {
+       "tileMetadataRenderer": {
+        "title": {
+         "simpleText": "Text 33"
+        },
+        "lines": [
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "text": {
+               "runs": [
+                {
+                 "text": "Text 16"
+                }
+               ]
+              }
+             }
+            }
+           ]
+          }
+         },
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "badge": {
+               "metadataBadgeRenderer": {
+                "style": "BADGE_STYLE_TYPE_SIMPLE",
+                "label": "Text 21"
+               }
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 34"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "\u2022"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 32"
+              }
+             }
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      "onSelectCommand": {
+       "watchEndpoint": {
+        "videoId": "vid00017AAA",
+        "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+       }
+      },
+      "contentId": "vid00017AAA",
+      "contentType": "TILE_CONTENT_TYPE_VIDEO"
+     }
+    },
+    {
+     "tileRenderer": {
+      "style": "TILE_STYLE_YTLR_VERTICAL_LIST",
+      "header": {
+       "tileHeaderRenderer": {
+        "thumbnail": {
+         "thumbnails": [
+          {
+           "url": "https://i.ytimg.com/fake/18/img.jpg",
+           "width": 640,
+           "height": 480
+          }
+         ]
+        },
+        "thumbnailOverlays": [
+         {
+          "thumbnailOverlayResumePlaybackRenderer": {
+           "percentDurationWatched": 0
+          }
+         },
+         {
+          "thumbnailOverlayTimeStatusRenderer": {
+           "text": {
+            "simpleText": "1:38:16"
+           },
+           "style": "x5"
+          }
+         }
+        ]
+       }
+      },
+      "metadata": {
+       "tileMetadataRenderer": {
+        "title": {
+         "simpleText": "Text 35"
+        },
+        "lines": [
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "text": {
+               "runs": [
+                {
+                 "text": "Text 16"
+                }
+               ]
+              }
+             }
+            }
+           ]
+          }
+         },
+         {
+          "lineRenderer": {
+           "items": [
+            {
+             "lineItemRenderer": {
+              "badge": {
+               "metadataBadgeRenderer": {
+                "style": "BADGE_STYLE_TYPE_SIMPLE",
+                "label": "Text 21"
+               }
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 36"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "\u2022"
+              }
+             }
+            },
+            {
+             "lineItemRenderer": {
+              "text": {
+               "simpleText": "Text 37"
+              }
+             }
+            }
+           ]
+          }
+         }
+        ]
+       }
+      },
+      "onSelectCommand": {
+       "watchEndpoint": {
+        "videoId": "vid00018AAA",
+        "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+       }
+      },
+      "contentId": "vid00018AAA",
+      "contentType": "TILE_CONTENT_TYPE_VIDEO"
+     }
+    }
+   ],
+   "playlistId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+   "isEditable": false,
+   "continuations": [
+    {
+     "nextContinuationData": {
+      "continuation": "CONTINUATION_7"
+     }
+    }
+   ],
+   "targetId": "PL0013AAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  }
+ }
+}
