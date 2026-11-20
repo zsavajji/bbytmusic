@@ -11,7 +11,13 @@ Sheet {
     property string regionReq: ""
     property string cacheReq: ""
     property string accountReq: ""
-    property variant acct: ({ "state": "out" })     // the last account answer or event
+    // The last account answer or event, as plain strings: signed out until the engine has said.
+    property string acctState: "out"
+    property string acctName: ""
+    property string acctSource: ""
+    property string acctCode: ""
+    property string acctUrl: ""
+    property string acctError: ""
     property string gl: ""          // the country in use, as the engine last said or was told
     property int capMb: 0           // the cache's cap, as the engine last said (0: not yet)
     property bool filling: false    // the controls are being set from the engine's answers
@@ -64,9 +70,18 @@ Sheet {
         });
     }
 
+    function setAccount(a) {
+        acctState = a.state ? a.state : "out";
+        acctName = a.name ? a.name : "";
+        acctSource = a.source ? a.source : "";
+        acctCode = a.code ? a.code : "";
+        acctUrl = a.url ? a.url : "";
+        acctError = a.error ? a.error : "";
+    }
+
     function onEvent(name, fields) {
         if (name == "account") {
-            sheet.acct = fields;
+            sheet.setAccount(fields);
         }
     }
 
@@ -84,7 +99,7 @@ Sheet {
         if (id != "" && id == sheet.accountReq) {
             sheet.accountReq = "";
             if (ok) {
-                sheet.acct = result;
+                sheet.setAccount(result);
             }
         }
         if (id != "" && id == sheet.regionReq) {
@@ -190,21 +205,21 @@ Sheet {
                     Label {
                         text: qsTr("Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.")
                         multiline: true
-                        visible: sheet.acct.state == "out"
+                        visible: sheet.acctState == "out"
                         textStyle.base: SystemDefaults.TextStyles.SmallText
                         textStyle.color: Color.create("#969696")
                     }
                     Label {
-                        text: qsTr("The sign-in did not complete: %1").arg(sheet.refuse(sheet.acct.error))
+                        text: qsTr("The sign-in did not complete: %1").arg(sheet.refuse(sheet.acctError))
                         multiline: true
                         topMargin: ui.du(2)
-                        visible: sheet.acct.state == "out" && sheet.acct.error != "" && sheet.acct.error != undefined
+                        visible: sheet.acctState == "out" && sheet.acctError != ""
                     }
                     Button {
                         text: qsTr("Sign in")
                         topMargin: ui.du(2)
                         horizontalAlignment: HorizontalAlignment.Fill
-                        visible: sheet.acct.state == "out"
+                        visible: sheet.acctState == "out"
                         onClicked: {
                             sheet.accountReq = engine.request("account", {
                                 "sign_in": true
@@ -212,13 +227,13 @@ Sheet {
                         }
                     }
                     Container {
-                        visible: sheet.acct.state == "pending"
+                        visible: sheet.acctState == "pending"
                         Label {
                             text: qsTr("On a phone or a computer, open")
                             multiline: true
                         }
                         Label {
-                            text: sheet.acct.url ? sheet.acct.url : "google.com/device"
+                            text: sheet.acctUrl != "" ? sheet.acctUrl : "google.com/device"
                             textStyle.fontSize: FontSize.Large
                         }
                         Label {
@@ -226,20 +241,22 @@ Sheet {
                             multiline: true
                         }
                         Label {
-                            text: sheet.acct.code
-                            visible: sheet.acct.code != "" && sheet.acct.code != undefined
-                            textStyle.fontSize: FontSize.Large
+                            text: sheet.acctCode
+                            visible: sheet.acctCode != ""
+                            textStyle.base: SystemDefaults.TextStyles.BigText
                         }
                         ActivityIndicator {
-                            running: sheet.acct.state == "pending" && ! sheet.acct.code
-                            visible: ! sheet.acct.code
+                            running: sheet.acctState == "pending" && sheet.acctCode == ""
+                            visible: sheet.acctCode == ""
+                            preferredWidth: ui.du(8)
+                            preferredHeight: ui.du(8)
                         }
                         Label {
                             text: qsTr("This page signs in by itself once the code is entered. The code is valid for 30 minutes.")
                             multiline: true
                             topMargin: ui.du(2)
                             textStyle.base: SystemDefaults.TextStyles.SmallText
-                        textStyle.color: Color.create("#969696")
+                            textStyle.color: Color.create("#969696")
                         }
                         Button {
                             text: qsTr("Cancel")
@@ -253,15 +270,15 @@ Sheet {
                         }
                     }
                     Container {
-                        visible: sheet.acct.state == "in"
+                        visible: sheet.acctState == "in"
                         Label {
-                            text: sheet.acct.name ? sheet.acct.name : qsTr("Signed in")
+                            text: sheet.acctName != "" ? sheet.acctName : qsTr("Signed in")
                         }
                         Label {
                             text: qsTr("Shared by the Tube app")
-                            visible: sheet.acct.source == "tube"
+                            visible: sheet.acctSource == "tube"
                             textStyle.base: SystemDefaults.TextStyles.SmallText
-                        textStyle.color: Color.create("#969696")
+                            textStyle.color: Color.create("#969696")
                         }
                         Button {
                             text: qsTr("Sign out")
