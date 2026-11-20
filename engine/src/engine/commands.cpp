@@ -118,7 +118,6 @@ void Engine::add_commands() {
         SearchPage page;
         std::string err;
         const std::string c = req["continuation"].string();
-        if (c.compare(0, 4, "tvf:") == 0 || c.compare(0, 4, "tvp:") == 0) return tv_browse_more(c);
         if (!yt_call([&](InnerTube &yt, std::string &e) { return search_more(yt, c, page, e); }, err))
             return Reply::error("network", err);
         return ok(search_page_json(page));
@@ -230,6 +229,7 @@ void Engine::add_commands() {
         BrowsePage page;
         std::string err;
         const std::string c = req["continuation"].string();
+        if (c.compare(0, 4, "tvf:") == 0 || c.compare(0, 4, "tvp:") == 0) return tv_browse_more(c);   // the account's
         if (!yt_call([&](InnerTube &yt, std::string &e) { return browse_more(yt, c, page, e); }, err))
             return Reply::error("network", err);
         return ok(browse_more_json(page));
