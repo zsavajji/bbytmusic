@@ -85,18 +85,18 @@
     </message>
     <message>
         <location filename="../assets/AlbumPage.qml" line="280"/>
-        <location filename="../assets/AlbumPage.qml" line="454"/>
-        <location filename="../assets/AlbumPage.qml" line="490"/>
-        <location filename="../assets/AlbumPage.qml" line="519"/>
+        <location filename="../assets/AlbumPage.qml" line="460"/>
+        <location filename="../assets/AlbumPage.qml" line="503"/>
+        <location filename="../assets/AlbumPage.qml" line="539"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Воспроизвести следующим</translation>
     </message>
     <message>
         <location filename="../assets/AlbumPage.qml" line="288"/>
-        <location filename="../assets/AlbumPage.qml" line="461"/>
-        <location filename="../assets/AlbumPage.qml" line="497"/>
-        <location filename="../assets/AlbumPage.qml" line="526"/>
+        <location filename="../assets/AlbumPage.qml" line="467"/>
+        <location filename="../assets/AlbumPage.qml" line="510"/>
+        <location filename="../assets/AlbumPage.qml" line="546"/>
         <source>Add to Queue</source>
         <translation>Добавить в очередь</translation>
     </message>
@@ -116,8 +116,15 @@
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../assets/AlbumPage.qml" line="468"/>
-        <location filename="../assets/AlbumPage.qml" line="533"/>
+        <location filename="../assets/AlbumPage.qml" line="474"/>
+        <location filename="../assets/AlbumPage.qml" line="517"/>
+        <location filename="../assets/AlbumPage.qml" line="553"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/AlbumPage.qml" line="481"/>
+        <location filename="../assets/AlbumPage.qml" line="560"/>
         <source>Start Radio</source>
         <translation>Запустить радио</translation>
     </message>
@@ -204,81 +211,248 @@
     </message>
 </context>
 <context>
-    <name>NowPlayingPage</name>
+    <name>FavoritesPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="54"/>
+        <location filename="../assets/FavoritesPage.qml" line="35"/>
+        <source>not downloaded yet</source>
+        <translation>ещё не загружено</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="65"/>
         <source>This track has no album page.</source>
         <translation>У этого трека нет страницы альбома.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="67"/>
+        <location filename="../assets/FavoritesPage.qml" line="181"/>
+        <source>Shuffle</source>
+        <translation>Перемешать</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="196"/>
+        <source>Play All</source>
+        <extracomment>plays every song of the list</extracomment>
+        <translation>Воспроизвести все</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="218"/>
+        <source>Favorites</source>
+        <translation>Избранное</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../assets/FavoritesPage.qml" line="219"/>
+        <source>%n track(s)</source>
+        <translation>
+            <numerusform>%n трек</numerusform>
+            <numerusform>%n трека</numerusform>
+            <numerusform>%n треков</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="222"/>
+        <source>No favorites yet. Add a song from its menu: it is kept on the phone and plays offline.</source>
+        <translation>В избранном пока ничего нет. Добавьте песню из её меню: она сохранится на телефоне и будет воспроизводиться офлайн.</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="239"/>
+        <source>This page could not be loaded.</source>
+        <translation>Не удалось загрузить страницу.</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="243"/>
+        <source>Retry</source>
+        <translation>Повторить</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="287"/>
+        <source>Play Next</source>
+        <extracomment>puts the song right after the one playing</extracomment>
+        <translation>Воспроизвести следующим</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="294"/>
+        <source>Add to Queue</source>
+        <translation>Добавить в очередь</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="301"/>
+        <source>View Album</source>
+        <translation>Перейти к альбому</translation>
+    </message>
+    <message>
+        <location filename="../assets/FavoritesPage.qml" line="308"/>
+        <source>Remove from Favorites</source>
+        <translation>Удалить из избранного</translation>
+    </message>
+</context>
+<context>
+    <name>LibraryPage</name>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="24"/>
+        <source>Favorites</source>
+        <translation>Избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="24"/>
+        <source>Kept on the phone, play offline</source>
+        <translation>Сохранено на телефоне, воспроизводится офлайн</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="27"/>
+        <source>YouTube account</source>
+        <translation>Аккаунт YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="30"/>
+        <source>Liked songs</source>
+        <translation>Понравившиеся песни</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="31"/>
+        <source>Playlists</source>
+        <translation>Плейлисты</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="32"/>
+        <source>Albums</source>
+        <translation>Альбомы</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="33"/>
+        <source>Artists</source>
+        <translation>Исполнители</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="34"/>
+        <source>Recent activity</source>
+        <translation>Недавняя активность</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="34"/>
+        <source>What you played on YouTube</source>
+        <translation>Что вы слушали на YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="36"/>
+        <source>Sign in to YouTube</source>
+        <translation>Войти в YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="36"/>
+        <source>Your playlists, liked songs and albums</source>
+        <translation>Ваши плейлисты, понравившиеся песни и альбомы</translation>
+    </message>
+    <message>
+        <location filename="../assets/LibraryPage.qml" line="124"/>
+        <source>Library</source>
+        <translation>Библиотека</translation>
+    </message>
+</context>
+<context>
+    <name>NowPlayingPage</name>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <source>Liked on YouTube</source>
+        <translation>Отмечено как понравившееся на YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="79"/>
+        <source>Like removed on YouTube</source>
+        <translation>Отметка «Нравится» снята на YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="106"/>
+        <source>This track has no album page.</source>
+        <translation>У этого трека нет страницы альбома.</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="119"/>
         <source>This artist has no page.</source>
         <translation>У этого исполнителя нет страницы.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="113"/>
+        <location filename="../assets/NowPlayingPage.qml" line="176"/>
         <source>Previous</source>
         <translation>Предыдущий</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="125"/>
+        <location filename="../assets/NowPlayingPage.qml" line="188"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="125"/>
+        <location filename="../assets/NowPlayingPage.qml" line="188"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Воспроизвести</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="136"/>
+        <location filename="../assets/NowPlayingPage.qml" line="199"/>
         <source>Next</source>
         <translation>Следующий</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="147"/>
+        <location filename="../assets/NowPlayingPage.qml" line="210"/>
         <source>Queue</source>
         <translation>Очередь</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="158"/>
+        <location filename="../assets/NowPlayingPage.qml" line="221"/>
         <source>View Podcast</source>
         <translation>Перейти к подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="158"/>
+        <location filename="../assets/NowPlayingPage.qml" line="221"/>
         <source>View Album</source>
         <translation>Перейти к альбому</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="169"/>
+        <location filename="../assets/NowPlayingPage.qml" line="232"/>
         <source>View Artist</source>
         <translation>Перейти к исполнителю</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="177"/>
+        <location filename="../assets/NowPlayingPage.qml" line="240"/>
         <source>Start Radio</source>
         <translation>Запустить радио</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="198"/>
+        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <source>Remove from Favorites</source>
+        <translation>Удалить из избранного</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="251"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="274"/>
+        <source>Like on YouTube</source>
+        <translation>Нравится на YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="287"/>
+        <source>Remove Like on YouTube</source>
+        <translation>Снять отметку «Нравится» на YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/NowPlayingPage.qml" line="310"/>
         <source>Equalizer (Off)</source>
         <translation>Эквалайзер (выкл.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="198"/>
+        <location filename="../assets/NowPlayingPage.qml" line="310"/>
         <source>Equalizer (On)</source>
         <translation>Эквалайзер (вкл.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="209"/>
+        <location filename="../assets/NowPlayingPage.qml" line="321"/>
         <source>Properties</source>
         <translation>Свойства</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="239"/>
+        <location filename="../assets/NowPlayingPage.qml" line="351"/>
         <source>Loading...</source>
         <translation>Загрузка...</translation>
     </message>
@@ -386,13 +560,18 @@
         <translation>Очередь пуста. Воспроизвести что-нибудь можно через Поиск.</translation>
     </message>
     <message>
-        <location filename="../assets/QueuePage.qml" line="438"/>
+        <location filename="../assets/QueuePage.qml" line="444"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Воспроизвести следующим</translation>
     </message>
     <message>
-        <location filename="../assets/QueuePage.qml" line="446"/>
+        <location filename="../assets/QueuePage.qml" line="451"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/QueuePage.qml" line="459"/>
         <source>Remove</source>
         <extracomment>removes the song from the queue</extracomment>
         <translation>Удалить</translation>
@@ -441,18 +620,23 @@
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../assets/RecentPage.qml" line="217"/>
+        <location filename="../assets/RecentPage.qml" line="223"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Воспроизвести следующим</translation>
     </message>
     <message>
-        <location filename="../assets/RecentPage.qml" line="224"/>
+        <location filename="../assets/RecentPage.qml" line="230"/>
         <source>Add to Queue</source>
         <translation>Добавить в очередь</translation>
     </message>
     <message>
-        <location filename="../assets/RecentPage.qml" line="231"/>
+        <location filename="../assets/RecentPage.qml" line="237"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/RecentPage.qml" line="244"/>
         <source>View Album</source>
         <translation>Перейти к альбому</translation>
     </message>
@@ -520,25 +704,31 @@
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../assets/SearchPage.qml" line="393"/>
-        <location filename="../assets/SearchPage.qml" line="430"/>
+        <location filename="../assets/SearchPage.qml" line="399"/>
+        <location filename="../assets/SearchPage.qml" line="443"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Воспроизвести следующим</translation>
     </message>
     <message>
-        <location filename="../assets/SearchPage.qml" line="400"/>
-        <location filename="../assets/SearchPage.qml" line="437"/>
+        <location filename="../assets/SearchPage.qml" line="406"/>
+        <location filename="../assets/SearchPage.qml" line="450"/>
         <source>Add to Queue</source>
         <translation>Добавить в очередь</translation>
     </message>
     <message>
-        <location filename="../assets/SearchPage.qml" line="407"/>
+        <location filename="../assets/SearchPage.qml" line="413"/>
+        <location filename="../assets/SearchPage.qml" line="457"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/SearchPage.qml" line="420"/>
         <source>View Album</source>
         <translation>Перейти к альбому</translation>
     </message>
     <message>
-        <location filename="../assets/SearchPage.qml" line="444"/>
+        <location filename="../assets/SearchPage.qml" line="464"/>
         <source>View Podcast</source>
         <translation>Перейти к подкасту</translation>
     </message>
@@ -546,98 +736,168 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="89"/>
-        <location filename="../assets/SettingsSheet.qml" line="305"/>
-        <location filename="../assets/SettingsSheet.qml" line="309"/>
+        <location filename="../assets/SettingsSheet.qml" line="90"/>
+        <source>the request was refused</source>
+        <translation>запрос отклонён</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="93"/>
+        <source>the code expired</source>
+        <translation>срок действия кода истёк</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="128"/>
+        <location filename="../assets/SettingsSheet.qml" line="455"/>
+        <location filename="../assets/SettingsSheet.qml" line="459"/>
         <source>%1 GB</source>
         <translation>%1 ГБ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="89"/>
-        <location filename="../assets/SettingsSheet.qml" line="90"/>
-        <location filename="../assets/SettingsSheet.qml" line="293"/>
-        <location filename="../assets/SettingsSheet.qml" line="297"/>
-        <location filename="../assets/SettingsSheet.qml" line="301"/>
+        <location filename="../assets/SettingsSheet.qml" line="128"/>
+        <location filename="../assets/SettingsSheet.qml" line="129"/>
+        <location filename="../assets/SettingsSheet.qml" line="443"/>
+        <location filename="../assets/SettingsSheet.qml" line="447"/>
+        <location filename="../assets/SettingsSheet.qml" line="451"/>
         <source>%1 MB</source>
         <translation>%1 МБ</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="90"/>
+        <location filename="../assets/SettingsSheet.qml" line="129"/>
         <source>%1 used of %2</source>
         <translation>Использовано %1 из %2</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="142"/>
+        <location filename="../assets/SettingsSheet.qml" line="187"/>
         <source>Settings</source>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="144"/>
+        <location filename="../assets/SettingsSheet.qml" line="189"/>
         <source>Close</source>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="153"/>
+        <location filename="../assets/SettingsSheet.qml" line="198"/>
+        <source>YouTube account</source>
+        <translation>Аккаунт YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="206"/>
+        <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
+        <translation>Войдите, чтобы увидеть свои плейлисты, понравившиеся песни и альбомы. Поиск, воспроизведение и избранное работают без аккаунта.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="213"/>
+        <source>The sign-in did not complete: %1</source>
+        <translation>Вход не завершён: %1</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="219"/>
+        <source>Sign in</source>
+        <translation>Войти</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="232"/>
+        <source>On a phone or a computer, open</source>
+        <translation>На телефоне или компьютере откройте</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="240"/>
+        <source>and enter this code:</source>
+        <translation>и введите этот код:</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="255"/>
+        <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
+        <translation>Эта страница войдёт в аккаунт сама, как только будет введён код. Код действителен 30 минут.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="262"/>
+        <source>Cancel</source>
+        <translation>Отмена</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="275"/>
+        <source>Signed in</source>
+        <translation>Вход выполнен</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="278"/>
+        <source>Shared by the Tube app</source>
+        <translation>Предоставлено приложением Tube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="284"/>
+        <source>Sign out</source>
+        <translation>Выйти</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="296"/>
         <source>Content country</source>
         <translation>Страна контента</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="161"/>
+        <location filename="../assets/SettingsSheet.qml" line="304"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>Страна, для которой YouTube Music подбирает песни и тренды. Новые релизы и рекомендуемые плейлисты по-прежнему определяются текущим местоположением.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="168"/>
+        <location filename="../assets/SettingsSheet.qml" line="311"/>
         <source>Country</source>
         <translation>Страна</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="176"/>
+        <location filename="../assets/SettingsSheet.qml" line="319"/>
         <source>Skip in a track</source>
         <translation>Пропуск внутри трека</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="184"/>
+        <location filename="../assets/SettingsSheet.qml" line="327"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>Фрагменты, отмеченные другими слушателями, из SponsorBlock. Пока включён любой из этих пунктов, к sponsor.ajay.app отправляется запрос по каждому треку с коротким хешем его идентификатора, но не с самим идентификатором.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="195"/>
+        <location filename="../assets/SettingsSheet.qml" line="338"/>
         <source>Non-music parts of a video</source>
         <translation>Немузыкальные фрагменты видео</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="215"/>
+        <location filename="../assets/SettingsSheet.qml" line="358"/>
         <source>Sponsors</source>
         <translation>Спонсоры</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="235"/>
+        <location filename="../assets/SettingsSheet.qml" line="378"/>
         <source>Intros</source>
         <translation>Интро</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="255"/>
+        <location filename="../assets/SettingsSheet.qml" line="398"/>
         <source>Outros</source>
         <translation>Аутро</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="271"/>
+        <location filename="../assets/SettingsSheet.qml" line="414"/>
         <source>Storage</source>
         <translation>Хранилище</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="279"/>
+        <location filename="../assets/SettingsSheet.qml" line="422"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>Песни остаются на телефоне после воспроизведения, поэтому их можно слушать снова без сети. Когда место заканчивается, первыми удаляются те, что воспроизводились раньше всех.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="290"/>
+        <location filename="../assets/SettingsSheet.qml" line="428"/>
+        <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
+        <translation>Избранное загружается и никогда не удаляется, чтобы освободить место; оно учитывается в этом объёме.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="440"/>
         <source>Space for songs</source>
         <translation>Место для песен</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="323"/>
+        <location filename="../assets/SettingsSheet.qml" line="473"/>
         <source>Clear cache</source>
         <translation>Очистить кэш</translation>
     </message>
@@ -645,80 +905,103 @@
 <context>
     <name>ShelfPage</name>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="100"/>
+        <location filename="../assets/ShelfPage.qml" line="159"/>
         <source>More</source>
         <translation>Ещё</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="125"/>
+        <location filename="../assets/ShelfPage.qml" line="64"/>
         <source>Recently played</source>
         <translation>Недавно прослушанные</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="126"/>
+        <location filename="../assets/ShelfPage.qml" line="57"/>
+        <source>Library</source>
+        <translation>Библиотека</translation>
+    </message>
+    <message>
+        <location filename="../assets/ShelfPage.qml" line="58"/>
+        <source>Favorites and your YouTube account</source>
+        <translation>Избранное и ваш аккаунт YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/ShelfPage.qml" line="65"/>
         <source>What you listened to, the latest first</source>
         <translation>Прослушанное, сначала самое новое</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="132"/>
+        <location filename="../assets/ShelfPage.qml" line="71"/>
         <source>Explore</source>
         <translation>Навигатор</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="133"/>
+        <location filename="../assets/ShelfPage.qml" line="72"/>
         <source>New releases, trending, new videos</source>
         <translation>Новые релизы, тренды, новые видео</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="139"/>
+        <location filename="../assets/ShelfPage.qml" line="78"/>
         <source>Podcasts</source>
         <translation>Подкасты</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="140"/>
+        <location filename="../assets/ShelfPage.qml" line="79"/>
         <source>Episodes by genre</source>
         <translation>Выпуски по жанрам</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="148"/>
+        <location filename="../assets/ShelfPage.qml" line="186"/>
         <source>Top songs</source>
         <translation>Лучшие песни</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="187"/>
+        <location filename="../assets/ShelfPage.qml" line="227"/>
         <source>Not yet</source>
         <translation>Пока недоступно</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="332"/>
+        <location filename="../assets/ShelfPage.qml" line="92"/>
+        <location filename="../assets/ShelfPage.qml" line="390"/>
         <source>This page could not be loaded.</source>
         <translation>Не удалось загрузить страницу.</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="336"/>
+        <location filename="../assets/ShelfPage.qml" line="91"/>
+        <location filename="../assets/ShelfPage.qml" line="394"/>
         <source>Retry</source>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="432"/>
-        <location filename="../assets/ShelfPage.qml" line="462"/>
+        <location filename="../assets/ShelfPage.qml" line="381"/>
+        <source>Nothing here yet.</source>
+        <translation>Здесь пока ничего нет.</translation>
+    </message>
+    <message>
+        <location filename="../assets/ShelfPage.qml" line="496"/>
+        <location filename="../assets/ShelfPage.qml" line="533"/>
         <source>Play Next</source>
         <extracomment>puts the song right after the one playing</extracomment>
         <translation>Воспроизвести следующим</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="439"/>
-        <location filename="../assets/ShelfPage.qml" line="469"/>
+        <location filename="../assets/ShelfPage.qml" line="503"/>
+        <location filename="../assets/ShelfPage.qml" line="540"/>
         <source>Add to Queue</source>
         <translation>Добавить в очередь</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="476"/>
+        <location filename="../assets/ShelfPage.qml" line="510"/>
+        <location filename="../assets/ShelfPage.qml" line="547"/>
+        <source>Add to Favorites</source>
+        <translation>Добавить в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/ShelfPage.qml" line="554"/>
         <source>View Podcast</source>
         <translation>Перейти к подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/ShelfPage.qml" line="563"/>
+        <location filename="../assets/ShelfPage.qml" line="645"/>
         <source>Play</source>
         <extracomment>verb, starts playback</extracomment>
         <translation>Воспроизвести</translation>
@@ -838,17 +1121,32 @@
         <translation>Сейчас играет</translation>
     </message>
     <message>
+        <location filename="../assets/main.qml" line="153"/>
+        <source>Sign in to YouTube first, in Settings.</source>
+        <translation>Сначала войдите в YouTube в настройках.</translation>
+    </message>
+    <message>
         <location filename="../assets/main.qml" line="154"/>
         <source>YouTube Music: %1</source>
         <translation>YouTube Music: %1</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="160"/>
+        <location filename="../assets/main.qml" line="161"/>
+        <source>Added to Favorites</source>
+        <translation>Добавлено в избранное</translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="164"/>
+        <source>Removed from Favorites</source>
+        <translation>Удалено из избранного</translation>
+    </message>
+    <message>
+        <location filename="../assets/main.qml" line="170"/>
         <source>Skipped a non-music part.</source>
         <translation>Немузыкальный фрагмент пропущен.</translation>
     </message>
     <message>
-        <location filename="../assets/main.qml" line="160"/>
+        <location filename="../assets/main.qml" line="170"/>
         <source>Skipped: %1.</source>
         <translation>Пропущено: %1.</translation>
     </message>

@@ -73,10 +73,10 @@ player cannot ask again: the standalone sign-in then moves up to replace it.
 |---|---|---|
 | 4.0 | Gate 0.7c: `tools/gates/tv_auth.py` on the Mac, the user enters one code. What the token can do, and whether two refreshes can live side by side (Tube and BBMusic) | done 2026-11-20, see below |
 | 4.1 | Engine: the account. The refresh token, the client pair, the name and the photo in `settings`; refresh when the access token has under a minute left; a refused refresh signs out. Protocol: `account` (bare: report; `import`; `sign_out`) and an `account` event | built 2026-11-20 (`engine/src/engine/oauth.*`, `account.*`, `account_cmd.cpp`); its tests pass, and on the Mac the real service took an `import` of the gate's token with and without the client pair, kept it across a restart and refused a made-up token. The engine cross-builds for BB10 with it; not yet run on the phone |
-| 4.2 | UI: an Account row in Settings; "Sign in with Tube" opens Tube's card and passes its answer to `account` `import`. Shown only when Tube's target is installed. Waits for Tube's side | |
-| 4.3 | Library: the TV renderers parsed into Items; a Library tab. Planned from 4.0's saved responses | the parser is built and tested on fixtures (`engine/src/innertube/tv_browse.*`, 2026-11-20). Not built: the engine's requests with the token, the command, the UI |
-| 4.4 | The standalone sign-in: `sign_in` and `cancel` on `account` (the code request and the polling), a sheet with the code and the url. Sign-out revokes a token of our own | |
-| 4.5 | Like, unlike; playlists: create, add, remove, delete (if 4.0 says the TV client does them) | |
+| 4.2 | UI: "Sign in with Tube" in Settings opens Tube's card and passes its answer to `account` `import`. Shown only when Tube's target is installed | not built: it needs the target id and the action Tube's developer chooses. The engine's side (`import`) is done; Settings already says "Shared by the Tube app" for such an account |
+| 4.3 | Library: the TV renderers parsed into Items; the engine's requests with the token; a Library page | built 2026-11-20. Engine: `engine/src/innertube/tv_browse.*`, `engine/src/engine/library.cpp`; `browse` answers the five tabs and `VLLM`, and asks again with the account for a playlist the anonymous client cannot read. UI: `LibraryPage.qml`, opened from the top of Home. Run against the real service on the Mac and on the Q10 (see "On the phone"); the pages have not been seen on a screen |
+| 4.4 | The standalone sign-in: `sign_in` and `cancel` on `account` (the code request and the polling), the code and the url in Settings. Sign-out revokes a token of our own | built 2026-11-20 (`account.cpp`, `oauth.cpp`, `SettingsSheet.qml`). Against the real service: the code arrives in under a second, the polling runs, `cancel` ends it. **Not run to the end**: nobody entered a code, so the token's arrival is covered by the tests' fake service only (its code path after that is `import`'s, which is verified). The revoke on sign-out has not met the real service either |
+| 4.5 | Like, unlike; playlists: create, add, remove, delete (if 4.0 says the TV client does them) | like and unlike built 2026-11-20 (`like`, two actions on Now Playing; the page does not know whether a track is liked). Playlists: not built, `playlist/create` still waits for the user's word (see gate 0.7c) |
 
 One account at a time. The engine records where it came from (`tube` or `own`) and Settings
 shows it. BBMusic does not follow an account switch made in Tube: it keeps what it imported
@@ -136,5 +136,26 @@ All with `TVHTML5` and the token, on music.youtube.com. Read-only requests.
 - Fixtures: `engine/tests/fixtures/innertube/tv/`, made from these answers with every text, id,
   url and token replaced and at most three tiles of a kind kept.
 
-Still to decide for 4.3, with the user: what the Library tab shows and in what order; whether
-"Recent activity" replaces or joins the app's own Recent page.
+Decided without the user on 2026-11-20 (they asked for the whole flow built unattended), theirs
+to change: the library is a page opened from the top of Home, not a fifth tab (the bar holds
+four); it lists Favorites, then the account's Liked songs (`VLLM`, as a playlist page with Play
+and Shuffle), Playlists, Albums, Artists (YouTube's "Subscriptions") and Recent activity; "Recent
+activity" joins the app's own Recently played, it does not replace it.
+
+## Favourites (2026-11-20)
+
+The user: "add a favorites list to be saved on a phone sqlite database / json, to be used
+offline". Not part of the account: it needs none.
+
+- The list is the `favorites` table of `music.db` (schema step 2), read by `favorites`, changed
+  by `favorite`.
+- "Used offline" is taken to mean played offline: a favourite's audio is downloaded into the
+  song cache when it is added (one track at a time, in the background), favourites are never
+  evicted and survive Clear cache, and a track that is whole in the cache plays with no network.
+  They count toward the cache's cap; one that does not fit stays "not downloaded yet" until the
+  cap is raised. A failed download is tried again at the next engine start.
+- UI: `FavoritesPage.qml` (Library → Favorites), "Add to Favorites" in every track row's menu and
+  on Now Playing. Home shows its links (Library among them) and a Retry row when its feed cannot
+  be loaded, so the favourites can be reached without the network.
+- On the Mac, 2026-11-20: a 6 min song was offline 4 s after it was added (6.2 MB), and played
+  from a restart with every request sent to a dead proxy.
