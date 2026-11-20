@@ -127,6 +127,31 @@ void SegmentCache::scan() {
     log_info("cache: " + std::to_string(entries_.size()) + " tracks, " + std::to_string(total_ / 1024) + " KiB in " + dir_);
 }
 
+// A key is "<video_id>.<itag>": the video id is up to the last '.'.
+bool SegmentCache::kept(const std::string &key) const {
+    return kept_.count(key.substr(0, key.rfind('.'))) != 0;
+}
+
+void SegmentCache::set_kept(std::set<std::string> video_ids) {
+    std::lock_guard<std::mutex> lk(m_);
+    kept_ = std::move(video_ids);
+}
+
+bool SegmentCache::complete(const std::string &video_id) {
+    std::lock_guard<std::mutex> lk(m_);
+    const std::string prefix = video_id + ".";
+    for (auto it = entries_.lower_bound(prefix); it != entries_.end() && it->first.compare(0, prefix.size(), prefix) == 0; ++it) {
+        const std::string &k = it->first;
+        std::vector<uint8_t> text;
+        CacheMeta m;
+        if (!read_file(path(k, "meta"), text) || !parse_meta(text, m) || file_size(path(k, "init")) != m.init_size) continue;
+        bool whole = true;
+        for (size_t i = 0; whole && i < m.segments.size(); i++) whole = file_size(path(k, std::to_string(i))) == m.segments[i].size;
+        if (whole) return true;
+    }
+    return false;
+}
+
 void SegmentCache::touch(const std::string &key, Entry &e) {
     e.used = ++clock_;
     ::utime(path(key, "meta").c_str(), nullptr);   // the order survives a restart through the mtime
@@ -145,7 +170,7 @@ bool SegmentCache::make_room(int64_t need, const std::string &keep) {
     while (total_ + need > cap_) {
         auto victim = entries_.end();
         for (auto it = entries_.begin(); it != entries_.end(); ++it)
-            if (it->second.pins == 0 && it->first != keep && (victim == entries_.end() || it->second.used < victim->second.used))
+            if (it->second.pins == 0 && !kept(it->first) && it->first != keep && (victim == entries_.end() || it->second.used < victim->second.used))
                 victim = it;
         if (victim == entries_.end()) return false;
         log_debug("cache: evicting " + victim->first);
@@ -273,7 +298,7 @@ void SegmentCache::clear() {
     std::lock_guard<std::mutex> lk(m_);
     std::vector<std::string> keys;   // erase() takes the entry out of the map: collect first
     for (const auto &[key, e] : entries_)
-        if (e.pins == 0) keys.push_back(key);
+        if (e.pins == 0 && !kept(key)) keys.push_back(key);
     for (const std::string &key : keys) erase(key);
 }
 

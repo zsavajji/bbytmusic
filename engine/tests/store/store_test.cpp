@@ -22,10 +22,10 @@ int main() {
     const std::string path = dir + "/music.db";
     std::string err;
 
-    {  // fresh open reaches version 1
+    {  // fresh open reaches the current version
         Db db;
         CHECK(open_store(db, path, err));
-        CHECK_EQ(db.user_version(), 1);
+        CHECK_EQ(db.user_version(), 2);
         CHECK(upsert_track(db, track("a", "Alpha"), err));
         CHECK(upsert_track(db, track("b", "Beta"), err));
         CHECK(upsert_track(db, track("a", "Alpha 2"), err));  // upsert: replaces
@@ -34,7 +34,7 @@ int main() {
     {  // reopen keeps the data and the version
         Db db;
         CHECK(open_store(db, path, err));
-        CHECK_EQ(db.user_version(), 1);
+        CHECK_EQ(db.user_version(), 2);
         auto a = get_track(db, "a", err);
         CHECK(a.has_value());
         CHECK_EQ(a->title, "Alpha 2");
@@ -54,7 +54,7 @@ int main() {
         raw.close();
         Db db;
         CHECK(open_store(db, dir + "/old.db", err));
-        CHECK_EQ(db.user_version(), 1);
+        CHECK_EQ(db.user_version(), 2);
         CHECK(upsert_track(db, track("x", "X"), err));
     }
     {  // a database from the future is refused

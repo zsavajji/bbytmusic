@@ -141,11 +141,56 @@ void resize_and_clear() {
     CHECK_EQ(disk_bytes(dir), int64_t(0));
 }
 
+// A kept track is never evicted and survives clear(); room that only kept tracks could give is not made;
+// complete() wants every file there, of the size the meta says.
+void kept_tracks() {
+    const std::string dir = temp_dir();
+    Fake f;
+    SegmentCache c(dir, int64_t(1) << 30);
+    CHECK(play(c, f, "keep", {0, 1, 2, 3}));   // the oldest
+    CHECK(play(c, f, "other", {0, 1, 2, 3}));
+    const int64_t one = c.bytes() / 2;
+    c.set_kept({"keep"});
+    c.set_cap(one * 2 + one / 2);
+    CHECK(play(c, f, "newer", {0, 1, 2, 3}));
+    CHECK(c.has("keep.251"));
+    CHECK(!c.has("other.251"));
+    CHECK(c.has("newer.251"));
+    CHECK(c.bytes() <= c.cap());
+    c.clear();
+    CHECK(c.has("keep.251"));
+    CHECK(!c.has("newer.251"));
+    CHECK_EQ(c.bytes(), one);
+
+    CHECK(c.complete("keep"));
+    CHECK(!c.complete("newer"));
+    CHECK(!c.complete("nobody"));
+    truncate_file(dir + "/keep.251/2", 5);
+    CHECK(!c.complete("keep"));
+    std::remove((dir + "/keep.251/2").c_str());
+    CHECK(!c.complete("keep"));
+    CHECK(c.has("keep.251"));   // complete() deletes nothing
+
+    // Only kept tracks could give way: the new track's segments are dropped, the cap holds.
+    const std::string dir2 = temp_dir();
+    SegmentCache d(dir2, one * 3 / 2);
+    d.set_kept({"keep"});
+    CHECK(play(d, f, "keep", {0, 1, 2, 3}));
+    CHECK(d.complete("keep"));
+    CHECK(play(d, f, "x", {0, 1, 2, 3}));
+    CHECK(d.has("keep.251"));
+    CHECK(d.complete("keep"));
+    CHECK(!d.complete("x"));
+    CHECK(d.bytes() <= d.cap());
+    CHECK_EQ(d.bytes(), disk_bytes(dir2));
+}
+
 }  // namespace
 
 int main() {
     const int64_t big = 1 << 30;
     resize_and_clear();
+    kept_tracks();
 
     // A second run makes no inner call, even from a new SegmentCache over the same folder.
     {

@@ -109,6 +109,16 @@ private:
     // account_cmd.cpp
     Reply account_command(Json req);
     std::string account_json();   // the fields of the account event and of the command's result, no braces
+    // favorites.cpp
+    Reply favorites_command();
+    Reply favorite_command(Json req);
+    void fav_restore();                          // start-up: the stored favourites are kept and queued
+    void fav_enqueue(const std::string &id);
+    void fav_requeue();                          // every favourite that is not offline
+    void fav_download();                         // the downloader thread
+    void fav_fetch(const std::string &id);       // one track into the cache; marks it offline when whole
+    void fav_event(const std::string &id, bool on, bool offline);
+    bool on_store(std::function<void()> job);    // runs job on the worker and waits; false: no store, or too slow
     // engine.cpp
     void post(std::function<void()> job);
     void work();
@@ -142,6 +152,8 @@ private:
     std::vector<std::string> skip_cats_;  // the categories skipped; empty: SponsorBlock is off
     std::string skip_track_;              // the current track, and its segments
     std::vector<SkipSegment> skip_segs_;
+    std::set<std::string> fav_ids_;       // the favourites; fav_done_ of them are whole in the cache
+    std::set<std::string> fav_done_;
     int64_t skip_last_to_ = -1;           // the segment skipped last, so as not to skip it twice
     std::chrono::steady_clock::time_point skip_last_at_;
 
@@ -166,6 +178,14 @@ private:
     bool worker_quit_ = false;
     std::thread worker_;
     std::atomic<bool> closing_{false};
+
+    // The favourites' downloader: one track at a time into the cache.
+    std::thread fav_thread_;
+    std::mutex fav_mu_;
+    std::condition_variable fav_cv_;
+    std::deque<std::string> fav_queue_;
+    bool fav_quit_ = false;
+    Source *fav_src_ = nullptr;   // the source being read, so that the destructor can cancel it
 
     std::unique_ptr<Account> account_;   // its on_change emits and posts: guarded by closing_
     Equalizer eq_;                     // the player's thread uses it through the sink

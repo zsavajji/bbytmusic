@@ -18,6 +18,9 @@ CREATE TABLE history(
 CREATE INDEX history_played_at ON history(played_at);
 CREATE TABLE settings(key TEXT PRIMARY KEY, value TEXT);
 )sql"},
+    {2, R"sql(
+CREATE TABLE favorites(track_id TEXT PRIMARY KEY, added_at INTEGER, offline INTEGER NOT NULL DEFAULT 0);
+)sql"},
 };
 
 }  // namespace

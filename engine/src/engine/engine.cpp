@@ -38,6 +38,13 @@ Engine::~Engine() {
     closing_ = true;
     stop();
     {
+        std::lock_guard<std::mutex> lk(fav_mu_);
+        fav_quit_ = true;
+        if (fav_src_) fav_src_->cancel();
+    }
+    fav_cv_.notify_all();
+    if (fav_thread_.joinable()) fav_thread_.join();
+    {
         std::lock_guard<std::mutex> lk(wq_mu_);
         worker_quit_ = true;
     }
@@ -95,6 +102,7 @@ bool Engine::start(std::string &err) {
     add_commands();
     if (!server_.start(opt_.data_dir, err)) return false;
     worker_ = std::thread([this] { work(); });
+    fav_thread_ = std::thread([this] { fav_download(); });
     return true;
 }
 
@@ -184,6 +192,7 @@ Item Engine::item_for(const Track &t) {
 void Engine::restore() {
     if (!db_ok_) return;
     account_->load(get_setting(db_, "account", ""));
+    fav_restore();
     if (int e = eq_preset_index(get_setting(db_, "eq", "off")); e >= 0) eq_.set_preset(e);
     if (Repeat r = Repeat::Off; parse_repeat(get_setting(db_, "repeat", "off"), r)) player_->set_repeat(r);
     if (std::string gl = get_setting(db_, "region", ""); valid_region(gl)) {   // before any command runs

@@ -303,6 +303,7 @@ void Engine::add_commands() {
             if (!req["cap_mb"].is_number() || !valid_cache_mb(req["cap_mb"].i64())) return bad("cap_mb: one of 128, 256, 512, 1024, 2048");
             const int mb = int(req["cap_mb"].i64());
             cache_.set_cap(int64_t(mb) << 20);
+            fav_requeue();   // a bigger cap may now hold the favourites that did not fit
             post([this, mb] {
                 std::string err;
                 if (db_ok_ && !set_setting(db_, "cache_mb", std::to_string(mb), err)) log_warn("store: " + err);
@@ -314,6 +315,8 @@ void Engine::add_commands() {
         }
         return ok("{\"bytes\":" + std::to_string(cache_.bytes()) + ",\"cap_mb\":" + std::to_string(cache_.cap() >> 20) + "}");
     });
+    server_.on("favorites", [this](Json) { return favorites_command(); });
+    server_.on("favorite", [this](Json req) { return favorite_command(req); });
     server_.on("skip", [this](Json req) { return skip_command(req); });
     server_.on("account", [this](Json req) { return account_command(req); });
     server_.on("thumbs", [this](Json req) {

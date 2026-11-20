@@ -6,7 +6,7 @@
 
 namespace bbm {
 
-constexpr int kSchemaVersion = 1;
+constexpr int kSchemaVersion = 2;
 
 // Opens the database and brings it to kSchemaVersion. Never deletes and starts again; a
 // database newer than this build is refused.

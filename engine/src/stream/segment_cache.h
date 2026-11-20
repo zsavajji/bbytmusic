@@ -2,12 +2,13 @@
 // `<video_id>.<itag>` holding `init` (the file's head), `meta` (the numbers and the segment
 // table) and one file per segment (`0`, `1`, …); every file is written to a temp file and renamed.
 // A cap in bytes (set_cap changes it), kept by evicting whole tracks, least recently used first,
-// never one that is pinned (open); clear() keeps the open ones too. Thread-safe.
+// never one that is pinned (open) or kept (the favourites); clear() keeps those too. Thread-safe.
 #pragma once
 #include <atomic>
 #include <cstdint>
 #include <map>
 #include <mutex>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -41,7 +42,12 @@ public:
     // The user's cap changes while running: evicts down to a smaller one at once.
     void set_cap(int64_t cap_bytes);
     int64_t cap() const;
-    void clear();   // every track that is not open
+    void clear();   // every track that is not open or kept
+    // Video ids whose tracks are never evicted and survive clear() (the favourites). They still count toward the cap.
+    void set_kept(std::set<std::string> video_ids);
+    // True when a track of video_id is in the cache with its head and every segment of its meta, each file of the size
+    // the meta says. Pins nothing, deletes nothing, leaves the LRU order alone.
+    bool complete(const std::string &video_id);
 
     // Segment `index` of key if its file holds exactly `size` bytes; a file of another size is deleted.
     bool get_segment(const std::string &key, int index, int64_t size, std::vector<uint8_t> &out);
@@ -60,6 +66,7 @@ private:
     void touch(const std::string &key, Entry &e);
     bool make_room(int64_t need, const std::string &keep);   // m_ held
     void erase(const std::string &key);                      // m_ held: the folder and the entry
+    bool kept(const std::string &key) const;                 // m_ held: its video id is in kept_
     void scan();
 
     const std::string dir_;
@@ -68,6 +75,7 @@ private:
     std::map<std::string, Entry> entries_;
     int64_t total_ = 0;
     uint64_t clock_ = 0;
+    std::set<std::string> kept_;   // m_
 };
 
 }  // namespace bbm
