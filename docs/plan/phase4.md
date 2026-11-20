@@ -159,3 +159,23 @@ offline". Not part of the account: it needs none.
   be loaded, so the favourites can be reached without the network.
 - On the Mac, 2026-11-20: a 6 min song was offline 4 s after it was added (6.2 MB), and played
   from a restart with every request sent to a dead proxy.
+
+## On the phone (Q10, 10.3.3, 2026-11-20)
+
+The engine built for BB10 was run on the Q10 from a root shell with a data folder of its own
+(`scripts/push-phone.sh`, `--data /root/bbmusic/data --null`, the port forwarded over ssh) and
+driven by a script that speaks the protocol. With the gate's token passed to `import`:
+
+| Check | Answer |
+|---|---|
+| `account` `sign_in` | `pending` at once; the code and `https://www.google.com/device` in an event after 1.2 s; 13 s of polling; `cancel` → `out`. Nobody entered the code |
+| `import`, then the five library tabs, `VLLM`, two of the account's playlists | signed in after 0.4 s; each answer in 0.1 to 0.9 s, the same items as on the Mac |
+| `like` on, then off | ok both |
+| `sign_out`, then `browse` `VLLM` | `out`; `signed_out` |
+| `favorite` on a 6 min song | offline after 5.5 s (37 segments, 6.2 MB) |
+| The engine started again with every request sent to a dead proxy: `favorites`, `play` | the list; playing after 3.5 s. A `search` then answers `network` |
+
+The test folder was deleted afterwards; the phone keeps no token. Build 1.0.1.55 is installed on
+the Q10. Its UI has **not been seen**: no way was found to start the app or read its screen over
+ssh. `data/check-qml` is in place, so its first start writes what each page's compiler said to
+`bbmusic-ui.log`.

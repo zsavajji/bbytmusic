@@ -36,6 +36,9 @@ overlay, the Active Frame, a headset or a Bluetooth car stereo.
 - Album, playlist and artist pages with covers, including long playlists
 - Podcasts: episodes by genre, a show's page, episodes in search
 - Every track opens into a radio queue, so the music doesn't stop
+- Favorites kept on the phone: each one is downloaded and plays offline, no account needed
+- Optional YouTube sign-in with a code (as a TV does it): your playlists, liked songs, albums and
+  artists, and Like from the player
 
 **Playback**
 - Gapless Opus playback with seek, started from the on-disk cache in under 0.2 s
@@ -53,7 +56,7 @@ overlay, the Active Frame, a headset or a Bluetooth car stereo.
 - Bluetooth (AVRCP): title, artist and position on the car's screen; Bluetooth off pauses
 - Keyboard shortcuts: Space, N, P on the player, and more on each page
 - Dark theme with YouTube's red, sized for the 720 × 720 screens of the Q10 and the Classic
-- Settings for the content's country, the song cache size and SponsorBlock
+- Settings for the YouTube account, the content's country, the song cache size and SponsorBlock
 
 ## How it works
 
@@ -75,8 +78,8 @@ BBMusic ships as one `.bar` with two processes:
   API to `music.youtube.com` over libcurl and wolfSSL (TLS 1.3, with its own root certificates,
   since BB10's are from 2013), fetches audio by DASH ranges or SABR/UMP, decodes Opus with
   libopus and writes PCM to the speaker itself. It runs as a BB10 headless service, so the music
-  outlives the UI, and holds the system's now-playing service. It keeps the queue, the history
-  and the song cache in SQLite.
+  outlives the UI, and holds the system's now-playing service. It keeps the queue, the history,
+  the favorites and the account in SQLite, and the songs in a cache on disk.
 - **`bbmusic`, the UI**, a native Cascades app (Qt 4.8, C++ and QML). It starts the engine and
   talks to it over a token-protected loopback socket as NDJSON ([docs/protocol.md](docs/protocol.md)).
 
