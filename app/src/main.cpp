@@ -77,8 +77,14 @@ Q_DECL_EXPORT int main(int argc, char **argv)
         uiLog("QML: no root object");
         return 1;
     }
+    // Now Playing takes the scene's place and gives it back (NowPlayingPage.qml). setScene()
+    // deletes a replaced scene that the Application owns, and it owns one that came without a
+    // parent: so the root gets one. A scene with a parent must be taken off before it is deleted.
+    root->setParent(document);
     app.setScene(root);
     checkDocuments(app);
     engine.start();
-    return Application::exec();
+    const int rc = Application::exec();
+    app.setScene(0);
+    return rc;
 }

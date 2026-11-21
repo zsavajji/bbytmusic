@@ -6,7 +6,7 @@ import bb.system 1.2
 // library: what the Q10's bar shows beside the action menu. With five, the ones that did not fit
 // lived in the tab menu and took another's place on the bar when chosen ("i don't like the fact
 // that the tabs shuffle around"). The fourth was Now Playing from 2026-11-15 to 2026-11-21, when
-// the user had the strip open Now Playing as a sheet instead (NowPlayingSheet.qml) and asked for
+// the user had the strip open Now Playing over the whole screen instead and asked for
 // the library as a tab. Recent and Explore open from the top of Home.
 // A tab's first page has its actions in the action menu; a pushed page has the bar to itself.
 // Home is first: it is the tab the app opens on. Each tab is a NavigationPane: albums and the

@@ -9,8 +9,11 @@ import bb.system 1.2
 // Pause does that, the user, 2026-11-14.)
 Page {
     id: page
-    property variant sheet          // NowPlayingSheet, which shows this page
-    property variant hostPane       // the tab under the sheet: albums, artists and the queue open there
+    // The page is shown by taking the whole screen (present()), not pushed and not in a sheet: both
+    // of those slide in from the right, and the user wanted it to come up from the strip.
+    property variant hostPane       // the tab the strip was on: albums, artists and the queue open there
+    property variant backScene      // what was on screen before: put back when this page leaves
+    property bool leaving: false
     property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
@@ -140,7 +143,7 @@ Page {
         p.navPane = hostPane;
         p.browseId = id;
         hostPane.push(p);
-        closeSheet();
+        leaveNow();
     }
 
     function viewArtist() {
@@ -154,7 +157,7 @@ Page {
         p.navPane = hostPane;
         p.browseId = id;
         hostPane.push(p);
-        closeSheet();
+        leaveNow();
     }
 
     function showQueue() {
@@ -163,17 +166,37 @@ Page {
             p.navPane = hostPane;
             p.pushed = true;
             hostPane.push(p);
-            closeSheet();
+            leaveNow();
         }
     }
 
-    function closeSheet() {
-        if (sheet) {
-            sheet.close();
+    // Takes the screen: the tabs go at once and the player's content rises from the bottom as it
+    // fades in (the user, 2026-11-21: "growing to fill the screen", "an opacity animation").
+    function present() {
+        backScene = Application.scene;
+        Application.scene = page;
+        riseIn.play();
+    }
+
+    // Close: the content sinks and fades, then the tabs are back.
+    function leave() {
+        if (! leaving) {
+            leaving = true;
+            sinkOut.play();
         }
     }
 
-    // Called by the sheet when it has closed.
+    // The tabs are back at once (a page was just pushed there), and this page is done with.
+    function leaveNow() {
+        if (backScene) {
+            Application.scene = backScene;
+            backScene = undefined;
+            cleanup();
+            page.destroy();
+        }
+    }
+
+    // Called when the page leaves the screen.
     // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
@@ -206,19 +229,18 @@ Page {
         engine.event.connect(page.onEvent);
         page.accountReq = engine.request("account", {});
         page.onPlayer();
-        fadeIn.play();      // while the sheet slides up
     }
 
 
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
-        // Where a pushed page has Back: the sheet's own page has none.
+        // Where a pushed page has Back: this page is the whole scene and has none.
         ActionItem {
             title: qsTr("Close")
             imageSource: "asset:///images/ic_expand_down.png"
             ActionBar.placement: ActionBarPlacement.OnBar
             onTriggered: {
-                page.closeSheet();
+                page.leave();
             }
         },
         ActionItem {
@@ -373,11 +395,34 @@ Page {
         }
         background: Color.Black
         animations: [
-            FadeTransition {
-                id: fadeIn
-                fromOpacity: 0
-                toOpacity: 1
-                duration: 400
+            ParallelAnimation {
+                id: riseIn
+                TranslateTransition {
+                    fromY: ui.du(50)
+                    toY: 0
+                    duration: 350
+                    easingCurve: StockCurve.CubicOut
+                }
+                FadeTransition {
+                    fromOpacity: 0
+                    toOpacity: 1
+                    duration: 350
+                }
+            },
+            ParallelAnimation {
+                id: sinkOut
+                TranslateTransition {
+                    toY: ui.du(50)
+                    duration: 220
+                    easingCurve: StockCurve.CubicIn
+                }
+                FadeTransition {
+                    toOpacity: 0
+                    duration: 220
+                }
+                onEnded: {
+                    page.leaveNow();
+                }
             }
         ]
 
