@@ -1,4 +1,5 @@
 import bb.cascades 1.4
+import bbmusic 1.0
 
 // The strip at the bottom of a page: the title on one line, the time elapsed and the track's
 // length at the far end, over a fill that grows from the left as the track plays. A tap opens Now
@@ -11,6 +12,7 @@ Container {
     property variant navPane
     property int stripWidth: 720
     property double openedAt: 0
+    property variant opening        // the player's page, between the tap and the moment it takes the screen
     visible: player.loaded
     horizontalAlignment: HorizontalAlignment.Fill
     preferredHeight: ui.du(7.2)     // a fifth taller than the first strip (the user, 2026-11-14)
@@ -29,7 +31,15 @@ Container {
         var p = nowPlaying.createObject(Application.scene);
         if (p) {
             p.hostPane = navPane;
-            p.present();
+            // The page under the strip fades out first, so that it does not vanish at a stroke
+            // when the player takes the screen (the user, 2026-11-21); the player shows it again.
+            var top = navPane.top;
+            if (top && top.content) {
+                p.dimmed = top.content;
+                top.content.opacity = 0;
+            }
+            opening = p;
+            swapTimer.start();
         }
     }
 
@@ -90,6 +100,17 @@ Container {
     }
 
     attachedObjects: [
+        Timer {
+            id: swapTimer
+            singleShot: true
+            interval: 170
+            onTimeout: {
+                if (mini.opening) {
+                    mini.opening.present();
+                    mini.opening = undefined;
+                }
+            }
+        },
         ComponentDefinition {
             id: nowPlaying
             source: "NowPlayingPage.qml"

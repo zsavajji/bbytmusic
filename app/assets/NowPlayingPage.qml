@@ -14,6 +14,8 @@ Page {
     property variant hostPane       // the tab the strip was on: albums, artists and the queue open there
     property variant backScene      // what was on screen before: put back when this page leaves
     property bool leaving: false
+    property variant dimmed         // the content of the page the strip was on, faded out: shown again at the end
+    property variant pendingPage    // a page asked for from here: pushed on hostPane once the tabs are back
     property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
     property bool dragging: false
@@ -142,8 +144,7 @@ Page {
         var p = albumPage.createObject();
         p.navPane = hostPane;
         p.browseId = id;
-        hostPane.push(p);
-        leaveNow();
+        openBelow(p);
     }
 
     function viewArtist() {
@@ -156,8 +157,7 @@ Page {
         var p = shelfPage.createObject();
         p.navPane = hostPane;
         p.browseId = id;
-        hostPane.push(p);
-        leaveNow();
+        openBelow(p);
     }
 
     function showQueue() {
@@ -165,8 +165,7 @@ Page {
             var p = queuePage.createObject();
             p.navPane = hostPane;
             p.pushed = true;
-            hostPane.push(p);
-            leaveNow();
+            openBelow(p);
         }
     }
 
@@ -186,11 +185,25 @@ Page {
         }
     }
 
-    // The tabs are back at once (a page was just pushed there), and this page is done with.
+    // An album, an artist or the queue: this page leaves first, then that one is pushed on the tab.
+    // Not at once: giving the scene back from inside an action's own handler, with a page pushed
+    // on a pane that was off the screen, closed the app (1.0.1.65, Queue).
+    function openBelow(p) {
+        pendingPage = p;
+        leave();
+    }
+
+    // The end of the sinking: the tabs are back, and this page is done with.
     function leaveNow() {
         if (backScene) {
             Application.scene = backScene;
             backScene = undefined;
+            if (dimmed) {
+                dimmed.opacity = 1;
+            }
+            if (pendingPage && hostPane) {
+                hostPane.push(pendingPage);
+            }
             cleanup();
             page.destroy();
         }
