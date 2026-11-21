@@ -142,6 +142,9 @@ Page {
     // A title bar, not a list header: under one the page read as Home (the user, 2026-11-21).
     titleBar: TitleBar {
         title: qsTr("My library")
+        // It stays put: one that scrolls away with the list took the strip off the screen's
+        // bottom (the user, 2026-11-21).
+        scrollBehavior: TitleBarScrollBehavior.Sticky
     }
 
     Container {

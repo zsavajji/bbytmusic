@@ -14,7 +14,12 @@ Page {
     property variant hostPane       // the tab the strip was on: albums, artists and the queue open there
     property variant backScene      // what was on screen before: put back when this page leaves
     property bool leaving: false
-    property variant dimmed         // the content of the page the strip was on, faded out: shown again at the end
+    // The bar comes once the content is up: shown from the start, it took the tabs' place at a
+    // stroke, before the page had risen (the user, 2026-11-21).
+    actionBarVisibility: ChromeVisibility.Hidden
+    property string infoReq: ""     // the track's ids are being asked for: it came without them
+    property string infoFor: ""     // "album" or "artist": what to open with the answer
+    property variant underPage      // the page the strip was on, its content faded out and its bar hidden: put back at the end
     property variant pendingPage    // a page asked for from here: pushed on hostPane once the tabs are back
     property string artFile: ""
     // While a finger is on the slider, and a moment after it lets go, the position updates leave it be.
@@ -88,7 +93,22 @@ Page {
         if (id == "") {
             return;
         }
-        if (id == page.favReq) {
+        if (id == page.infoReq) {
+            page.infoReq = "";
+            if (ok) {       // a failure is main.qml's to show
+                var found = page.infoFor == "album" ? result.album_id : result.artist_id;
+                if (found) {
+                    if (page.infoFor == "album") {
+                        page.openAlbum(found);
+                    } else {
+                        page.openArtist(found);
+                    }
+                } else {
+                    notice.body = page.infoFor == "album" ? qsTr("This track has no album page.") : qsTr("This artist has no page.");
+                    notice.show();
+                }
+            }
+        } else if (id == page.favReq) {
             page.favReq = "";
             page.favorite = ok && result.on && result.id == page.favId;
         } else if (id == page.accountReq) {
@@ -134,13 +154,29 @@ Page {
         });
     }
 
-    function viewAlbum() {
-        var id = player.track.album_id;
-        if (! id || ! hostPane) {
-            notice.body = qsTr("This track has no album page.");
-            notice.show();
+    // A track from the account's lists has no album or artist id: the engine asks YouTube Music.
+    function lookup(what) {
+        if (! player.track.id || infoReq != "") {
             return;
         }
+        infoFor = what;
+        infoReq = engine.request("info", {
+            "id": player.track.id
+        });
+    }
+
+    function viewAlbum() {
+        if (! hostPane) {
+            return;
+        }
+        if (! player.track.album_id) {
+            lookup("album");
+            return;
+        }
+        openAlbum(player.track.album_id);
+    }
+
+    function openAlbum(id) {
         var p = albumPage.createObject();
         p.navPane = hostPane;
         p.browseId = id;
@@ -148,12 +184,17 @@ Page {
     }
 
     function viewArtist() {
-        var id = player.track.artist_id;
-        if (! id || ! hostPane) {
-            notice.body = qsTr("This artist has no page.");
-            notice.show();
+        if (! hostPane) {
             return;
         }
+        if (! player.track.artist_id) {
+            lookup("artist");
+            return;
+        }
+        openArtist(player.track.artist_id);
+    }
+
+    function openArtist(id) {
         var p = shelfPage.createObject();
         p.navPane = hostPane;
         p.browseId = id;
@@ -181,6 +222,7 @@ Page {
     function leave() {
         if (! leaving) {
             leaving = true;
+            page.actionBarVisibility = ChromeVisibility.Hidden;
             sinkOut.play();
         }
     }
@@ -198,8 +240,11 @@ Page {
         if (backScene) {
             Application.scene = backScene;
             backScene = undefined;
-            if (dimmed) {
-                dimmed.opacity = 1;
+            if (underPage) {
+                if (underPage.content) {
+                    underPage.content.opacity = 1;
+                }
+                underPage.actionBarVisibility = ChromeVisibility.Default;
             }
             if (pendingPage && hostPane) {
                 hostPane.push(pendingPage);
@@ -420,6 +465,9 @@ Page {
                     fromOpacity: 0
                     toOpacity: 1
                     duration: 350
+                }
+                onEnded: {
+                    page.actionBarVisibility = ChromeVisibility.Default;
                 }
             },
             ParallelAnimation {

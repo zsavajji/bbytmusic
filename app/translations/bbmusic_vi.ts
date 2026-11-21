@@ -345,7 +345,7 @@
         <translation>Thư viện của tôi</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="155"/>
+        <location filename="../assets/LibraryPage.qml" line="158"/>
         <source>You&apos;re signed in. Your likes now sync with your YouTube profile.</source>
         <translation>Bạn đã đăng nhập. Lượt thích của bạn giờ được đồng bộ với hồ sơ YouTube.</translation>
     </message>
@@ -357,114 +357,114 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Liked on YouTube</source>
         <translation>Đã thích trên YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Like removed on YouTube</source>
         <translation>Đã bỏ thích trên YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="140"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This track has no album page.</source>
         <translation>Bài hát này không có trang album.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="153"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This artist has no page.</source>
         <translation>Nghệ sĩ này không có trang.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="252"/>
+        <location filename="../assets/NowPlayingPage.qml" line="297"/>
         <source>Close</source>
         <translation>Đóng</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="260"/>
+        <location filename="../assets/NowPlayingPage.qml" line="305"/>
         <source>Previous</source>
         <translation>Trước</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Tạm dừng</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Phát</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="283"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Next</source>
         <translation>Tiếp theo</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="294"/>
+        <location filename="../assets/NowPlayingPage.qml" line="339"/>
         <source>Queue</source>
         <translation>Danh sách chờ</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Podcast</source>
         <translation>Xem podcast</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Album</source>
         <translation>Xem album</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="316"/>
+        <location filename="../assets/NowPlayingPage.qml" line="361"/>
         <source>View Artist</source>
         <translation>Xem nghệ sĩ</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="324"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Start Radio</source>
         <translation>Bắt đầu radio</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Remove from Favorites</source>
         <translation>Xóa khỏi mục yêu thích</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Add to Favorites</source>
         <translation>Thêm vào mục yêu thích</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Like on YouTube</source>
         <translation>Thích trên YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Remove Like on YouTube</source>
         <translation>Bỏ thích trên YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (Off)</source>
         <translation>Bộ chỉnh âm (tắt)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (On)</source>
         <translation>Bộ chỉnh âm (bật)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="394"/>
+        <location filename="../assets/NowPlayingPage.qml" line="439"/>
         <source>Properties</source>
         <translation>Thuộc tính</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="455"/>
+        <location filename="../assets/NowPlayingPage.qml" line="503"/>
         <source>Loading...</source>
         <translation>Đang tải...</translation>
     </message>

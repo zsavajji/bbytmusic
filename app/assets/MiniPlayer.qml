@@ -31,12 +31,16 @@ Container {
         var p = nowPlaying.createObject(Application.scene);
         if (p) {
             p.hostPane = navPane;
-            // The page under the strip fades out first, so that it does not vanish at a stroke
-            // when the player takes the screen (the user, 2026-11-21); the player shows it again.
+            // The page under the strip fades out and its bar slides away first, so that neither
+            // vanishes or flips at a stroke when the player takes the screen (the user,
+            // 2026-11-21); the player puts both back when it leaves.
             var top = navPane.top;
-            if (top && top.content) {
-                p.dimmed = top.content;
-                top.content.opacity = 0;
+            if (top) {
+                p.underPage = top;
+                if (top.content) {
+                    top.content.opacity = 0;
+                }
+                top.actionBarVisibility = ChromeVisibility.Hidden;
             }
             opening = p;
             swapTimer.start();
@@ -103,7 +107,7 @@ Container {
         Timer {
             id: swapTimer
             singleShot: true
-            interval: 170
+            interval: 220
             onTimeout: {
                 if (mini.opening) {
                     mini.opening.present();

@@ -346,7 +346,7 @@
         <translation>मेरी लाइब्रेरी</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="155"/>
+        <location filename="../assets/LibraryPage.qml" line="158"/>
         <source>You&apos;re signed in. Your likes now sync with your YouTube profile.</source>
         <translation>आप साइन इन हो गए हैं। अब आपके लाइक आपकी YouTube प्रोफ़ाइल के साथ सिंक होते हैं।</translation>
     </message>
@@ -358,114 +358,114 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Liked on YouTube</source>
         <translation>YouTube पर पसंद किया</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Like removed on YouTube</source>
         <translation>YouTube पर पसंद हटाई गई</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="140"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This track has no album page.</source>
         <translation>इस ट्रैक का कोई एल्बम पेज नहीं है।</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="153"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This artist has no page.</source>
         <translation>इस कलाकार का कोई पेज नहीं है।</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="252"/>
+        <location filename="../assets/NowPlayingPage.qml" line="297"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="260"/>
+        <location filename="../assets/NowPlayingPage.qml" line="305"/>
         <source>Previous</source>
         <translation>पिछला</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>पॉज़</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>चलाएं</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="283"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Next</source>
         <translation>अगला</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="294"/>
+        <location filename="../assets/NowPlayingPage.qml" line="339"/>
         <source>Queue</source>
         <translation>कतार</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Podcast</source>
         <translation>पॉडकास्ट देखें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Album</source>
         <translation>एल्बम देखें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="316"/>
+        <location filename="../assets/NowPlayingPage.qml" line="361"/>
         <source>View Artist</source>
         <translation>कलाकार देखें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="324"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Start Radio</source>
         <translation>रेडियो शुरू करें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Remove from Favorites</source>
         <translation>पसंदीदा से हटाएं</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Add to Favorites</source>
         <translation>पसंदीदा में जोड़ें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Like on YouTube</source>
         <translation>YouTube पर पसंद करें</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Remove Like on YouTube</source>
         <translation>YouTube पर पसंद हटाएं</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (Off)</source>
         <translation>इक्वलाइज़र (बंद)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (On)</source>
         <translation>इक्वलाइज़र (चालू)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="394"/>
+        <location filename="../assets/NowPlayingPage.qml" line="439"/>
         <source>Properties</source>
         <translation>विवरण</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="455"/>
+        <location filename="../assets/NowPlayingPage.qml" line="503"/>
         <source>Loading...</source>
         <translation>लोड हो रहा है...</translation>
     </message>

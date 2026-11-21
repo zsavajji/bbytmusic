@@ -347,7 +347,7 @@
         <translation>Моя бібліотека</translation>
     </message>
     <message>
-        <location filename="../assets/LibraryPage.qml" line="155"/>
+        <location filename="../assets/LibraryPage.qml" line="158"/>
         <source>You&apos;re signed in. Your likes now sync with your YouTube profile.</source>
         <translation>Ви увійшли. Тепер ваші вподобання синхронізуються з профілем YouTube.</translation>
     </message>
@@ -359,114 +359,114 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Liked on YouTube</source>
         <translation>Вподобано на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="109"/>
+        <location filename="../assets/NowPlayingPage.qml" line="129"/>
         <source>Like removed on YouTube</source>
         <translation>Вподобання знято на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="140"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This track has no album page.</source>
         <translation>У цього треку немає сторінки альбому.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="153"/>
+        <location filename="../assets/NowPlayingPage.qml" line="107"/>
         <source>This artist has no page.</source>
         <translation>У цього виконавця немає сторінки.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="252"/>
+        <location filename="../assets/NowPlayingPage.qml" line="297"/>
         <source>Close</source>
         <translation>Закрити</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="260"/>
+        <location filename="../assets/NowPlayingPage.qml" line="305"/>
         <source>Previous</source>
         <translation>Попередній</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Пауза</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="272"/>
+        <location filename="../assets/NowPlayingPage.qml" line="317"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Відтворити</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="283"/>
+        <location filename="../assets/NowPlayingPage.qml" line="328"/>
         <source>Next</source>
         <translation>Наступний</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="294"/>
+        <location filename="../assets/NowPlayingPage.qml" line="339"/>
         <source>Queue</source>
         <translation>Черга</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Podcast</source>
         <translation>Перейти до подкасту</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="305"/>
+        <location filename="../assets/NowPlayingPage.qml" line="350"/>
         <source>View Album</source>
         <translation>Перейти до альбому</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="316"/>
+        <location filename="../assets/NowPlayingPage.qml" line="361"/>
         <source>View Artist</source>
         <translation>Перейти до виконавця</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="324"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Start Radio</source>
         <translation>Запустити радіо</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Remove from Favorites</source>
         <translation>Видалити з обраного</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="335"/>
+        <location filename="../assets/NowPlayingPage.qml" line="380"/>
         <source>Add to Favorites</source>
         <translation>Додати до обраного</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Like on YouTube</source>
         <translation>Подобається на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="359"/>
+        <location filename="../assets/NowPlayingPage.qml" line="404"/>
         <source>Remove Like on YouTube</source>
         <translation>Зняти вподобання на YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (Off)</source>
         <translation>Еквалайзер (вимк.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="383"/>
+        <location filename="../assets/NowPlayingPage.qml" line="428"/>
         <source>Equalizer (On)</source>
         <translation>Еквалайзер (увімк.)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="394"/>
+        <location filename="../assets/NowPlayingPage.qml" line="439"/>
         <source>Properties</source>
         <translation>Властивості</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="455"/>
+        <location filename="../assets/NowPlayingPage.qml" line="503"/>
         <source>Loading...</source>
         <translation>Завантаження...</translation>
     </message>

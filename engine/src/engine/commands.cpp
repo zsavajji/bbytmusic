@@ -235,6 +235,19 @@ void Engine::add_commands() {
         return ok(browse_more_json(page));
     });
     server_.on("like", [this](Json req) { return like_command(req); });
+    // What YouTube Music knows of one track: its radio's first page starts with the track itself. For a track
+    // that came without its artist's and album's ids (the account's lists through the TV client carry none).
+    server_.on("info", [this](Json req) {
+        if (!req["id"].is_string() || req["id"].str().empty()) return bad("id: a video id is required");
+        const std::string id = req["id"].string();
+        QueuePage page;
+        std::string err;
+        if (!yt_call([&](InnerTube &yt, std::string &e) { return watch_queue(yt, id, "", page, e); }, err))
+            return Reply::error("network", err);
+        for (const Item &i : page.items)
+            if (i.id == id) return ok(item_json(i));
+        return Reply::error("not_found", "info: " + id + " is not in its own radio");
+    });
     server_.on("history", [this](Json req) {
         // a limit that is not a number is the default
         const int n = int(std::clamp<int64_t>(req["limit"].is_number() ? req["limit"].i64() : 50, 1, 200));
