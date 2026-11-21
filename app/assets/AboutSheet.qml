@@ -39,7 +39,7 @@ Sheet {
                     }
                     Label {
                         horizontalAlignment: HorizontalAlignment.Center
-                        text: qsTr("Version %1").arg("1.0")
+                        text: qsTr("Version %1").arg("1.0.1")
                         textStyle.base: SystemDefaults.TextStyles.SubtitleText
                         textStyle.color: Color.create("#969696")
                     }
