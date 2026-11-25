@@ -33,12 +33,15 @@
 
     <configuration name="Device-Release">
         <platformArchitecture>armle-v7</platformArchitecture>
-        <asset entryPointId="BBMusic" path="../build/app-ui/app/bbmusic" entry="true" type="Qnx/Elf">bbmusic</asset>
+        <asset entryPointId="BBMusic" path="../build/app-ui/app/libbbmusic.so" entry="true" type="Qnx/Elf">libbbmusic.so</asset>
         <asset entryPointId="BBMusicService" path="../build/engine-bb10/bbmusicd" type="Qnx/Elf">bbmusicd</asset>
     </configuration>
 
+    <!-- The launcher forks /bin/cascades (Cascades and Qt already loaded) and calls libbbmusic.so's main(); a plain
+         executable loaded about 100 libraries itself at every start (Tengram, Classic, 2026-11-24: the scene at 1.5 s, from 4.35 s). -->
     <entryPoint id="BBMusic">
         <name>BBMusic</name>
+        <entryPointType>Qnx/Cascades</entryPointType>
     </entryPoint>
     <!-- The engine, headless, as the gate app's: a memory class (else the heap is capped at 3 MB)
          and no stop when the UI is swiped away. Not started at boot. -->

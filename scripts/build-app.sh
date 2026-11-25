@@ -47,7 +47,7 @@ docker run --rm -v "$ROOT:/src" -w /src "$IMAGE" bash -c '
 	done
 	(cd build/app-ui && qmake -spec blackberry-armv7le-qcc CONFIG+=device ../../app/bbmusic.pro >/dev/null &&
 		make -j"$(nproc)" >/dev/null)
-	ls -l build/app-ui/app/bbmusic
+	ls -l build/app-ui/app/libbbmusic.so
 	cd app && blackberry-nativepackager -package ../build/bbmusic.bar \
 		-buildIdFile ../build/app-buildid.txt bar-descriptor.xml -configuration Device-Release
 	rm -f assets/.assets.index'

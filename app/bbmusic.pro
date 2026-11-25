@@ -1,11 +1,14 @@
-# BBMusic's UI, a plain executable as the bar's Qnx/Elf entry point. Built out of tree by
+# BBMusic's UI is a shared object, the bar's Qnx/Cascades entry point: the launcher's /bin/cascades (Cascades and Qt
+# already loaded) forks, loads it and calls its exported main(), as HyperBerry's and Tengram's. Built out of tree by
 # scripts/build-app.sh (build/app-ui).
-TEMPLATE = app
+TEMPLATE = lib
 TARGET = bbmusic
-CONFIG += qt warn_on release
+CONFIG += qt warn_on release plugin
 QT += declarative network
 LIBS += -lbbcascades -lbbdata -lbbsystem -lbb -lbps
 QMAKE_CXXFLAGS += -Wno-psabi
+# Loaded into a process that already holds the system's libraries: bind our references to our own definitions.
+QMAKE_LFLAGS += -Wl,-Bsymbolic
 
 SOURCES += src/main.cpp src/EngineLink.cpp src/PlayerState.cpp src/Thumbs.cpp src/TubeSignIn.cpp src/SignInCard.cpp
 HEADERS += src/EngineLink.h src/PlayerState.h src/Thumbs.h src/TubeSignIn.h src/SignInCard.h src/UiLog.h
