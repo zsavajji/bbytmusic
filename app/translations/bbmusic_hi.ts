@@ -747,176 +747,201 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="91"/>
+        <location filename="../assets/SettingsSheet.qml" line="96"/>
         <source>the request was refused</source>
         <translation>अनुरोध अस्वीकार कर दिया गया</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="94"/>
+        <location filename="../assets/SettingsSheet.qml" line="99"/>
         <source>the code expired</source>
         <translation>कोड की समय-सीमा समाप्त हो गई</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="460"/>
-        <location filename="../assets/SettingsSheet.qml" line="464"/>
+        <location filename="../assets/SettingsSheet.qml" line="102"/>
+        <source>Tube is not signed in to YouTube</source>
+        <translation>Tube YouTube में साइन इन नहीं है</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="105"/>
+        <source>Tube&apos;s sign-in did not open</source>
+        <translation>Tube का साइन-इन नहीं खुला</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="108"/>
+        <source>Google does not accept Tube&apos;s sign-in</source>
+        <translation>Google Tube के साइन-इन को स्वीकार नहीं करता</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="111"/>
+        <source>YouTube could not be reached</source>
+        <translation>YouTube तक नहीं पहुँचा जा सका</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="146"/>
+        <location filename="../assets/SettingsSheet.qml" line="497"/>
+        <location filename="../assets/SettingsSheet.qml" line="501"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="130"/>
-        <location filename="../assets/SettingsSheet.qml" line="448"/>
-        <location filename="../assets/SettingsSheet.qml" line="452"/>
-        <location filename="../assets/SettingsSheet.qml" line="456"/>
+        <location filename="../assets/SettingsSheet.qml" line="146"/>
+        <location filename="../assets/SettingsSheet.qml" line="147"/>
+        <location filename="../assets/SettingsSheet.qml" line="485"/>
+        <location filename="../assets/SettingsSheet.qml" line="489"/>
+        <location filename="../assets/SettingsSheet.qml" line="493"/>
         <source>%1 MB</source>
         <translation>%1 MB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="130"/>
+        <location filename="../assets/SettingsSheet.qml" line="147"/>
         <source>%1 used of %2</source>
         <translation>%2 में से %1 उपयोग में</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="188"/>
+        <location filename="../assets/SettingsSheet.qml" line="211"/>
         <source>Settings</source>
         <translation>सेटिंग</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="190"/>
+        <location filename="../assets/SettingsSheet.qml" line="213"/>
         <source>Close</source>
         <translation>बंद करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="199"/>
+        <location filename="../assets/SettingsSheet.qml" line="222"/>
         <source>YouTube account</source>
         <translation>YouTube खाता</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="210"/>
+        <location filename="../assets/SettingsSheet.qml" line="233"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>अपनी प्लेलिस्ट, पसंद किए गए गाने और एल्बम देखने के लिए साइन इन करें। खोज, प्लेबैक और पसंदीदा बिना खाते के भी काम करते हैं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="217"/>
+        <location filename="../assets/SettingsSheet.qml" line="240"/>
         <source>The sign-in did not complete: %1</source>
         <translation>साइन-इन पूरा नहीं हुआ: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="223"/>
+        <location filename="../assets/SettingsSheet.qml" line="247"/>
+        <source>Sign in with Tube</source>
+        <translation>Tube से साइन इन करें</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="258"/>
         <source>Sign in</source>
         <translation>साइन इन करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="237"/>
+        <location filename="../assets/SettingsSheet.qml" line="274"/>
         <source>On a phone or a computer, open</source>
         <translation>किसी फ़ोन या कंप्यूटर पर खोलें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="245"/>
+        <location filename="../assets/SettingsSheet.qml" line="282"/>
         <source>and enter this code:</source>
         <translation>और यह कोड दर्ज करें:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="260"/>
+        <location filename="../assets/SettingsSheet.qml" line="297"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>कोड दर्ज होते ही यह पेज अपने-आप साइन इन हो जाता है। कोड 30 मिनट तक मान्य है।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="267"/>
-        <location filename="../assets/SettingsSheet.qml" line="496"/>
+        <location filename="../assets/SettingsSheet.qml" line="304"/>
+        <location filename="../assets/SettingsSheet.qml" line="533"/>
         <source>Cancel</source>
         <translation>रद्द करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="281"/>
+        <location filename="../assets/SettingsSheet.qml" line="318"/>
         <source>Signed in</source>
         <translation>साइन इन है</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="284"/>
+        <location filename="../assets/SettingsSheet.qml" line="321"/>
         <source>Shared by the Tube app</source>
         <translation>Tube ऐप से साझा किया गया</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="290"/>
-        <location filename="../assets/SettingsSheet.qml" line="493"/>
-        <location filename="../assets/SettingsSheet.qml" line="495"/>
+        <location filename="../assets/SettingsSheet.qml" line="327"/>
+        <location filename="../assets/SettingsSheet.qml" line="530"/>
+        <location filename="../assets/SettingsSheet.qml" line="532"/>
         <source>Sign out</source>
         <translation>साइन आउट करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="301"/>
+        <location filename="../assets/SettingsSheet.qml" line="338"/>
         <source>Content country</source>
         <translation>कंटेंट का देश</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="309"/>
+        <location filename="../assets/SettingsSheet.qml" line="346"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>वह देश जिसके लिए YouTube Music गाने और ट्रेंड चुनता है। नई रिलीज़ और चुनिंदा प्लेलिस्ट अब भी आपकी मौजूदा लोकेशन के हिसाब से ही दिखती हैं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="316"/>
+        <location filename="../assets/SettingsSheet.qml" line="353"/>
         <source>Country</source>
         <translation>देश</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="324"/>
+        <location filename="../assets/SettingsSheet.qml" line="361"/>
         <source>Skip in a track</source>
         <translation>ट्रैक के भीतर स्किप</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="332"/>
+        <location filename="../assets/SettingsSheet.qml" line="369"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>दूसरे श्रोताओं के चिह्नित किए हुए हिस्से, SponsorBlock से। इनमें से कोई भी चालू होने पर, sponsor.ajay.app से हर ट्रैक के बारे में उसकी आईडी के छोटे हैश से पूछा जाता है, आईडी से कभी नहीं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="343"/>
+        <location filename="../assets/SettingsSheet.qml" line="380"/>
         <source>Non-music parts of a video</source>
         <translation>वीडियो के गैर-संगीत हिस्से</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="363"/>
+        <location filename="../assets/SettingsSheet.qml" line="400"/>
         <source>Sponsors</source>
         <translation>स्पॉन्सर</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="383"/>
+        <location filename="../assets/SettingsSheet.qml" line="420"/>
         <source>Intros</source>
         <translation>इंट्रो</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="403"/>
+        <location filename="../assets/SettingsSheet.qml" line="440"/>
         <source>Outros</source>
         <translation>आउट्रो</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="419"/>
+        <location filename="../assets/SettingsSheet.qml" line="456"/>
         <source>Storage</source>
         <translation>स्टोरेज</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="427"/>
+        <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>गाने चलने के बाद फ़ोन में सेव रहते हैं, ताकि उन्हें बिना नेटवर्क के दोबारा चलाया जा सके। जगह भरने पर जो सबसे लंबे समय से नहीं चले, वे पहले हटाए जाते हैं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="433"/>
+        <location filename="../assets/SettingsSheet.qml" line="470"/>
         <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
         <translation>पसंदीदा डाउनलोड किए जाते हैं और जगह बनाने के लिए कभी हटाए नहीं जाते; वे इस जगह में गिने जाते हैं।</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="445"/>
+        <location filename="../assets/SettingsSheet.qml" line="482"/>
         <source>Space for songs</source>
         <translation>गानों के लिए जगह</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="478"/>
+        <location filename="../assets/SettingsSheet.qml" line="515"/>
         <source>Clear cache</source>
         <translation>कैश साफ़ करें</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="494"/>
+        <location filename="../assets/SettingsSheet.qml" line="531"/>
         <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
         <translation>इस फ़ोन पर YouTube से साइन आउट करें? आपके पसंदीदा बने रहेंगे।</translation>
     </message>
@@ -1026,6 +1051,49 @@
         <source>Play</source>
         <extracomment>verb, starts playback</extracomment>
         <translation>चलाएं</translation>
+    </message>
+</context>
+<context>
+    <name>SignInCard</name>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="10"/>
+        <source>Cancel</source>
+        <translation>रद्द करें</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="16"/>
+        <source>Allow</source>
+        <translation>अनुमति दें</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="40"/>
+        <source>Allow &quot;%1&quot; to use your YouTube account from BBMusic?</source>
+        <translation>क्या &quot;%1&quot; को BBMusic से आपका YouTube खाता इस्तेमाल करने की अनुमति दें?</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="53"/>
+        <source>It will be able to see and change your YouTube library: playlists, likes and subscriptions.</source>
+        <translation>यह आपकी YouTube लाइब्रेरी देख और बदल सकेगा: प्लेलिस्ट, लाइक और सदस्यताएँ।</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>BBMusic is not signed in to YouTube.</source>
+        <translation>BBMusic YouTube में साइन इन नहीं है।</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>Only the Tube app can ask for this, for now.</source>
+        <translation>अभी केवल Tube ऐप ही यह माँग सकता है।</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>The request could not be read.</source>
+        <translation>अनुरोध पढ़ा नहीं जा सका।</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="67"/>
+        <source>Asked by: %1</source>
+        <translation>अनुरोध किसने किया: %1</translation>
     </message>
 </context>
 <context>

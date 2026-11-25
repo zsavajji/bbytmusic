@@ -56,7 +56,7 @@ private slots:
 
 private:
     void startEngine();
-    void writeLine(const QByteArray &json);
+    void writeLine(const QByteArray &json, const QString &logAs = QString());
     void handleLine(const QByteArray &line);
     void scheduleAttempt();
 
@@ -73,6 +73,7 @@ private:
     QString m_statusId;
     QString m_queueId;
     QSet<QString> m_pending; // requests sent and not answered yet
+    QSet<QString> m_quiet;   // requests whose reply must not be logged
 };
 
 #endif

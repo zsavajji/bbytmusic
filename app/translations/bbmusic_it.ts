@@ -747,176 +747,201 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="91"/>
+        <location filename="../assets/SettingsSheet.qml" line="96"/>
         <source>the request was refused</source>
         <translation>la richiesta è stata rifiutata</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="94"/>
+        <location filename="../assets/SettingsSheet.qml" line="99"/>
         <source>the code expired</source>
         <translation>il codice è scaduto</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="460"/>
-        <location filename="../assets/SettingsSheet.qml" line="464"/>
+        <location filename="../assets/SettingsSheet.qml" line="102"/>
+        <source>Tube is not signed in to YouTube</source>
+        <translation>Tube non ha effettuato l&apos;accesso a YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="105"/>
+        <source>Tube&apos;s sign-in did not open</source>
+        <translation>L&apos;accesso di Tube non si è aperto</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="108"/>
+        <source>Google does not accept Tube&apos;s sign-in</source>
+        <translation>Google non accetta l&apos;accesso di Tube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="111"/>
+        <source>YouTube could not be reached</source>
+        <translation>Impossibile raggiungere YouTube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="146"/>
+        <location filename="../assets/SettingsSheet.qml" line="497"/>
+        <location filename="../assets/SettingsSheet.qml" line="501"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="129"/>
-        <location filename="../assets/SettingsSheet.qml" line="130"/>
-        <location filename="../assets/SettingsSheet.qml" line="448"/>
-        <location filename="../assets/SettingsSheet.qml" line="452"/>
-        <location filename="../assets/SettingsSheet.qml" line="456"/>
+        <location filename="../assets/SettingsSheet.qml" line="146"/>
+        <location filename="../assets/SettingsSheet.qml" line="147"/>
+        <location filename="../assets/SettingsSheet.qml" line="485"/>
+        <location filename="../assets/SettingsSheet.qml" line="489"/>
+        <location filename="../assets/SettingsSheet.qml" line="493"/>
         <source>%1 MB</source>
         <translation>%1 MB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="130"/>
+        <location filename="../assets/SettingsSheet.qml" line="147"/>
         <source>%1 used of %2</source>
         <translation>%1 usati su %2</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="188"/>
+        <location filename="../assets/SettingsSheet.qml" line="211"/>
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="190"/>
+        <location filename="../assets/SettingsSheet.qml" line="213"/>
         <source>Close</source>
         <translation>Chiudi</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="199"/>
+        <location filename="../assets/SettingsSheet.qml" line="222"/>
         <source>YouTube account</source>
         <translation>Account YouTube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="210"/>
+        <location filename="../assets/SettingsSheet.qml" line="233"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Accedi per vedere le tue playlist, i brani piaciuti e gli album. Ricerca, riproduzione e preferiti funzionano anche senza account.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="217"/>
+        <location filename="../assets/SettingsSheet.qml" line="240"/>
         <source>The sign-in did not complete: %1</source>
         <translation>L&apos;accesso non è stato completato: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="223"/>
+        <location filename="../assets/SettingsSheet.qml" line="247"/>
+        <source>Sign in with Tube</source>
+        <translation>Accedi con Tube</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="258"/>
         <source>Sign in</source>
         <translation>Accedi</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="237"/>
+        <location filename="../assets/SettingsSheet.qml" line="274"/>
         <source>On a phone or a computer, open</source>
         <translation>Su un telefono o un computer, apri</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="245"/>
+        <location filename="../assets/SettingsSheet.qml" line="282"/>
         <source>and enter this code:</source>
         <translation>e inserisci questo codice:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="260"/>
+        <location filename="../assets/SettingsSheet.qml" line="297"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Questa pagina effettua l&apos;accesso da sola una volta inserito il codice. Il codice è valido per 30 minuti.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="267"/>
-        <location filename="../assets/SettingsSheet.qml" line="496"/>
+        <location filename="../assets/SettingsSheet.qml" line="304"/>
+        <location filename="../assets/SettingsSheet.qml" line="533"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="281"/>
+        <location filename="../assets/SettingsSheet.qml" line="318"/>
         <source>Signed in</source>
         <translation>Accesso effettuato</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="284"/>
+        <location filename="../assets/SettingsSheet.qml" line="321"/>
         <source>Shared by the Tube app</source>
         <translation>Condiviso dall&apos;app Tube</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="290"/>
-        <location filename="../assets/SettingsSheet.qml" line="493"/>
-        <location filename="../assets/SettingsSheet.qml" line="495"/>
+        <location filename="../assets/SettingsSheet.qml" line="327"/>
+        <location filename="../assets/SettingsSheet.qml" line="530"/>
+        <location filename="../assets/SettingsSheet.qml" line="532"/>
         <source>Sign out</source>
         <translation>Esci</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="301"/>
+        <location filename="../assets/SettingsSheet.qml" line="338"/>
         <source>Content country</source>
         <translation>Paese dei contenuti</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="309"/>
+        <location filename="../assets/SettingsSheet.qml" line="346"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>Il paese per cui YouTube Music sceglie brani e tendenze. Le nuove uscite e le playlist in evidenza dipendono comunque dalla posizione attuale.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="316"/>
+        <location filename="../assets/SettingsSheet.qml" line="353"/>
         <source>Country</source>
         <translation>Paese</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="324"/>
+        <location filename="../assets/SettingsSheet.qml" line="361"/>
         <source>Skip in a track</source>
         <translation>Salti nei brani</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="332"/>
+        <location filename="../assets/SettingsSheet.qml" line="369"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>Parti segnalate da altri ascoltatori, tramite SponsorBlock. Finché una di queste è attiva, sponsor.ajay.app viene interrogato su ogni brano con un breve hash del suo ID, mai con l&apos;ID stesso.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="343"/>
+        <location filename="../assets/SettingsSheet.qml" line="380"/>
         <source>Non-music parts of a video</source>
         <translation>Parti non musicali di un video</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="363"/>
+        <location filename="../assets/SettingsSheet.qml" line="400"/>
         <source>Sponsors</source>
         <translation>Sponsor</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="383"/>
+        <location filename="../assets/SettingsSheet.qml" line="420"/>
         <source>Intros</source>
         <translation>Intro</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="403"/>
+        <location filename="../assets/SettingsSheet.qml" line="440"/>
         <source>Outros</source>
         <translation>Outro</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="419"/>
+        <location filename="../assets/SettingsSheet.qml" line="456"/>
         <source>Storage</source>
         <translation>Memoria</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="427"/>
+        <location filename="../assets/SettingsSheet.qml" line="464"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>I brani restano sul telefono dopo la riproduzione, così si possono riascoltare senza rete. Quando lo spazio è esaurito, vengono eliminati per primi quelli ascoltati meno di recente.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="433"/>
+        <location filename="../assets/SettingsSheet.qml" line="470"/>
         <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
         <translation>I preferiti vengono scaricati e mai rimossi per fare spazio; contano su questo spazio.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="445"/>
+        <location filename="../assets/SettingsSheet.qml" line="482"/>
         <source>Space for songs</source>
         <translation>Spazio per i brani</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="478"/>
+        <location filename="../assets/SettingsSheet.qml" line="515"/>
         <source>Clear cache</source>
         <translation>Svuota cache</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="494"/>
+        <location filename="../assets/SettingsSheet.qml" line="531"/>
         <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
         <translation>Uscire da YouTube su questo telefono? I preferiti restano.</translation>
     </message>
@@ -1026,6 +1051,49 @@
         <source>Play</source>
         <extracomment>verb, starts playback</extracomment>
         <translation>Riproduci</translation>
+    </message>
+</context>
+<context>
+    <name>SignInCard</name>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="10"/>
+        <source>Cancel</source>
+        <translation>Annulla</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="16"/>
+        <source>Allow</source>
+        <translation>Consenti</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="40"/>
+        <source>Allow &quot;%1&quot; to use your YouTube account from BBMusic?</source>
+        <translation>Consentire a &quot;%1&quot; di usare il tuo account YouTube da BBMusic?</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="53"/>
+        <source>It will be able to see and change your YouTube library: playlists, likes and subscriptions.</source>
+        <translation>Potrà vedere e modificare la tua libreria YouTube: playlist, Mi piace e iscrizioni.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>BBMusic is not signed in to YouTube.</source>
+        <translation>BBMusic non ha eseguito l&apos;accesso a YouTube.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>Only the Tube app can ask for this, for now.</source>
+        <translation>Per ora solo l&apos;app Tube può chiederlo.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="59"/>
+        <source>The request could not be read.</source>
+        <translation>Impossibile leggere la richiesta.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SignInCard.qml" line="67"/>
+        <source>Asked by: %1</source>
+        <translation>Richiesto da: %1</translation>
     </message>
 </context>
 <context>

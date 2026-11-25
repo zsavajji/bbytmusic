@@ -27,13 +27,15 @@ public:
     void load(const std::string &stored);   // what stored() gave; "" or garbage: signed out. No callback, no network.
     std::string stored() const;             // "" when signed out, else a JSON object with the refresh token and the client
     Info info() const;
+    // The refresh token and its client, for the sign-in card; false when signed out.
+    bool credentials(std::string &refresh, OAuthClient &client) const;
 
     // A refresh token from elsewhere. An empty client (id and secret "") is looked up on the TV page.
     // One refresh proves the token and the pair, then the account's name is asked; only on Ok does
     // anything change. A name that cannot be fetched (Network) leaves it empty.
     OAuthResult import(const std::string &refresh, OAuthClient client, const std::string &source, std::string &err);
     // Stops a sign-in in flight; forgets, no network; no callback when already out and nothing pending.
-    // Returns the refresh token to revoke when the account was our own ("" otherwise).
+    // Returns the refresh token to revoke, our own or one that came from Tube's card ("" when there was no account).
     std::string sign_out();
     void revoke(const std::string &token);   // best effort; a failure is a warning
 

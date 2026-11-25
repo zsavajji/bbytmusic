@@ -25,6 +25,14 @@ Account::Info Account::info() const {
     return {!refresh_.empty(), name_, photo_, source_, pending_, code_, url_, error_};
 }
 
+bool Account::credentials(std::string &refresh, OAuthClient &client) const {
+    std::lock_guard<std::mutex> lk(mu_);
+    if (refresh_.empty()) return false;
+    refresh = refresh_;
+    client = client_;
+    return true;
+}
+
 Account::~Account() { halt(); }
 
 void Account::load(const std::string &stored) {
@@ -88,7 +96,7 @@ std::string Account::sign_out() {
         if (!error_.empty()) did_change = true;
         if (!refresh_.empty()) {
             did_change = true;
-            if (source_ == "own") token = refresh_;
+            token = refresh_;   // ours or Tube's: a sign-out here ends both (the user, 2026-11-21)
         }
         refresh_.clear();
         access_.clear();

@@ -1,6 +1,8 @@
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
+#include <bb/system/ApplicationStartupMode>
+#include <bb/system/InvokeManager>
 #include <QDir>
 #include <QLocale>
 #include <QFile>
@@ -11,7 +13,9 @@
 
 #include "EngineLink.h"
 #include "PlayerState.h"
+#include "SignInCard.h"
 #include "Thumbs.h"
+#include "TubeSignIn.h"
 #include "UiLog.h"
 
 using namespace bb::cascades;
@@ -54,15 +58,24 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     if (translator.load("bbmusic_" + QLocale().name(), "app/native/qm"))
         app.installTranslator(&translator);
 
+    // Started by another app as the sign-in card: the scene is the card's page instead of the tabs.
+    // (docs/signin-card.md)
+    bb::system::InvokeManager invoker;
+    const bool asCard = invoker.startupMode() == bb::system::ApplicationStartupMode::InvokeCard;
+
     EngineLink engine(&app);
     PlayerState player(&app);
     Thumbs thumbs(&engine, &app);
+    TubeSignIn tube(&engine, &app);
     QObject::connect(&engine, SIGNAL(event(QString,QVariantMap)),
                      &player, SLOT(onEvent(QString,QVariantMap)));
 
     // bb.cascades has no Timer: the search page's debounce and focus use this one.
     qmlRegisterType<QTimer>("bbmusic", 1, 0, "Timer");
-    QmlDocument *document = QmlDocument::create("asset:///main.qml").parent(&app);
+    SignInCard *card = 0;
+    if (asCard)
+        card = new SignInCard(&engine, &app);
+    QmlDocument *document = QmlDocument::create(asCard ? "asset:///SignInCard.qml" : "asset:///main.qml").parent(&app);
     if (document->hasErrors()) {
         // A QML error otherwise quits the app at start with nothing to show.
         foreach (const QDeclarativeError &error, document->errors())
@@ -72,6 +85,9 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     document->setContextProperty("engine", &engine);
     document->setContextProperty("player", &player);
     document->setContextProperty("thumbs", &thumbs);
+    document->setContextProperty("tube", &tube);
+    if (card)
+        document->setContextProperty("card", card);
     AbstractPane *root = document->createRootObject<AbstractPane>();
     if (!root) {
         uiLog("QML: no root object");
@@ -82,7 +98,8 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     // parent: so the root gets one. A scene with a parent must be taken off before it is deleted.
     root->setParent(document);
     app.setScene(root);
-    checkDocuments(app);
+    if (!asCard)
+        checkDocuments(app);
     engine.start();
     const int rc = Application::exec();
     app.setScene(0);

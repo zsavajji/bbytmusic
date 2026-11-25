@@ -14,7 +14,9 @@ std::string Engine::account_json() {
 Reply Engine::account_command(Json req) {
     auto bad = [](const char *why) { return Reply::error("bad_request", why); };
     const bool out = req["sign_out"].boolean(), sign_in = req["sign_in"].boolean(), cancel = req["cancel"].boolean();
-    if (int(!req["import"].is_null()) + out + sign_in + cancel > 1) return bad("import, sign_in, cancel and sign_out: one at a time");
+    const bool exp = req["export"].boolean();
+    if (int(!req["import"].is_null()) + out + sign_in + cancel + exp > 1)
+        return bad("import, sign_in, cancel, sign_out and export: one at a time");
     if (!req["import"].is_null()) {
         const Json im = req["import"];
         if (!im.is_object()) return bad("import: an object is required");
@@ -28,6 +30,15 @@ Reply Engine::account_command(Json req) {
         if (r == OAuthResult::Network) return Reply::error("network", err);
         if (r == OAuthResult::Refused) return Reply::error("refused", err);
         log_info("account: signed in (tube)");
+    } else if (exp) {
+        std::string refresh;
+        OAuthClient client;
+        if (!account_->credentials(refresh, client)) return Reply::error("signed_out", "no account");
+        log_info("account: exported");
+        Reply r;
+        r.result = "{" + account_json() + ",\"refresh_token\":" + json_quote(refresh) + ",\"client_id\":" + json_quote(client.id) +
+                   ",\"client_secret\":" + json_quote(client.secret) + "}";
+        return r;
     } else if (sign_in) {
         account_->sign_in();
         log_info("account: sign-in started");

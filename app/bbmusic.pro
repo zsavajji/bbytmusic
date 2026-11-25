@@ -7,8 +7,8 @@ QT += declarative network
 LIBS += -lbbcascades -lbbdata -lbbsystem -lbb -lbps
 QMAKE_CXXFLAGS += -Wno-psabi
 
-SOURCES += src/main.cpp src/EngineLink.cpp src/PlayerState.cpp src/Thumbs.cpp
-HEADERS += src/EngineLink.h src/PlayerState.h src/Thumbs.h src/UiLog.h
+SOURCES += src/main.cpp src/EngineLink.cpp src/PlayerState.cpp src/Thumbs.cpp src/TubeSignIn.cpp src/SignInCard.cpp
+HEADERS += src/EngineLink.h src/PlayerState.h src/Thumbs.h src/TubeSignIn.h src/SignInCard.h src/UiLog.h
 
 DESTDIR = app
 OBJECTS_DIR = obj

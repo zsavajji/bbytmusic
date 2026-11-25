@@ -60,6 +60,17 @@
         </filter>
     </invoke-target>
 
+    <!-- The sign-in card (docs/signin-card.md): the UI's entry point, started as a card. -->
+    <invoke-target id="com.zsavajji.bbmusic.card.signin">
+        <invoke-target-type>card.picker</invoke-target-type>
+        <entry-point-id>BBMusic</entry-point-id>
+        <filter>
+            <action>com.zsavajji.bbmusic.SHARE_SIGN_IN</action>
+            <mime-type>application/json</mime-type>
+            <property var="uris" value="data://local"/>
+        </filter>
+    </invoke-target>
+
     <!-- The QML: app/native/assets. -->
     <asset path="assets">assets</asset>
     <!-- The translations, compiled by scripts/build-app.sh: app/native/qm. -->

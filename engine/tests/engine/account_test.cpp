@@ -274,8 +274,9 @@ int main() {
         CHECK(!a.info().in);
         a.revoke("OWN-REFRESH");
         CHECK_EQ(f.revokes.load(), 1);
+        // and so does one that came from Tube: a sign-out here ends both
         CHECK(a.import("R", {"id", "sec"}, "tube", err) == OAuthResult::Ok);
-        CHECK_EQ(a.sign_out(), std::string(""));
+        CHECK_EQ(a.sign_out(), std::string("R"));
 
         // refused
         f.deny = true;
@@ -354,6 +355,12 @@ int main() {
         CHECK_EQ(res["source"].string(), "tube");
         CHECK(line.find("REFRESH-1") == std::string::npos);
         CHECK(c.wait_event([](Json e) { return is_ev(e, "account") && e["state"].str() == "in" && e["name"].str() == "Test User"; }, 3000) >= 0);
+        Json ex = parse(c.cmd("account", "\"export\":true"), d)["result"];
+        CHECK_EQ(ex["state"].string(), "in");
+        CHECK_EQ(ex["refresh_token"].string(), "REFRESH-1");
+        CHECK_EQ(ex["client_id"].string(), "9-fake.apps.googleusercontent.com");
+        CHECK_EQ(ex["client_secret"].string(), "FakeSecret");
+        CHECK_EQ(parse(c.cmd("account", "\"export\":true,\"sign_out\":true"), d)["error"]["code"].string(), "bad_request");
     }
     {
         Running r(dir, f.fn());
@@ -363,6 +370,7 @@ int main() {
         CHECK_EQ(res["state"].string(), "in");
         CHECK_EQ(res["name"].string(), "Test User");
         CHECK_EQ(parse(c.cmd("account", "\"sign_out\":true"), d)["result"]["state"].string(), "out");
+        CHECK_EQ(parse(c.cmd("account", "\"export\":true"), d)["error"]["code"].string(), "signed_out");
         CHECK(c.wait_event([](Json e) { return is_ev(e, "account") && e["state"].str() == "out"; }, 3000) >= 0);
     }
     {

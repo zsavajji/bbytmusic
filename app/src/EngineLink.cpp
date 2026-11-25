@@ -187,14 +187,16 @@ void EngineLink::handleLine(const QByteArray &line)
     QVariantMap map = doc.toMap();
     // Not the positions (one a second) nor the thumbnails (one per row of a list).
     const QString ev = map.value("ev").toString();
-    if (ev != "position" && ev != "thumb")
+    const QString id = map.value("@").toString();
+    if (m_quiet.remove(id))
+        uiLog("< " + id + " (not logged)");
+    else if (ev != "position" && ev != "thumb")
         uiLog("< " + QString::fromUtf8(line.left(220)).trimmed());
     if (map.contains("ev")) {
         const QString name = map.take("ev").toString();
         emit event(name, map);
         return;
     }
-    const QString id = map["@"].toString();
     const bool ok = map["ok"].toBool();
     if (id == "h") {
         if (!ok) {
@@ -224,9 +226,11 @@ void EngineLink::handleLine(const QByteArray &line)
         emit event("queue_snapshot", result.toMap());
 }
 
-void EngineLink::writeLine(const QByteArray &json)
+void EngineLink::writeLine(const QByteArray &json, const QString &logAs)
 {
-    if (!json.contains("\"cmd\":\"hello\""))
+    if (!logAs.isEmpty())
+        uiLog("> " + logAs);
+    else if (!json.contains("\"cmd\":\"hello\""))
         uiLog("> " + QString::fromUtf8(json.left(220)));
     m_socket.write(json + "\n");
 }
@@ -244,7 +248,16 @@ QString EngineLink::request(const QString &cmd, const QVariantMap &fields)
     json.saveToBuffer(QVariant(message), &buffer);
     // JsonDataAccess may indent its output; inside strings newlines are escaped, so these are layout.
     buffer.replace('\n', "").replace('\r', "");
-    writeLine(buffer);
+    // The Tube card's answer goes out here and the sign-in card's token comes back (export): the
+    // log gets the command's name only, and the reply is not logged.
+    QString logAs;
+    if (fields.contains("import"))
+        logAs = cmd + " import";
+    else if (fields.contains("export")) {
+        logAs = cmd + " export";
+        m_quiet.insert(id);
+    }
+    writeLine(buffer, logAs);
     m_pending.insert(id);
     return id;
 }

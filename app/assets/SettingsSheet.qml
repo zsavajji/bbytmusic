@@ -19,6 +19,7 @@ Sheet {
     property string acctCode: ""
     property string acctUrl: ""
     property string acctError: ""
+    property string tubeError: ""   // why Tube's card gave nothing ("" when it has not, or the user said no)
     property string gl: ""          // the country in use, as the engine last said or was told
     property int capMb: 0           // the cache's cap, as the engine last said (0: not yet)
     property bool filling: false    // the controls are being set from the engine's answers
@@ -86,12 +87,28 @@ Sheet {
         }
     }
 
+    function onTubeRefused(e) {
+        sheet.tubeError = e;
+    }
+
     function refuse(e) {
         if (e == "access_denied") {
             return qsTr("the request was refused");
         }
         if (e == "expired_token") {
             return qsTr("the code expired");
+        }
+        if (e == "not-signed-in") {
+            return qsTr("Tube is not signed in to YouTube");
+        }
+        if (e == "no-card") {
+            return qsTr("Tube's sign-in did not open");
+        }
+        if (e == "refused") {
+            return qsTr("Google does not accept Tube's sign-in");
+        }
+        if (e == "network") {
+            return qsTr("YouTube could not be reached");
         }
         return e;
     }
@@ -164,6 +181,8 @@ Sheet {
     function show() {
         engine.reply.connect(sheet.onReply);
         engine.event.connect(sheet.onEvent);
+        tube.refused.connect(sheet.onTubeRefused);
+        tube.check();
         accountReq = engine.request("account", {});
         listReq = engine.request("skip", {});
         regionReq = engine.request("region", {});
@@ -179,6 +198,10 @@ Sheet {
         try {
             engine.event.disconnect(sheet.onEvent);
         } catch (e1) {
+        }
+        try {
+            tube.refused.disconnect(sheet.onTubeRefused);
+        } catch (e2) {
         }
         sheet.destroy();
     }
@@ -214,17 +237,31 @@ Sheet {
                         textStyle.color: Color.create("#969696")
                     }
                     Label {
-                        text: qsTr("The sign-in did not complete: %1").arg(sheet.refuse(sheet.acctError))
+                        text: qsTr("The sign-in did not complete: %1").arg(sheet.refuse(sheet.acctError != "" ? sheet.acctError : sheet.tubeError))
                         multiline: true
                         topMargin: ui.du(2)
-                        visible: sheet.acctState == "out" && sheet.acctError != ""
+                        visible: sheet.acctState == "out" && (sheet.acctError != "" || sheet.tubeError != "")
+                    }
+                    Button {
+                        // One tap: the Tube app (1.17.0 and later) shares its sign-in through its card.
+                        text: qsTr("Sign in with Tube")
+                        topMargin: ui.du(2)
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        visible: sheet.acctState == "out" && tube.available
+                        enabled: ! tube.busy
+                        onClicked: {
+                            sheet.tubeError = "";
+                            tube.ask();
+                        }
                     }
                     Button {
                         text: qsTr("Sign in")
                         topMargin: ui.du(2)
                         horizontalAlignment: HorizontalAlignment.Fill
                         visible: sheet.acctState == "out"
+                        enabled: ! tube.busy
                         onClicked: {
+                            sheet.tubeError = "";
                             sheet.accountReq = engine.request("account", {
                                 "sign_in": true
                             });
