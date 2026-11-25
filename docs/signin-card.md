@@ -4,7 +4,7 @@ Tube can use the YouTube account BBMusic is signed in with, so the user does not
 BBMusic's card, the card asks the user whether this app - by the name it sends - may use the account, and the
 answer comes back to the app: **Allow** - BBMusic's sign-in, **Cancel** - nothing. It is Tube's own card
 (`SIGNIN-CARD.md`, Tube 1.17.0) the other way round: the same request, the same answer, field for field.
-Since BBMusic 1.0.1. **For now the card answers Tube only.**
+Since BBMusic 1.0.2. **For now the card answers Tube only.**
 
 | | |
 |---|---|
@@ -257,6 +257,6 @@ fields to `version` 1 - read the ones you know.
 - **The card uses no network** and writes nothing. It asks BBMusic's engine, which a first invoke may have to
   start (a few seconds; it stops by itself after ten idle minutes); the card's process is pooled between
   invokes. BBMusic's log has the caller's install id and the outcome, never a token.
-- **No card, no entry.** A BBMusic older than 1.0.1 has no card: `check()` finds no target, and your app shows
+- **No card, no entry.** A BBMusic older than 1.0.2 has no card: `check()` finds no target, and your app shows
   no entry.
 - **State, 2026-11-25:** tried on a phone with Tube and working.

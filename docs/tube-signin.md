@@ -4,7 +4,7 @@ BBMusic can use the YouTube account Tube is signed in with, so the user does not
 card (`SIGNIN-CARD.md`, Tube 1.17.0) seen from the app that asks: what BBMusic sends, what the user sees here,
 and what BBMusic does with the answer. Here BBMusic asks and Tube gives; the other way round - Tube asking
 BBMusic - is BBMusic's own card, `signin-card.md`. BBMusic's own sign-in (a code entered at google.com/device)
-stays next to it. Since BBMusic 1.0.1.
+stays next to it. Since BBMusic 1.0.2.
 
 | | |
 |---|---|
