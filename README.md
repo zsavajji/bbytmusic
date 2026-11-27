@@ -75,7 +75,7 @@ BBMusic ships as one `.bar` with two processes:
 
 - **`bbmusicd`, the engine**, written in C++20 and cross-compiled for BB10 (QNX on ARMv7) with
   the bb10-cxx20 clang toolchain, with no Qt in it. It speaks YouTube's InnerTube
-  API to `music.youtube.com` over libcurl and wolfSSL (TLS 1.3, with its own root certificates,
+  API to `music.youtube.com` over libcurl and OpenSSL (TLS 1.3, with its own root certificates,
   since BB10's are from 2013), fetches audio by DASH ranges or SABR/UMP, decodes Opus with
   libopus and writes PCM to the speaker itself. It runs as a BB10 headless service, so the music
   outlives the UI, and holds the system's now-playing service. It keeps the queue, the history,
@@ -89,7 +89,7 @@ bytes (UMP, WebM, protobuf) have fuzz targets.
 
 ## Building
 
-You need Docker, the local image `bb10-cxx20` and `yamsergey/bb10-ndk:0.6`.
+You need Docker, the local images `bb10-cxx20:19.1.7-6-build` and `yamsergey/bb10-ndk:0.6`.
 
 ```sh
 docker build -t bbmusic-build docker   # once: the engine's toolchain and libraries
@@ -109,5 +109,5 @@ BBMusic is free software: you can redistribute it and/or modify it under the ter
 [GNU General Public License v3.0](LICENSE). Its protocol code is ported from
 [YTMusicWP](https://github.com/Yasukoisreal/YTMusicWP), which is GPL-3.0.
 
-The libraries keep their own licenses: libcurl is under the curl license, wolfSSL is GPL-3.0,
+The libraries keep their own licenses: libcurl is under the curl license, OpenSSL is Apache-2.0,
 libopus is BSD, and yyjson is MIT.

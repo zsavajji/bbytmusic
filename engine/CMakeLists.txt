@@ -24,16 +24,17 @@ endif()
 # ---- third-party libraries, as one target each ----------------------------------------------
 if(BBM_BB10)
   # zlib by its .a, BY PATH, never -lz: the phone's libz.so.2 exports a libgcc unwinder that
-  # hijacks C++ exceptions (phase0.md, gate 0.3). Order matters: curl, wolfssl, opus, libz.a.
+  # hijacks C++ exceptions (phase0.md, gate 0.3). Order matters: curl, ssl, crypto, opus, libz.a.
   set(BBM_PREFIX /opt/bbmusic)
   add_library(bbm_curl INTERFACE)
   target_include_directories(bbm_curl INTERFACE ${BBM_PREFIX}/include)
   target_compile_definitions(bbm_curl INTERFACE CURL_STATICLIB)
-  target_link_libraries(bbm_curl INTERFACE ${BBM_PREFIX}/lib/libcurl.a ${BBM_PREFIX}/lib/libwolfssl.a)
+  target_link_libraries(bbm_curl INTERFACE ${BBM_PREFIX}/lib/libcurl.a ${BBM_PREFIX}/lib/libssl.a
+    ${BBM_PREFIX}/lib/libcrypto.a)
   add_library(bbm_opus INTERFACE)
   target_include_directories(bbm_opus INTERFACE ${BBM_PREFIX}/include)
   target_link_libraries(bbm_opus INTERFACE ${BBM_PREFIX}/lib/libopus.a)
-  # libz.a and -lsocket come after curl/wolfssl/opus on the link line; bbm_syslibs is linked last.
+  # libz.a and -lsocket come after curl/ssl/crypto/opus on the link line; bbm_syslibs is linked last.
   add_library(bbm_syslibs INTERFACE)
   target_link_libraries(bbm_syslibs INTERFACE
     /opt/bb10-sdk/target/qnx6/armle-v7/usr/lib/libz.a -lsocket)
