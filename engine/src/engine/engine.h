@@ -106,6 +106,8 @@ private:
     void skip_new_track(const std::string &id);                  // mu_ held
     void skip_fetch(const std::string &id, std::vector<std::string> cats);
     void skip_check(const PlayerStatus &s);                      // not under mu_
+    // lyrics_cmd.cpp
+    Reply lyrics_command(Json req);
     // account_cmd.cpp
     Reply account_command(Json req);
     std::string account_json();   // the fields of the account event and of the command's result, no braces
@@ -143,6 +145,8 @@ private:
     SegmentCache cache_;
 
     std::mutex it_mu_;   // the InnerTube: one request at a time
+    std::mutex lyrics_mu_;   // lyrics_http_ (LRCLIB): one request at a time, from the readers
+    Http lyrics_http_;
     InnerTube yt_;
     bool visitor_shared_ = false;
     bool region_known_ = false;   // stored, chosen, or detection was tried: it is not tried again

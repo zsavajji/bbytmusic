@@ -154,6 +154,7 @@ Page {
         Label {
             text: qsTr("Nothing yet. What you listen to shows up here.")
             multiline: true
+            textStyle.textAlign: TextAlign.Center
             visible: page.asked && page.tracks.length == 0 && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
         }

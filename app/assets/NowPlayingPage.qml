@@ -1,8 +1,10 @@
 import bb.cascades 1.4
 import bb.system 1.2
+import "quiet.js" as Quiet
 
 // Now Playing, laid out as the stock BB10 player (measured from its screenshots on the Q10):
-// title and artist, a row with the album and the Repeat and Shuffle icons, the artwork with the
+// title and artist, a row with the album and the Lyrics, Favorite, Repeat and Shuffle icons, the
+// artwork (the lyrics take its place when on: LyricsView.qml) with the
 // scrubber lying over its lower edge, and Previous / Play-Pause / Next on the action bar with
 // Play-Pause as the Signature action. What YTMusicWP's player adds is in the action menu: the
 // queue, the album, the artist, the track's radio, Share, the equalizer, Properties. (No Stop:
@@ -36,6 +38,56 @@ Page {
     property string likeId: ""      // the track the flag is for
     property bool signedIn: false
     property string accountReq: ""
+    property bool lyricsOn: false   // stays on from song to song while this page lives
+    property string lyricsReq: ""
+    property string lyricsFor: ""   // the track the lyrics are for
+
+    function toggleFavorite() {
+        if (! player.track.id)
+            return;
+        if (page.favorite) {
+            engine.request("favorite", {
+                "id": player.track.id,
+                "on": false
+            });
+        } else {
+            engine.request("favorite", {
+                "item": player.track,
+                "on": true
+            });
+        }
+    }
+
+    // Asks for the lyrics of the track now playing while the view is on; the id guard makes
+    // repeated calls free.
+    function askLyrics() {
+        var id = player.track.id;
+        if (! page.lyricsOn || ! id || id == page.lyricsFor) {
+            return;
+        }
+        page.lyricsFor = id;
+        lyricsView.clear("loading");
+        page.lyricsReq = engine.request("lyrics", {
+            "id": id
+        });
+        Quiet.add(page.lyricsReq);      // the view says it when there are none: no toast
+    }
+
+    function toggleLyrics() {
+        page.lyricsOn = ! page.lyricsOn;
+        if (page.lyricsOn) {
+            page.askLyrics();
+            lyricsView.update(player.positionMs);
+        }
+    }
+
+    // The position moves every 250 ms: the slider and the lit line.
+    function onPosition() {
+        sync();
+        if (page.lyricsOn) {
+            lyricsView.update(player.positionMs);
+        }
+    }
 
     function sync() {
         if (dragging || new Date().getTime() < holdUntil) {
@@ -87,6 +139,7 @@ Page {
         sync();
         askFavorite();
         askLike();
+        askLyrics();
     }
 
     function onReply(id, ok, result, code, message) {
@@ -107,6 +160,14 @@ Page {
                     notice.body = page.infoFor == "album" ? qsTr("This track has no album page.") : qsTr("This artist has no page.");
                     notice.show();
                 }
+            }
+        } else if (id == page.lyricsReq) {
+            page.lyricsReq = "";
+            if (ok && result.id == page.lyricsFor) {
+                lyricsView.load(result);
+                lyricsView.update(player.positionMs);
+            } else if (! ok) {
+                lyricsView.clear(code == "not_found" ? "none" : "error");
             }
         } else if (id == page.favReq) {
             page.favReq = "";
@@ -145,6 +206,8 @@ Page {
             page.likeId = "";       // asked again once the account has answered
             page.favId = "";
             page.askFavorite();
+            page.lyricsFor = "";    // the engine may have restarted: ask again
+            page.askLyrics();
         }
     }
 
@@ -258,7 +321,7 @@ Page {
     // One try each: a disconnect that throws must not leave the others connected.
     function cleanup() {
         try {
-            player.positionChanged.disconnect(page.sync);
+            player.positionChanged.disconnect(page.onPosition);
         } catch (e0) {
         }
         try {
@@ -280,7 +343,7 @@ Page {
     }
 
     onCreationCompleted: {
-        player.positionChanged.connect(page.sync);
+        player.positionChanged.connect(page.onPosition);
         player.changed.connect(page.onPlayer);
         thumbs.ready.connect(page.onThumb);
         engine.reply.connect(page.onReply);
@@ -292,15 +355,6 @@ Page {
 
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
-        // Where a pushed page has Back: this page is the whole scene and has none.
-        ActionItem {
-            title: qsTr("Close")
-            imageSource: "asset:///images/ic_expand_down.png"
-            ActionBar.placement: ActionBarPlacement.OnBar
-            onTriggered: {
-                page.leave();
-            }
-        },
         ActionItem {
             title: qsTr("Previous")
             imageSource: "asset:///images/ic_previous.png"
@@ -384,19 +438,7 @@ Page {
                 key: "F"
             }
             onTriggered: {
-                if (player.track.id) {
-                    if (page.favorite) {
-                        engine.request("favorite", {
-                            "id": player.track.id,
-                            "on": false
-                        });
-                    } else {
-                        engine.request("favorite", {
-                            "item": player.track,
-                            "on": true
-                        });
-                    }
-                }
+                page.toggleFavorite();
             }
         },
         ActionItem {
@@ -487,23 +529,43 @@ Page {
             }
         ]
 
-        // Title and artist: 10 du on the Q10.
+        // Title and artist: 10 du on the Q10. Close sits at their right: on the bar it pushed
+        // Previous / Play / Next off their usual places (the user, 2026-11-27).
         Container {
             leftPadding: ui.du(2)
-            rightPadding: ui.du(2)
+            rightPadding: ui.du(1)
             topPadding: ui.du(0.5)
             bottomPadding: ui.du(0.5)
-            Label {
-                text: player.title
-                textStyle.fontSize: FontSize.Large
-                textStyle.color: Color.White
-                bottomMargin: 0
+            layout: StackLayout {
+                orientation: LayoutOrientation.LeftToRight
             }
-            Label {
-                text: player.state == "loading" ? qsTr("Loading...") : player.artist
-                textStyle.fontSize: FontSize.Small
-                textStyle.color: Color.create("#969696")
-                topMargin: 0
+            Container {
+                verticalAlignment: VerticalAlignment.Center
+                layoutProperties: StackLayoutProperties {
+                    spaceQuota: 1
+                }
+                Label {
+                    text: player.title
+                    textStyle.fontSize: FontSize.Large
+                    textStyle.color: Color.White
+                    bottomMargin: 0
+                }
+                Label {
+                    text: player.state == "loading" ? qsTr("Loading...") : player.artist
+                    textStyle.fontSize: FontSize.Small
+                    textStyle.color: Color.create("#969696")
+                    topMargin: 0
+                }
+            }
+            ImageButton {
+                defaultImageSource: "asset:///images/ic_expand_down.png"
+                accessibility.name: qsTr("Close")
+                preferredWidth: ui.du(8)
+                preferredHeight: ui.du(8)
+                verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    page.leave();
+                }
             }
         }
         Container {
@@ -531,6 +593,30 @@ Page {
                     onTapped: {
                         page.viewAlbum();
                     }
+                }
+            }
+            // The lyrics take the artwork's place; lit while they are on.
+            ImageButton {
+                defaultImageSource: "asset:///images/ic_lyrics.png"
+                accessibility.name: page.lyricsOn ? qsTr("Hide Lyrics") : qsTr("Show Lyrics")
+                opacity: page.lyricsOn ? 1.0 : 0.4
+                preferredWidth: ui.du(8)
+                preferredHeight: ui.du(8)
+                verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    page.toggleLyrics();
+                }
+            }
+            // A toggle beside Repeat (the user, 2026-11-27): lit when the track is a favourite.
+            ImageButton {
+                defaultImageSource: "asset:///images/ic_favorite.png"
+                accessibility.name: page.favorite ? qsTr("Remove from Favorites") : qsTr("Add to Favorites")
+                opacity: page.favorite ? 1.0 : 0.4
+                preferredWidth: ui.du(8)
+                preferredHeight: ui.du(8)
+                verticalAlignment: VerticalAlignment.Center
+                onClicked: {
+                    page.toggleFavorite();
                 }
             }
             ImageButton {
@@ -575,6 +661,15 @@ Page {
                 horizontalAlignment: HorizontalAlignment.Fill
                 verticalAlignment: VerticalAlignment.Fill
             }
+            LyricsView {
+                id: lyricsView
+                visible: page.lyricsOn
+                onSeekTo: {
+                    engine.request("seek", {
+                        "ms": ms
+                    });
+                }
+            }
             ActivityIndicator {
                 running: player.state == "loading"
                 visible: player.state == "loading"
@@ -591,6 +686,13 @@ Page {
                 rightPadding: ui.du(2)
                 topPadding: ui.du(1)
                 bottomPadding: ui.du(1.5)
+                attachedObjects: [
+                    LayoutUpdateHandler {
+                        onLayoutFrameChanged: {
+                            lyricsView.bottomSpace = layoutFrame.height;
+                        }
+                    }
+                ]
                 Slider {
                     id: slider
                     fromValue: 0
@@ -642,18 +744,9 @@ Page {
     }
 
     attachedObjects: [
-        ComponentDefinition {
-            id: albumPage
-            source: "AlbumPage.qml"
-        },
-        ComponentDefinition {
-            id: queuePage
-            source: "QueuePage.qml"
-        },
-        ComponentDefinition {
-            id: shelfPage
-            source: "ShelfPage.qml"
-        },
+        // albumPage, queuePage and shelfPage are the strip's (MiniPlayer.qml): a page made from a
+        // definition of this one lost its context when this page was destroyed, and its first
+        // script call crashed the app (1.0.1.75 on the Passport, View Album, 2026-11-27).
         ComponentDefinition {
             id: eqSheet
             source: "EqSheet.qml"

@@ -221,6 +221,7 @@ Page {
         Label {
             text: qsTr("No favorites yet. Add a song from its menu: it is kept on the phone and plays offline.")
             multiline: true
+            textStyle.textAlign: TextAlign.Center
             visible: page.asked && page.tracks.length == 0 && ! page.failed
             horizontalAlignment: HorizontalAlignment.Center
         }

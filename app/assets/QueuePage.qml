@@ -366,6 +366,7 @@ Page {
         Label {
             text: qsTr("The queue is empty. Play something from Search.")
             multiline: true
+            textStyle.textAlign: TextAlign.Center
             visible: page.tracks.length == 0
             horizontalAlignment: HorizontalAlignment.Center
         }

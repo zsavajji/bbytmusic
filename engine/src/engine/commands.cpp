@@ -341,6 +341,7 @@ void Engine::add_commands() {
     server_.on("favorites", [this](Json) { return favorites_command(); });
     server_.on("favorite", [this](Json req) { return favorite_command(req); });
     server_.on("skip", [this](Json req) { return skip_command(req); });
+    server_.on("lyrics", [this](Json req) { return lyrics_command(req); });
     server_.on("account", [this](Json req) { return account_command(req); });
     server_.on("thumbs", [this](Json req) {
         std::vector<std::string> urls;

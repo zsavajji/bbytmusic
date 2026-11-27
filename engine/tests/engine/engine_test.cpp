@@ -142,6 +142,8 @@ int main() {
         CHECK_EQ(parse(c.cmd("seek"), d)["error"]["code"].string(), "bad_request");
         CHECK_EQ(parse(c.cmd("jump", "\"index\":0"), d)["error"]["code"].string(), "not_found");
         CHECK_EQ(parse(c.cmd("radio"), d)["error"]["code"].string(), "not_found");   // no current track
+        CHECK_EQ(parse(c.cmd("lyrics"), d)["error"]["code"].string(), "bad_request");
+        CHECK_EQ(parse(c.cmd("lyrics", "\"id\":\"zzz\""), d)["error"]["code"].string(), "not_found");   // not in the queue
 
         // An episode can be queued, and comes back as it went in (kind, show and its page).
         CHECK(parse(c.cmd("queue_add", "\"items\":[{\"kind\":\"episode\",\"id\":\"e1\",\"title\":\"Ep 1\",\"artist\":\"A Show\",\"album_id\":\"MPSPPL1\"}]"), d)["ok"].boolean());

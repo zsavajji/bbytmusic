@@ -39,7 +39,7 @@ Sheet {
                     }
                     Label {
                         horizontalAlignment: HorizontalAlignment.Center
-                        text: qsTr("Version %1").arg("1.0.2")
+                        text: qsTr("Version %1").arg("1.0.3")
                         textStyle.base: SystemDefaults.TextStyles.SubtitleText
                         textStyle.color: Color.create("#969696")
                     }
@@ -47,6 +47,7 @@ Sheet {
                         horizontalAlignment: HorizontalAlignment.Center
                         text: qsTr("An unofficial YouTube Music client for BlackBerry 10.")
                         multiline: true
+                        textStyle.textAlign: TextAlign.Center
                     }
                 }
                 Header {

@@ -2,7 +2,7 @@
 <qnx xmlns="http://www.qnx.com/schemas/application/1.0">
     <id>com.zsavajji.bbmusic</id>
     <name>BBMusic</name>
-    <versionNumber>1.0.2</versionNumber>
+    <versionNumber>1.0.3</versionNumber>
     <!-- Overwritten at packaging by -buildIdFile (scripts/build-app.sh). -->
     <buildId>1</buildId>
     <description>An unofficial YouTube Music client.</description>

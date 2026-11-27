@@ -1,5 +1,6 @@
 import bb.cascades 1.4
 import bb.system 1.2
+import "quiet.js" as Quiet
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
 // bar of a tab's first page was all but empty), and there are four, Home, Search, Queue and My
@@ -136,8 +137,10 @@ TabbedPane {
         }
         // Every failed command and every track that could not be played: one toast, here.
         engine.reply.connect(function (id, ok, result, code, message) {
-            // Not for a dropped link: the bar at the top of each page says that.
-            if (!ok && code != "disconnected") {
+            // Not for a dropped link: the bar at the top of each page says that. Nor for a request
+            // whose page shows the failure itself (Quiet).
+            var own = Quiet.take(id);
+            if (!ok && code != "disconnected" && !own) {
                 // "network" covers both an unreachable service and an answer the engine could
                 // not read: the engine's own words say which.
                 var text = code == "signed_out" ? qsTr("Sign in to YouTube first, in Settings.") : (message ? message : code);

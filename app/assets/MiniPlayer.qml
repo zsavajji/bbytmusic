@@ -119,6 +119,21 @@ Container {
             id: nowPlaying
             source: "NowPlayingPage.qml"
         },
+        // What the player opens on navPane. Here, not in the player: the player is destroyed as it
+        // leaves, and a page made from its definitions would lose its QML context with it. The
+        // strip lives as long as the page under the one pushed.
+        ComponentDefinition {
+            id: albumPage
+            source: "AlbumPage.qml"
+        },
+        ComponentDefinition {
+            id: queuePage
+            source: "QueuePage.qml"
+        },
+        ComponentDefinition {
+            id: shelfPage
+            source: "ShelfPage.qml"
+        },
         LayoutUpdateHandler {
             onLayoutFrameChanged: {
                 mini.stripWidth = layoutFrame.width;

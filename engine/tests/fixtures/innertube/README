@@ -45,3 +45,8 @@ search_all_podcast.json search        same query, no params: the flat layout wit
                                       three Episode rows and more shows
 search_all_episode.json search        "query":"serial"   (no params: the top result is an episode, a musicCardShelfRenderer whose title
                                       links to MPED..., with its watchEndpoint on the Play button)
+
+Added with the lyrics (2026-11-27), written by hand, not recorded: the lyrics tab's browse answer (the shape of
+"browseId":"MPLYt..." with WEB_REMIX) with made-up lines, the repository being public.
+browse_lyrics.json       a musicDescriptionShelfRenderer: the text and the footer "Source: Musixmatch"
+browse_lyrics_none.json  a messageRenderer, as when the song has no lyrics
