@@ -12,6 +12,7 @@ On 2026-11-20/21 the user tested Phase 4 builds on the Q10 live, one short remar
 - A container is only as wide as its content: a `Button` with `HorizontalAlignment.Fill` stays narrow unless its parents fill too.
 - `TitleBar` needs `scrollBehavior: Sticky` on a page with a strip at the bottom.
 - The phone's own `grep` is unreliable with `\|`: copy the log off (`ssh … cat`) and grep on the Mac.
+- The Classic's Back belt key, on a page that is the scene (no NavigationPane to pop): `DeviceShortcut { type: DeviceShortcuts.BackTap }` (Cascades 1.4) gets it; `SystemShortcuts.PreviousSection`, the same key code, never fires and the app goes to the background (2026-11-28, 1.0.3.115/.116).
 - `git add app/assets` sweeps in the user's uncommitted version bump (`AboutSheet.qml`): add files by name.
 
 **Why:** nobody but the user can see the screen; each wrong guess is a round trip for them.
