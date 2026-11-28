@@ -22,7 +22,7 @@ public:
     // Called on the fetch thread with the url and size as requested, and the file now in the cache.
     using Ready = std::function<void(const std::string &url, int size, const std::string &file)>;
 
-    Thumbs(std::string dir, Ready ready);   // makes the folder; trims it; starts the fetch thread
+    Thumbs(std::string dir, Ready ready);   // makes the folder; starts the fetch thread, which trims it first
     ~Thumbs();                              // cancels a fetch in flight and joins
     Thumbs(const Thumbs &) = delete;
     Thumbs &operator=(const Thumbs &) = delete;

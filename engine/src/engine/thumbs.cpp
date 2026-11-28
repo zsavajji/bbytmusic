@@ -32,7 +32,9 @@ bool has_suffix(const std::string &s, const std::string &suf) {
     return s.size() >= suf.size() && s.compare(s.size() - suf.size(), suf.size(), suf) == 0;
 }
 
-// ponytail: a count cap, not bytes; LRU by mtime only (a hit does not touch the file).
+// ponytail: a count cap, not bytes; LRU by mtime only (a hit does not touch the file). On the fetch
+// thread, so the engine does not wait for it (a stat per file: 1.7 s for 1,156 on the Classic). A
+// file found by request() while it runs may be dropped just after: the next request fetches it again.
 void trim(const std::string &dir) {
     std::vector<std::pair<time_t, std::string>> files;
     if (DIR *d = ::opendir(dir.c_str())) {
@@ -73,7 +75,6 @@ std::string Thumbs::sized_url(const std::string &url, int size) {
 
 Thumbs::Thumbs(std::string dir, Ready ready) : dir_(std::move(dir)), ready_(std::move(ready)) {
     ::mkdir(dir_.c_str(), 0700);
-    trim(dir_);
     thread_ = std::thread([this] { run(); });
 }
 
@@ -121,6 +122,7 @@ std::map<std::string, std::string> Thumbs::request(const std::vector<std::string
 }
 
 void Thumbs::run() {
+    trim(dir_);   // before any fetch: its .tmp files are not this run's
     std::unique_lock<std::mutex> lk(m_);
     while (!quit_) {
         if (queue_.empty()) {
