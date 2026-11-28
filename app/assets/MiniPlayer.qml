@@ -30,6 +30,7 @@ Container {
             return;
         }
         openedAt = now;
+        engine.note("player: tap");
         // A child of the scene: a page without a parent would become the Application's own when
         // it takes the screen, and be deleted under its own feet when it gives the screen back.
         var p = nowPlaying.createObject(Application.scene);

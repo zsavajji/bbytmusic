@@ -41,6 +41,9 @@ Page {
     property bool lyricsOn: false   // stays on from song to song while this page lives
     property string lyricsReq: ""
     property string lyricsFor: ""   // the track the lyrics are for
+    // The page asks the engine nothing until it has risen (the user, 2026-11-28: "the ui is
+    // unrelated to that and can come up"); Favorite and Like wait for their answers, disabled.
+    property bool risen: false
 
     function toggleFavorite() {
         if (! player.track.id)
@@ -113,7 +116,7 @@ Page {
     // Asks whether the track now playing is a favorite; the id guard makes repeated calls free.
     function askFavorite() {
         var id = player.track.id;
-        if (! id || id == page.favId) {
+        if (! page.risen || ! id || id == page.favId) {
             return;
         }
         page.favId = id;
@@ -126,7 +129,7 @@ Page {
     // Asks YouTube whether the account likes the track now playing; nothing to ask when signed out.
     function askLike() {
         var id = player.track.id;
-        if (! id || ! page.signedIn || id == page.likeId) {
+        if (! page.risen || ! id || ! page.signedIn || id == page.likeId) {
             return;
         }
         page.likeId = id;
@@ -203,7 +206,7 @@ Page {
             page.likeId = "";
             page.liked = false;
             page.askLike();
-        } else if (name == "status") {
+        } else if (name == "status" && page.risen) {
             page.accountReq = engine.request("account", {});
             page.likeId = "";       // asked again once the account has answered
             page.favId = "";
@@ -350,8 +353,8 @@ Page {
         thumbs.ready.connect(page.onThumb);
         engine.reply.connect(page.onReply);
         engine.event.connect(page.onEvent);
-        page.accountReq = engine.request("account", {});
-        page.onPlayer();
+        engine.note("player: made");
+        page.onPlayer();    // the art and the slider now; the questions once the page is up
     }
 
 
@@ -401,6 +404,15 @@ Page {
 
     // The letters of the actions now in the drawer, kept.
     shortcuts: [
+        // The Classic's Back key: no pane here to take it, so it closes the player as Close does
+        // (the user, 2026-11-28). Not SystemShortcuts.PreviousSection, the same key code: that
+        // one never fired, and the system put the app in the background (1.0.3.115).
+        DeviceShortcut {
+            type: DeviceShortcuts.BackTap
+            onTriggered: {
+                page.leave();
+            }
+        },
         Shortcut {
             key: "A"
             onTriggered: {
@@ -467,6 +479,7 @@ Page {
         ActionItem {
             title: page.favorite ? qsTr("Remove from Favorites") : qsTr("Add to Favorites")
             imageSource: "asset:///images/ic_favorite.png"
+            enabled: page.favId != "" && page.favReq == ""
             ActionBar.placement: ActionBarPlacement.InOverflow
             shortcuts: Shortcut {
                 key: "F"
@@ -479,7 +492,7 @@ Page {
             // One action for both (the user, 2026-11-20): it says what a tap will do.
             title: page.liked ? qsTr("Remove Like on YouTube") : qsTr("Like on YouTube")
             imageSource: "asset:///images/ic_like.png"
-            enabled: page.signedIn
+            enabled: page.signedIn && page.likeId != "" && page.likeReq == "" && page.likeSetReq == ""
             ActionBar.placement: ActionBarPlacement.InOverflow
             onTriggered: {
                 if (player.track.id) {
@@ -544,6 +557,11 @@ Page {
                 }
                 onEnded: {
                     page.actionBarVisibility = ChromeVisibility.Default;
+                    engine.note("player: up");
+                    page.risen = true;
+                    page.accountReq = engine.request("account", {});    // then the Like
+                    page.askFavorite();
+                    page.askLyrics();
                 }
             },
             ParallelAnimation {
@@ -646,6 +664,7 @@ Page {
                 defaultImageSource: "asset:///images/ic_favorite.png"
                 accessibility.name: page.favorite ? qsTr("Remove from Favorites") : qsTr("Add to Favorites")
                 opacity: page.favorite ? 1.0 : 0.4
+                enabled: page.favId != "" && page.favReq == ""
                 preferredWidth: ui.du(8)
                 preferredHeight: ui.du(8)
                 verticalAlignment: VerticalAlignment.Center

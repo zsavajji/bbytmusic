@@ -36,6 +36,8 @@ public:
     // Every id gets one reply(): the engine's, or, if the link drops first, a failure with the
     // code "disconnected".
     Q_INVOKABLE QString request(const QString &cmd, const QVariantMap &fields);
+    // A line in bbmusic-ui.log from QML ("ui " + text): the steps of a slow page.
+    Q_INVOKABLE void note(const QString &text);
 
 signals:
     void connectedChanged();
@@ -53,6 +55,7 @@ private slots:
     void socketError();
     void lost();
     void wentDown();
+    void beat();
 
 private:
     void startEngine();
@@ -63,6 +66,9 @@ private:
     QTcpSocket m_socket;
     QTimer m_retry;
     QTimer m_downTimer;
+    // ponytail: diagnostic for the 4 s stall of 2026-11-28; remove once it is explained.
+    QTimer m_beat;
+    QElapsedTimer m_lastBeat;
     QElapsedTimer m_began;
     QElapsedTimer m_invokedAt;
     bb::system::InvokeManager *m_invoker;

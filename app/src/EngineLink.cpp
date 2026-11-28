@@ -56,6 +56,11 @@ EngineLink::EngineLink(QObject *parent)
     connect(&m_retry, SIGNAL(timeout()), this, SLOT(attempt()));
     m_downTimer.setSingleShot(true);
     connect(&m_downTimer, SIGNAL(timeout()), this, SLOT(wentDown()));
+    // A beat every 250 ms: a late one means the main thread was held (it reads the engine's socket too).
+    m_lastBeat.start();
+    m_beat.setInterval(250);
+    connect(&m_beat, SIGNAL(timeout()), this, SLOT(beat()));
+    m_beat.start();
     connect(&m_socket, SIGNAL(connected()), this, SLOT(socketConnected()));
     connect(&m_socket, SIGNAL(readyRead()), this, SLOT(readLines()));
     connect(&m_socket, SIGNAL(disconnected()), this, SLOT(lost()));
@@ -224,6 +229,18 @@ void EngineLink::handleLine(const QByteArray &line)
         emit event("status", result.toMap());
     else if (ok && id == m_queueId)
         emit event("queue_snapshot", result.toMap());
+}
+
+void EngineLink::beat()
+{
+    const qint64 gap = m_lastBeat.restart();
+    if (gap > 750)
+        uiLog(QString("stall: main thread held %1 ms").arg(gap));
+}
+
+void EngineLink::note(const QString &text)
+{
+    uiLog("ui " + text);
 }
 
 void EngineLink::writeLine(const QByteArray &json, const QString &logAs)
