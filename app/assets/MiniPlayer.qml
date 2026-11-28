@@ -15,7 +15,11 @@ Container {
     property variant opening        // the player's page, between the tap and the moment it takes the screen
     visible: player.loaded
     horizontalAlignment: HorizontalAlignment.Fill
-    preferredHeight: ui.du(7.2)     // a fifth taller than the first strip (the user, 2026-11-14)
+    // 7.2 du was a fifth taller than the first strip (the user, 2026-11-14); on 2026-11-27 they asked
+    // for twice that on the Passport (the only 1440 px wide screen) and 1.2 times on the others.
+    preferredHeight: mini.stripWidth >= 1440 ? ui.du(14.4) : ui.du(8.64)
+    property double caret: mini.stripWidth >= 1440 ? ui.du(5) : ui.du(3.6)   // the hint grows with the strip (it was 3 du)
+    property int textScale: mini.stripWidth >= 1440 ? 110 : 100   // %, apparently of Medium rather than SmallText: 200 filled the strip (1.0.3.101), 135 was still too big (.103)
     background: Color.create("#262626")
     layout: DockLayout {
     }
@@ -70,6 +74,8 @@ Container {
             text: player.title
             verticalAlignment: VerticalAlignment.Center
             textStyle.base: SystemDefaults.TextStyles.SmallText
+            textStyle.fontSize: FontSize.PercentageValue
+            textStyle.fontSizeValue: mini.textScale
             textStyle.color: Color.White
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 1
@@ -78,9 +84,11 @@ Container {
         // Elapsed and total, at the far end (the user, 2026-11-14). On a page with a Signature
         // action a long title runs behind that button; the user is fine with that.
         Label {
-            text: player.fmt(player.positionMs) + " / " + player.fmt(player.durationMs)
+            text: player.fmt(player.positionMs) + (player.durationMs > 0 ? " / " + player.fmt(player.durationMs) : "")
             verticalAlignment: VerticalAlignment.Center
             textStyle.base: SystemDefaults.TextStyles.SmallText
+            textStyle.fontSize: FontSize.PercentageValue
+            textStyle.fontSizeValue: mini.textScale
             textStyle.color: Color.create("#969696")
         }
         // A tap opens Now Playing, and nothing else says so: this is the hint, not a button (the
@@ -88,9 +96,9 @@ Container {
         ImageView {
             imageSource: "asset:///images/ic_expand_up.png"
             filterColor: Color.create("#969696")
-            preferredWidth: ui.du(3)
-            preferredHeight: ui.du(3)
-            minWidth: ui.du(3)
+            preferredWidth: mini.caret
+            preferredHeight: mini.caret
+            minWidth: mini.caret
             scalingMethod: ScalingMethod.AspectFit
             loadEffect: ImageViewLoadEffect.None
             verticalAlignment: VerticalAlignment.Center

@@ -1,5 +1,6 @@
 import bb.cascades 1.4
 import bb.system 1.2
+import bbmusic 1.0
 import "quiet.js" as Quiet
 
 // The root. The tabs sit on the action bar (the user, 2026-11-14: with them in the tab menu the
@@ -16,6 +17,32 @@ import "quiet.js" as Quiet
 TabbedPane {
     id: root
     showTabsOnActionBar: true
+    property variant dockPage       // docked mode's page while it is up (DockPage.qml)
+    property bool dockAuto: false   // it opened by itself, for a display: it closes by itself too
+
+    // Docked mode for an external display (docs/plan/docked.md). `auto`: opened for a display, so
+    // the display going away closes it.
+    function dock(auto) {
+        if (dockPage || ! player.loaded) {
+            return;
+        }
+        var p = dockDef.createObject(root);
+        if (p) {
+            p.host = root;
+            root.dockPage = p;
+            root.dockAuto = auto;
+            // Not at once: the scene is not swapped from inside an action's handler (MiniPlayer
+            // waits the same way before Now Playing takes the screen).
+            dockTimer.start();
+        }
+    }
+
+    function dockClosed(p) {
+        if (p == dockPage) {
+            dockPage = undefined;
+            dockAuto = false;
+        }
+    }
 
     // A page that was pushed is done with: let it drop its signal connections, then free it.
     function retire(page) {
@@ -164,6 +191,13 @@ TabbedPane {
                 errorToast.show();
             }
         });
+        externalDisplay.attachedChanged.connect(function (on) {
+            if (on) {
+                root.dock(true);
+            } else if (root.dockPage && root.dockAuto) {
+                root.dockPage.leave();
+            }
+        });
         player.errorOccurred.connect(function (message) {
             errorToast.body = message;
             errorToast.show();
@@ -186,6 +220,22 @@ TabbedPane {
         ComponentDefinition {
             id: aboutSheet
             source: "AboutSheet.qml"
+        },
+        // Here and not on Now Playing: a page made from Now Playing's definitions loses its context
+        // when Now Playing is destroyed (see MiniPlayer.qml).
+        ComponentDefinition {
+            id: dockDef
+            source: "DockPage.qml"
+        },
+        Timer {
+            id: dockTimer
+            singleShot: true
+            interval: 220
+            onTimeout: {
+                if (root.dockPage) {
+                    root.dockPage.present();
+                }
+            }
         }
     ]
 }

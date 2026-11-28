@@ -156,6 +156,9 @@ ICONS = {
     # A star (the favourites, kept on the phone), a heart (a like, on YouTube), books (the library).
     "ic_favorite": any_of(*[tri(0.50, 0.53, *STAR[i], *STAR[(i + 1) % 10]) for i in range(10)]),
     "ic_like": any_of(circle(0.36, 0.38, 0.16), circle(0.64, 0.38, 0.16), tri(0.215, 0.45, 0.785, 0.45, 0.50, 0.82)),
+    # A screen on a stand: docked mode, for a TV.
+    "ic_tv": any_of(minus(rrect(0.12, 0.18, 0.88, 0.68, 0.07), rrect(0.12 + W, 0.18 + W, 0.88 - W, 0.68 - W, 0.03)),
+                    seg(0.50, 0.68, 0.50, 0.80, W), seg(0.32, 0.82, 0.68, 0.82, W)),
     "ic_library": any_of(rect(0.18, 0.22, 0.30, 0.80), rect(0.37, 0.22, 0.49, 0.80), seg(0.60, 0.28, 0.76, 0.76, 0.11)),
 }
 
@@ -266,6 +269,11 @@ out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "app", "ass
 os.makedirs(out, exist_ok=True)
 for name, shape in ICONS.items():
     icon(os.path.join(out, name + ".png"), shape)
+# Docked mode's buttons, drawn at the Passport's size (24 du = 432 px, 10 du = 180 px): the 81 px
+# ones stretched that far were soft (the user, 2026-11-27).
+for name, size in (("ic_play", 432), ("ic_pause", 432), ("ic_previous", 432), ("ic_next", 432),
+                   ("ic_lyrics", 180), ("ic_favorite", 180)):
+    icon(os.path.join(out, name + "_big.png"), ICONS[name], size)
 placeholder(os.path.join(out, "art_none.png"), 120)
 placeholder(os.path.join(out, "art_none_large.png"), 360)
 

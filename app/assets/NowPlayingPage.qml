@@ -94,7 +94,9 @@ Page {
             return;
         }
         setting = true;
-        slider.value = Math.min(player.positionMs, slider.toValue);
+        // A restored track may not know its length until it plays (Home's items come without it):
+        // at the start, not at the end of a slider that runs to 1 (the user, 2026-11-27).
+        slider.value = player.durationMs > 0 ? Math.min(player.positionMs, slider.toValue) : 0;
         setting = false;
     }
 
@@ -353,6 +355,68 @@ Page {
     }
 
 
+    // The drawer from the top: each scene has its own (the tabs' one is empty here), and four
+    // actions fit beside nothing else (the user, 2026-11-27: "move … inside there when in now playing").
+    Menu.definition: MenuDefinition {
+        // On screen: Radio, Album, Artist, Docked Mode (the user, 2026-11-27). The drawer puts the
+        // first action in the left corner, the second in the right one, the rest between them in
+        // order: so Docked Mode is second here (1.0.3.93, in list order, showed Radio, Artist, Dock, Album).
+        actions: [
+            ActionItem {
+                title: qsTr("Start Radio")
+                imageSource: "asset:///images/ic_radio.png"
+                enabled: player.track.kind != "episode"
+                onTriggered: {
+                    if (player.track.id) {
+                        engine.request("radio", {});
+                    }
+                }
+            },
+            ActionItem {
+                title: qsTr("Docked Mode")
+                imageSource: "asset:///images/ic_tv.png"
+                onTriggered: {
+                    // The root owns the definition (backScene is the TabbedPane).
+                    if (page.backScene && page.backScene.dock) {
+                        page.backScene.dock(false);
+                    }
+                }
+            },
+            ActionItem {
+                title: player.track.kind == "episode" ? qsTr("View Podcast") : qsTr("View Album")
+                imageSource: "asset:///images/ic_album.png"
+                onTriggered: {
+                    page.viewAlbum();
+                }
+            },
+            ActionItem {
+                title: qsTr("View Artist")
+                imageSource: "asset:///images/ic_artist.png"
+                onTriggered: {
+                    page.viewArtist();
+                }
+            }
+        ]
+    }
+
+    // The letters of the actions now in the drawer, kept.
+    shortcuts: [
+        Shortcut {
+            key: "A"
+            onTriggered: {
+                page.viewAlbum();
+            }
+        },
+        Shortcut {
+            key: "D"
+            onTriggered: {
+                if (page.backScene && page.backScene.dock) {
+                    page.backScene.dock(false);
+                }
+            }
+        }
+    ]
+
     // Letter shortcuts are safe here: no text field on this page.
     actions: [
         ActionItem {
@@ -398,36 +462,6 @@ Page {
             }
             onTriggered: {
                 page.showQueue();
-            }
-        },
-        ActionItem {
-            title: player.track.kind == "episode" ? qsTr("View Podcast") : qsTr("View Album")
-            imageSource: "asset:///images/ic_album.png"
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            shortcuts: Shortcut {
-                key: "A"
-            }
-            onTriggered: {
-                page.viewAlbum();
-            }
-        },
-        ActionItem {
-            title: qsTr("View Artist")
-            imageSource: "asset:///images/ic_artist.png"
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            onTriggered: {
-                page.viewArtist();
-            }
-        },
-        ActionItem {
-            title: qsTr("Start Radio")
-            imageSource: "asset:///images/ic_radio.png"
-            enabled: player.track.kind != "episode"
-            ActionBar.placement: ActionBarPlacement.InOverflow
-            onTriggered: {
-                if (player.track.id) {
-                    engine.request("radio", {});
-                }
             }
         },
         ActionItem {
@@ -560,8 +594,8 @@ Page {
             ImageButton {
                 defaultImageSource: "asset:///images/ic_expand_down.png"
                 accessibility.name: qsTr("Close")
-                preferredWidth: ui.du(8)
-                preferredHeight: ui.du(8)
+                preferredWidth: ui.du(6)        // 8 du was too big beside the title (the user, 2026-11-27)
+                preferredHeight: ui.du(6)
                 verticalAlignment: VerticalAlignment.Center
                 onClicked: {
                     page.leave();
@@ -734,7 +768,7 @@ Page {
                     }
                     // What is left, as the stock player counts it.
                     Label {
-                        text: "-" + player.fmt(Math.max(0, player.durationMs - (page.dragging ? slider.immediateValue : player.positionMs)))
+                        text: player.durationMs > 0 ? "-" + player.fmt(Math.max(0, player.durationMs - (page.dragging ? slider.immediateValue : player.positionMs))) : ""
                         textStyle.fontSize: FontSize.XSmall
                         textStyle.color: Color.create("#969696")
                     }
