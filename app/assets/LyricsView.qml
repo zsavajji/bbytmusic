@@ -14,6 +14,7 @@ Container {
     property variant lines: []          // [{ms, text}] as the engine sent them
     property double downY: 0
     property double bottomSpace: 0     // the scrubber's height: the lines stop above it (the user, 2026-11-27)
+    property bool big: false            // docked mode's style (DockPage.qml), carried in each row: read as ListItem.view.big it left them smaller (1.0.3.94)
     signal seekTo(int ms)
 
     horizontalAlignment: HorizontalAlignment.Fill
@@ -34,13 +35,20 @@ Container {
 
     // The engine's answer: the lines, then the credit.
     function load(result) {
+        // Docked mode: synced lines or nothing (the user, 2026-11-27: "either synchro mode or nothing").
+        if (view.big && ! result.synced) {
+            clear("none");
+            return;
+        }
         clear("");
         var rows = [];
         for (var i = 0; i < result.lines.length; ++i) {
             rows.push({
                 "text": result.lines[i].text,
                 "kind": result.synced ? "line" : "plain",
-                "on": false
+                "on": false,
+                "state": "next",
+                "big": view.big
             });
         }
         if (result.credit) {
@@ -54,17 +62,22 @@ Container {
         model.append(rows);
     }
 
-    function light(i, on) {
+    // state: "past" (sung), "now" or "next".
+    function light(i, state) {
         model.replace(i, {
             "text": view.lines[i].text,
             "kind": "line",
-            "on": on
+            "on": state == "now",
+            "state": state,
+            "big": view.big
         });
     }
 
     function follow() {
         if (view.line >= 0) {
-            list.scrollToItem([ Math.max(0, view.line - 2) ], ScrollAnimation.Smooth);
+            // Docked mode's lines wrap on two or three rows: two of them above pushed the current
+            // one under the buttons (1.0.3.98), so one only.
+            list.scrollToItem([ Math.max(0, view.line - (view.big ? 1 : 2)) ], ScrollAnimation.Smooth);
         }
     }
 
@@ -89,12 +102,13 @@ Container {
         if (lo == view.line) {
             return;
         }
-        if (view.line >= 0) {
-            light(view.line, false);
-        }
+        // Every line between the old and the new one changes side: one or two rows as the song
+        // goes on, more after a seek.
+        var from = Math.max(0, Math.min(view.line, lo));
+        var to = Math.max(view.line, lo);
         view.line = lo;
-        if (lo >= 0) {
-            light(lo, true);
+        for (var i = from; i <= to; ++i) {
+            light(i, i < lo ? "past" : (i == lo ? "now" : "next"));
         }
         if (view.autoSync) {
             follow();
@@ -107,7 +121,7 @@ Container {
         verticalAlignment: VerticalAlignment.Fill
         bottomPadding: view.bottomSpace
         Container {
-            visible: view.synced
+            visible: view.synced && ! view.big
             horizontalAlignment: HorizontalAlignment.Fill
             topPadding: ui.du(1)
             rightPadding: ui.du(2)
@@ -148,7 +162,7 @@ Container {
                 if (event.touchType == TouchType.Down) {
                     view.downY = event.windowY;
                 } else if (event.touchType == TouchType.Move || event.touchType == TouchType.Cancel) {
-                    if (Math.abs(event.windowY - view.downY) > ui.du(3)) {
+                    if (! view.big && Math.abs(event.windowY - view.downY) > ui.du(3)) {
                         view.autoSync = false;
                     }
                 }
@@ -167,16 +181,19 @@ Container {
                     Container {
                         leftPadding: ui.du(3)
                         rightPadding: ui.du(3)
-                        topPadding: ui.du(2)
-                        bottomPadding: ui.du(2)
+                        topPadding: ListItemData.big ? 0 : ui.du(2)
+                        bottomPadding: ListItemData.big ? 0 : ui.du(2)
                         Label {
                             text: ListItemData.text
                             multiline: true
                             horizontalAlignment: HorizontalAlignment.Fill
                             textStyle.textAlign: TextAlign.Left
-                            textStyle.fontSize: ListItemData.on ? FontSize.Large : FontSize.Medium
+                            // Docked mode, as the user's example (2026-11-27): one size, lines close
+                            // together, sung ones faded white, the current one white, the coming ones dark.
+                            textStyle.fontSize: ListItemData.big ? FontSize.XXLarge : (ListItemData.on ? FontSize.Large : FontSize.Medium)
                             textStyle.fontWeight: FontWeight.Bold
-                            textStyle.color: ListItemData.on ? Color.White : Color.create("#969696")
+                            textStyle.color: ListItemData.on ? Color.White : (ListItemData.big ? (ListItemData.state == "past" ? Color.White : Color.Black) : Color.create("#969696"))
+                            opacity: ListItemData.big && ! ListItemData.on ? (ListItemData.state == "past" ? 0.55 : 0.7) : 1.0
                         }
                     }
                 },
@@ -192,7 +209,7 @@ Container {
                             multiline: true
                             horizontalAlignment: HorizontalAlignment.Fill
                             textStyle.textAlign: TextAlign.Left
-                            textStyle.fontSize: FontSize.Medium
+                            textStyle.fontSize: ListItemData.big ? FontSize.XLarge : FontSize.Medium
                             textStyle.fontWeight: FontWeight.Bold
                             textStyle.color: Color.White
                         }
@@ -221,7 +238,7 @@ Container {
 
     Label {
         text: view.phase == "none" ? qsTr("No lyrics for this song") : qsTr("Lyrics could not be loaded")
-        visible: view.phase == "none" || view.phase == "error"
+        visible: ! view.big && (view.phase == "none" || view.phase == "error")
         multiline: true
         horizontalAlignment: HorizontalAlignment.Center
         verticalAlignment: VerticalAlignment.Center

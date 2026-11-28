@@ -44,6 +44,7 @@ void Engine::on_event(const PlayerEvent &e) {
         post([this, s] {
             np_update(s, false);
             save_state(s);
+            save_duration(s);
         });
         break;
     }

@@ -1,6 +1,7 @@
 #include <bb/cascades/AbstractPane>
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
+#include <bb/device/DisplayInfo>
 #include <bb/system/ApplicationStartupMode>
 #include <bb/system/InvokeManager>
 #include <QDir>
@@ -67,6 +68,8 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     PlayerState player(&app);
     Thumbs thumbs(&engine, &app);
     TubeSignIn tube(&engine, &app);
+    // Made here: QML can only make a DisplayInfo for the primary display (docs/plan/docked.md).
+    bb::device::DisplayInfo externalDisplay(bb::device::DisplayInfo::secondaryDisplayId(), &app);
     QObject::connect(&engine, SIGNAL(event(QString,QVariantMap)),
                      &player, SLOT(onEvent(QString,QVariantMap)));
 
@@ -86,6 +89,7 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     document->setContextProperty("player", &player);
     document->setContextProperty("thumbs", &thumbs);
     document->setContextProperty("tube", &tube);
+    document->setContextProperty("externalDisplay", &externalDisplay);
     if (card)
         document->setContextProperty("card", card);
     AbstractPane *root = document->createRootObject<AbstractPane>();

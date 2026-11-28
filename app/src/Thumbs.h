@@ -27,6 +27,10 @@ public:
     // for (0: as the url says).
     Q_INVOKABLE QString file(const QString &url, int size);
 
+    // The picture's average colour at a middle lightness, "#rrggbb", for a backdrop that both
+    // white and dark text read on (docked mode's lyrics); "" when the file cannot be read.
+    Q_INVOKABLE QString tint(const QString &fileUrl) const;
+
 signals:
     void ready(QString url, int size, QString file);
 

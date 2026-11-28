@@ -134,6 +134,7 @@ private:
     void restore();
     void save_queue();                                           // worker
     void save_state(const PlayerStatus &s);                      // worker
+    void save_duration(const PlayerStatus &s);                   // worker
     Item item_for(const Track &t);                               // mu_ held
 
     static constexpr int kArtSize = 544;   // the cover now-playing asks for: the file Now Playing shows

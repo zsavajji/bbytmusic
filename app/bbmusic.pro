@@ -5,7 +5,7 @@ TEMPLATE = lib
 TARGET = bbmusic
 CONFIG += qt warn_on release plugin
 QT += declarative network
-LIBS += -lbbcascades -lbbdata -lbbsystem -lbb -lbps
+LIBS += -lbbcascades -lbbdata -lbbdevice -lbbsystem -lbb -lbps
 QMAKE_CXXFLAGS += -Wno-psabi
 # NEON (every BB10 CPU has it; qcc passes -mcpu=cortex-a9 without it), and the spec's -fstack-protector-all as plain
 # -fstack-protector (functions with local buffers keep their guard), as HyperBerry's 8a8ed08 and Tengram's bd82509.

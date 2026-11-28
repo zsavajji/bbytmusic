@@ -283,6 +283,23 @@ void Engine::save_state(const PlayerStatus &s) {
     if (db_ok_ && !save_queue_state(db_, {s.index, s.position_ms}, err)) log_warn("store: " + err);
 }
 
+// A track from a feed (Home's Quick picks) comes without its length, and the stream tells it once
+// it plays: kept, so that a restart does not bring the track back with a length of 0 (Now Playing's
+// slider then sat at its end, the user, 2026-11-27).
+void Engine::save_duration(const PlayerStatus &s) {
+    if (!db_ok_ || s.duration_ms <= 0 || s.track_id.empty()) return;
+    Item i;
+    {
+        std::lock_guard<std::mutex> lk(mu_);
+        auto it = items_.find(s.track_id);
+        if (it == items_.end() || it->second.duration_s > 0) return;
+        it->second.duration_s = int(s.duration_ms / 1000);
+        i = it->second;
+    }
+    std::string err;
+    if (!upsert_track(db_, to_row(i), err)) log_warn("store: " + err);
+}
+
 void Engine::history_end() {
     if (!hist_id_.empty() && hist_ms_ > 0 && db_ok_) {
         post([this, id = hist_id_, ms = hist_ms_] {

@@ -2,6 +2,11 @@
 
 #include "EngineLink.h"
 
+#include <QColor>
+#include <QImage>
+#include <QImageReader>
+#include <QUrl>
+
 static QString keyOf(const QString &url, int size)
 {
     return QString::number(size) + "|" + url;
@@ -103,4 +108,30 @@ void Thumbs::onConnectedChanged()
         if (!list.contains(url))
             list.append(url);
     }
+}
+
+QString Thumbs::tint(const QString &fileUrl) const
+{
+    // A JPEG decodes straight to 16 x 16: no full-size picture in memory for an average.
+    QImageReader reader(QUrl(fileUrl).toLocalFile());
+    reader.setScaledSize(QSize(16, 16));
+    const QImage image = reader.read();
+    if (image.isNull())
+        return QString();
+    qint64 r = 0, g = 0, b = 0;
+    for (int y = 0; y < image.height(); ++y) {
+        for (int x = 0; x < image.width(); ++x) {
+            const QRgb p = image.pixel(x, y);
+            r += qRed(p);
+            g += qGreen(p);
+            b += qBlue(p);
+        }
+    }
+    const int n = image.width() * image.height();
+    QColor c(int(r / n), int(g / n), int(b / n));
+    // ponytail: a plain average, often muddy; take the most saturated cluster if it looks dull.
+    qreal h, s, l;
+    c.getHslF(&h, &s, &l);
+    c.setHslF(h < 0 ? 0 : h, qMin(qreal(1), s * qreal(1.3)), qreal(0.38));
+    return c.name();
 }
