@@ -413,6 +413,18 @@ int main() {
         std::string err;
         CHECK(e->start(err));
         const auto t0 = std::chrono::steady_clock::now();
+        e->run();
+        const int64_t took = etest::ms_since(t0);
+        CHECK(took >= 1000 && took < 4000);
+        CHECK(!exists(g_dir + "/engine.json"));
+    }
+
+    // The last client leaves with nothing playing: the engine goes with it, not after idle_exit_ms.
+    {
+        auto e = make_engine(8000);
+        std::string err;
+        CHECK(e->start(err));
+        const auto t0 = std::chrono::steady_clock::now();
         std::thread t([&] { e->run(); });
         {
             Client c(e->port());   // a client holds it open
@@ -422,8 +434,59 @@ int main() {
         }
         t.join();
         const int64_t took = etest::ms_since(t0);
-        CHECK(took >= 2500 && took < 6000);
+        CHECK(took >= 1800 && took < 6000);
         CHECK(!exists(g_dir + "/engine.json"));
+    }
+
+    // It leaves while a track plays: the engine stays.
+    {
+        Running r(8000);
+        {
+            Client c(r.e->port());
+            CHECK(c.hello(r.e->token()));
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 1000; }, 10000) >= 0);
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+        CHECK(exists(g_dir + "/engine.json"));
+    }
+
+    // Paused after it played: the engine stays for a resume, until keep_paused is turned off.
+    {
+        auto e = make_engine(8000);
+        std::string err;
+        CHECK(e->start(err));
+        std::thread t([&] { e->run(); });
+        {
+            Client c(e->port());
+            CHECK(c.hello(e->token()));
+            CHECK(parse(c.cmd("keep_paused"), d)["result"]["on"].boolean());
+            CHECK(parse(c.cmd("play", kTwo), d)["ok"].boolean());
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "position") && e["position_ms"].i64() >= 500; }, 10000) >= 0);
+            const size_t mark = c.events.size();
+            CHECK(parse(c.cmd("pause"), d)["ok"].boolean());
+            CHECK(c.wait_event([](Json e) { return is_ev(e, "state") && e["state"].str() == "paused"; }, 5000, mark) >= 0);
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));   // a tick sees the client
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(2500));
+        CHECK(exists(g_dir + "/engine.json"));
+        const auto t0 = std::chrono::steady_clock::now();
+        {
+            Client c(e->port());
+            CHECK(c.hello(e->token()));
+            CHECK_EQ(parse(c.cmd("keep_paused", "\"on\":1"), d)["error"]["code"].string(), "bad_request");
+            CHECK(!parse(c.cmd("keep_paused", "\"on\":false"), d)["result"]["on"].boolean());
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+        }
+        t.join();
+        CHECK(etest::ms_since(t0) < 5000);
+        CHECK(!exists(g_dir + "/engine.json"));
+    }
+    {   // kept across restarts
+        Running r;
+        Client c(r.e->port());
+        CHECK(c.hello(r.e->token()));
+        CHECK(!parse(c.cmd("keep_paused"), d)["result"]["on"].boolean());
     }
 
     // Headphones out pauses (not stops); resume plays on.

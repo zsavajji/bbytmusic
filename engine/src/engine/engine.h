@@ -50,7 +50,7 @@ struct EngineOptions {
     SinkFactory sinks;                      // required
     SourceFactory sources;                  // empty: resolve() + make_source() behind the cache
     int64_t cache_bytes = int64_t(256) << 20;
-    int64_t idle_exit_ms = 10 * 60 * 1000;  // nothing playing and no client this long: exit
+    int64_t idle_exit_ms = 10 * 60 * 1000;  // nothing playing and no client this long: exit (at once when the last client leaves)
     // Where the now-playing overlay's cover is copied (it cannot read data_dir): a dot-folder in the
     // shared storage, which its group (1000_shared) reads and the Pictures app does not list. Needs
     // the access_shared permission; where it is not there (the host) no cover is sent.
@@ -181,6 +181,9 @@ private:
     std::atomic<bool> np_revoked_{false};
     std::chrono::steady_clock::time_point idle_since_;
     bool idle_ = false;
+    bool had_client_ = false;   // at the last idle_check()
+    bool played_ = false;       // worker: a track played in this run, so a pause is the user's, not the restored queue's
+    std::atomic<bool> keep_paused_{true};   // the `keep_paused` setting
 
     std::mutex wq_mu_;
     std::condition_variable wq_cv_;

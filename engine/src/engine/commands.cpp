@@ -292,6 +292,18 @@ void Engine::add_commands() {
         });
         return ok();
     });
+    server_.on("keep_paused", [this](Json req) {
+        if (!req["on"].is_null()) {
+            if (!req["on"].is_bool()) return bad("on: a boolean");
+            const bool on = req["on"].boolean(false);
+            keep_paused_ = on;
+            post([this, on] {
+                std::string err;
+                if (db_ok_ && !set_setting(db_, "keep_paused", on ? "on" : "off", err)) log_warn("store: " + err);
+            });
+        }
+        return ok(std::string("{\"on\":") + (keep_paused_ ? "true" : "false") + "}");
+    });
     server_.on("eq", [this](Json req) {
         const auto &presets = eq_presets();
         if (!req["preset"].is_null()) {

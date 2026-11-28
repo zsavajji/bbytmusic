@@ -148,27 +148,38 @@ void Engine::work() {
         }
         if (worker_quit_) return;
         lk.unlock();
-        if (idle_check()) {
-            log_info("idle for " + std::to_string(opt_.idle_exit_ms / 1000) + " s: exiting");
-            stop();
-        }
+        if (idle_check()) stop();
         lk.lock();
     }
 }
 
 bool Engine::idle_check() {
     const PlayState st = player_->status().state;
-    const bool idle = (st == PlayState::Stopped || st == PlayState::Paused) && server_.clients() == 0;
+    const bool client = server_.clients() > 0;
+    const bool left = had_client_ && !client;   // the last client went since the last tick
+    had_client_ = client;
+    const bool idle = (st == PlayState::Stopped || st == PlayState::Paused) && !client;
     const auto now = std::chrono::steady_clock::now();
     if (!idle) {
         idle_ = false;
         return false;
     }
+    // The app closed with nothing playing: leave with it. Only at that moment: a pause that comes
+    // later, from the headset or the overlay with the app gone, still waits idle_exit_ms for a resume.
+    // A track the user paused stays too (`keep_paused`), while the overlay that resumes it is ours;
+    // the queue restored at the start is paused as well, and that one nobody is waiting for.
+    const bool resumable = st == PlayState::Paused && keep_paused_ && played_ && !np_revoked_;
+    if (left && !resumable) {
+        log_info("the last client left, nothing playing: exiting");
+        return true;
+    }
     if (!idle_) {
         idle_ = true;
         idle_since_ = now;
     }
-    return now - idle_since_ >= std::chrono::milliseconds(opt_.idle_exit_ms);
+    if (now - idle_since_ < std::chrono::milliseconds(opt_.idle_exit_ms)) return false;
+    log_info("idle for " + std::to_string(opt_.idle_exit_ms / 1000) + " s: exiting");
+    return true;
 }
 
 // The real sources: the segment cache in front of resolve() + make_source(), which run only for
@@ -200,6 +211,7 @@ void Engine::restore() {
         yt_.set_language("en", gl);
         region_known_ = true;
     }
+    keep_paused_ = get_setting(db_, "keep_paused", "on") == "on";
     const bool shuffle_saved = get_setting(db_, "shuffle", "off") == "on";
     {
         std::vector<std::string> cats;

@@ -118,9 +118,12 @@ void Engine::on_event(const PlayerEvent &e) {
 // revoke only when we play again.
 void Engine::np_update(const PlayerStatus &s, bool send_meta) {
     const bool playing = s.state == PlayState::Playing || s.state == PlayState::Loading;
+    if (s.state == PlayState::Playing) played_ = true;   // not Loading: the restored queue passes through it
     std::string err;
     if (!np_started_) {
-        if (!playing || np_failed_) return;
+        // Playing, not Loading: the queue restored at the start passes through Loading on its way
+        // to paused, and that is not a play.
+        if (s.state != PlayState::Playing || np_failed_) return;
         if (!np_.start("bbmusic", [this](const std::string &c) { on_np_command(c); }, err)) {
             np_failed_ = true;
             log_info("now-playing: " + err);

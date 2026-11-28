@@ -145,7 +145,7 @@
 <context>
     <name>DockPage</name>
     <message>
-        <location filename="../assets/DockPage.qml" line="319"/>
+        <location filename="../assets/DockPage.qml" line="323"/>
         <source>Loading...</source>
         <translation>Lädt...</translation>
     </message>
@@ -154,47 +154,47 @@
         <translation type="obsolete">Schließen</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="336"/>
+        <location filename="../assets/DockPage.qml" line="340"/>
         <source>Hide Lyrics</source>
         <translation>Songtext ausblenden</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="336"/>
+        <location filename="../assets/DockPage.qml" line="340"/>
         <source>Show Lyrics</source>
         <translation>Songtext anzeigen</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="402"/>
+        <location filename="../assets/DockPage.qml" line="411"/>
         <source>Previous</source>
         <translation>Vorheriger</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="422"/>
+        <location filename="../assets/DockPage.qml" line="431"/>
         <source>Pause</source>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="422"/>
+        <location filename="../assets/DockPage.qml" line="431"/>
         <source>Play</source>
         <translation>Abspielen</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="441"/>
+        <location filename="../assets/DockPage.qml" line="450"/>
         <source>Next</source>
         <translation>Nächster</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="346"/>
+        <location filename="../assets/DockPage.qml" line="350"/>
         <source>Remove from Favorites</source>
         <translation>Aus Favoriten entfernen</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="346"/>
+        <location filename="../assets/DockPage.qml" line="350"/>
         <source>Add to Favorites</source>
         <translation>Zu Favoriten hinzufügen</translation>
     </message>
     <message>
-        <location filename="../assets/DockPage.qml" line="37"/>
+        <location filename="../assets/DockPage.qml" line="40"/>
         <source>Exit Docked Mode</source>
         <translation>Dock-Modus verlassen</translation>
     </message>
@@ -415,17 +415,17 @@
 <context>
     <name>LyricsView</name>
     <message>
-        <location filename="../assets/LyricsView.qml" line="240"/>
+        <location filename="../assets/LyricsView.qml" line="334"/>
         <source>No lyrics for this song</source>
         <translation>Kein Songtext für dieses Lied</translation>
     </message>
     <message>
-        <location filename="../assets/LyricsView.qml" line="240"/>
+        <location filename="../assets/LyricsView.qml" line="334"/>
         <source>Lyrics could not be loaded</source>
         <translation>Songtext konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location filename="../assets/LyricsView.qml" line="131"/>
+        <location filename="../assets/LyricsView.qml" line="152"/>
         <source>Sync</source>
         <translation>Sync</translation>
     </message>
@@ -433,131 +433,131 @@
 <context>
     <name>NowPlayingPage</name>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="192"/>
+        <location filename="../assets/NowPlayingPage.qml" line="195"/>
         <source>Liked on YouTube</source>
         <translation>Auf YouTube mit „Gefällt mir“ markiert</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="192"/>
+        <location filename="../assets/NowPlayingPage.qml" line="195"/>
         <source>Like removed on YouTube</source>
         <translation>„Gefällt mir“ auf YouTube entfernt</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="162"/>
+        <location filename="../assets/NowPlayingPage.qml" line="165"/>
         <source>This track has no album page.</source>
         <translation>Dieser Titel hat keine Albumseite.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="162"/>
+        <location filename="../assets/NowPlayingPage.qml" line="165"/>
         <source>This artist has no page.</source>
         <translation>Dieser Künstler hat keine Seite.</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="596"/>
+        <location filename="../assets/NowPlayingPage.qml" line="614"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="423"/>
+        <location filename="../assets/NowPlayingPage.qml" line="435"/>
         <source>Previous</source>
         <translation>Vorheriger</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="435"/>
+        <location filename="../assets/NowPlayingPage.qml" line="447"/>
         <source>Pause</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Pause</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="435"/>
+        <location filename="../assets/NowPlayingPage.qml" line="447"/>
         <source>Play</source>
         <extracomment>verbs, the button that pauses or starts playback</extracomment>
         <translation>Abspielen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="446"/>
+        <location filename="../assets/NowPlayingPage.qml" line="458"/>
         <source>Next</source>
         <translation>Nächster</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="457"/>
+        <location filename="../assets/NowPlayingPage.qml" line="469"/>
         <source>Queue</source>
         <translation>Warteschlange</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="386"/>
+        <location filename="../assets/NowPlayingPage.qml" line="389"/>
         <source>View Podcast</source>
         <translation>Podcast ansehen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="386"/>
+        <location filename="../assets/NowPlayingPage.qml" line="389"/>
         <source>View Album</source>
         <translation>Album ansehen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="393"/>
+        <location filename="../assets/NowPlayingPage.qml" line="396"/>
         <source>View Artist</source>
         <translation>Künstler ansehen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="366"/>
+        <location filename="../assets/NowPlayingPage.qml" line="369"/>
         <source>Start Radio</source>
         <translation>Radio starten</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="468"/>
-        <location filename="../assets/NowPlayingPage.qml" line="647"/>
+        <location filename="../assets/NowPlayingPage.qml" line="480"/>
+        <location filename="../assets/NowPlayingPage.qml" line="665"/>
         <source>Remove from Favorites</source>
         <translation>Aus Favoriten entfernen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="468"/>
-        <location filename="../assets/NowPlayingPage.qml" line="647"/>
+        <location filename="../assets/NowPlayingPage.qml" line="480"/>
+        <location filename="../assets/NowPlayingPage.qml" line="665"/>
         <source>Add to Favorites</source>
         <translation>Zu Favoriten hinzufügen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="480"/>
+        <location filename="../assets/NowPlayingPage.qml" line="493"/>
         <source>Like on YouTube</source>
         <translation>Auf YouTube „Gefällt mir“</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="480"/>
+        <location filename="../assets/NowPlayingPage.qml" line="493"/>
         <source>Remove Like on YouTube</source>
         <translation>„Gefällt mir“ auf YouTube entfernen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="504"/>
+        <location filename="../assets/NowPlayingPage.qml" line="517"/>
         <source>Equalizer (Off)</source>
         <translation>Equalizer (aus)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="504"/>
+        <location filename="../assets/NowPlayingPage.qml" line="517"/>
         <source>Equalizer (On)</source>
         <translation>Equalizer (an)</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="515"/>
+        <location filename="../assets/NowPlayingPage.qml" line="528"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="588"/>
+        <location filename="../assets/NowPlayingPage.qml" line="606"/>
         <source>Loading...</source>
         <translation>Lädt...</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="635"/>
+        <location filename="../assets/NowPlayingPage.qml" line="653"/>
         <source>Hide Lyrics</source>
         <translation>Songtext ausblenden</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="635"/>
+        <location filename="../assets/NowPlayingPage.qml" line="653"/>
         <source>Show Lyrics</source>
         <translation>Songtext anzeigen</translation>
     </message>
     <message>
-        <location filename="../assets/NowPlayingPage.qml" line="376"/>
+        <location filename="../assets/NowPlayingPage.qml" line="379"/>
         <source>Docked Mode</source>
         <translation>Dock-Modus</translation>
     </message>
@@ -839,201 +839,216 @@
 <context>
     <name>SettingsSheet</name>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="96"/>
+        <location filename="../assets/SettingsSheet.qml" line="97"/>
         <source>the request was refused</source>
         <translation>die Anfrage wurde abgelehnt</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="99"/>
+        <location filename="../assets/SettingsSheet.qml" line="100"/>
         <source>the code expired</source>
         <translation>der Code ist abgelaufen</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="102"/>
+        <location filename="../assets/SettingsSheet.qml" line="103"/>
         <source>Tube is not signed in to YouTube</source>
         <translation>Tube ist nicht bei YouTube angemeldet</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="105"/>
+        <location filename="../assets/SettingsSheet.qml" line="106"/>
         <source>Tube&apos;s sign-in did not open</source>
         <translation>Die Anmeldung von Tube wurde nicht geöffnet</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="108"/>
+        <location filename="../assets/SettingsSheet.qml" line="109"/>
         <source>Google does not accept Tube&apos;s sign-in</source>
         <translation>Google akzeptiert die Anmeldung von Tube nicht</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="111"/>
+        <location filename="../assets/SettingsSheet.qml" line="112"/>
         <source>YouTube could not be reached</source>
         <translation>YouTube ist nicht erreichbar</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="146"/>
-        <location filename="../assets/SettingsSheet.qml" line="497"/>
-        <location filename="../assets/SettingsSheet.qml" line="501"/>
+        <location filename="../assets/SettingsSheet.qml" line="155"/>
+        <location filename="../assets/SettingsSheet.qml" line="546"/>
+        <location filename="../assets/SettingsSheet.qml" line="550"/>
         <source>%1 GB</source>
         <translation>%1 GB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="146"/>
-        <location filename="../assets/SettingsSheet.qml" line="147"/>
-        <location filename="../assets/SettingsSheet.qml" line="485"/>
-        <location filename="../assets/SettingsSheet.qml" line="489"/>
-        <location filename="../assets/SettingsSheet.qml" line="493"/>
+        <location filename="../assets/SettingsSheet.qml" line="155"/>
+        <location filename="../assets/SettingsSheet.qml" line="156"/>
+        <location filename="../assets/SettingsSheet.qml" line="534"/>
+        <location filename="../assets/SettingsSheet.qml" line="538"/>
+        <location filename="../assets/SettingsSheet.qml" line="542"/>
         <source>%1 MB</source>
         <translation>%1 MB</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="147"/>
+        <location filename="../assets/SettingsSheet.qml" line="156"/>
         <source>%1 used of %2</source>
         <translation>%1 von %2 belegt</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="211"/>
+        <location filename="../assets/SettingsSheet.qml" line="221"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="213"/>
+        <location filename="../assets/SettingsSheet.qml" line="223"/>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="222"/>
+        <location filename="../assets/SettingsSheet.qml" line="232"/>
         <source>YouTube account</source>
         <translation>YouTube-Konto</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="233"/>
+        <location filename="../assets/SettingsSheet.qml" line="243"/>
         <source>Sign in to see your playlists, liked songs and albums. Search, playback and Favorites work without an account.</source>
         <translation>Melde dich an, um deine Playlists, Songs mit „Gefällt mir“ und Alben zu sehen. Suche, Wiedergabe und Favoriten funktionieren auch ohne Konto.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="240"/>
+        <location filename="../assets/SettingsSheet.qml" line="250"/>
         <source>The sign-in did not complete: %1</source>
         <translation>Die Anmeldung wurde nicht abgeschlossen: %1</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="247"/>
+        <location filename="../assets/SettingsSheet.qml" line="257"/>
         <source>Sign in with Tube</source>
         <translation>Mit Tube anmelden</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="258"/>
+        <location filename="../assets/SettingsSheet.qml" line="268"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="274"/>
+        <location filename="../assets/SettingsSheet.qml" line="284"/>
         <source>On a phone or a computer, open</source>
         <translation>Öffne auf einem Telefon oder Computer</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="282"/>
+        <location filename="../assets/SettingsSheet.qml" line="292"/>
         <source>and enter this code:</source>
         <translation>und gib diesen Code ein:</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="297"/>
+        <location filename="../assets/SettingsSheet.qml" line="307"/>
         <source>This page signs in by itself once the code is entered. The code is valid for 30 minutes.</source>
         <translation>Diese Seite meldet sich automatisch an, sobald der Code eingegeben ist. Der Code ist 30 Minuten gültig.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="304"/>
-        <location filename="../assets/SettingsSheet.qml" line="533"/>
+        <location filename="../assets/SettingsSheet.qml" line="314"/>
+        <location filename="../assets/SettingsSheet.qml" line="582"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="318"/>
+        <location filename="../assets/SettingsSheet.qml" line="328"/>
         <source>Signed in</source>
         <translation>Angemeldet</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="321"/>
+        <location filename="../assets/SettingsSheet.qml" line="331"/>
         <source>Shared by the Tube app</source>
         <translation>Von der Tube-App geteilt</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="327"/>
-        <location filename="../assets/SettingsSheet.qml" line="530"/>
-        <location filename="../assets/SettingsSheet.qml" line="532"/>
+        <location filename="../assets/SettingsSheet.qml" line="337"/>
+        <location filename="../assets/SettingsSheet.qml" line="579"/>
+        <location filename="../assets/SettingsSheet.qml" line="581"/>
         <source>Sign out</source>
         <translation>Abmelden</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="338"/>
+        <location filename="../assets/SettingsSheet.qml" line="348"/>
         <source>Content country</source>
         <translation>Land für Inhalte</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="346"/>
+        <location filename="../assets/SettingsSheet.qml" line="356"/>
         <source>The country YouTube Music picks songs and trends for. New releases and featured playlists still follow where you are.</source>
         <translation>Das Land, für das YouTube Music Songs und Trends auswählt. Neuerscheinungen und ausgewählte Playlists richten sich weiterhin nach dem aktuellen Standort.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="353"/>
+        <location filename="../assets/SettingsSheet.qml" line="363"/>
         <source>Country</source>
         <translation>Land</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="361"/>
+        <location filename="../assets/SettingsSheet.qml" line="371"/>
         <source>Skip in a track</source>
         <translation>Überspringen im Titel</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="369"/>
+        <location filename="../assets/SettingsSheet.qml" line="379"/>
         <source>Parts that other listeners have marked, from SponsorBlock. While any of these is on, sponsor.ajay.app is asked about each track by a short hash of its id, never by the id.</source>
         <translation>Abschnitte, die andere Hörer markiert haben, über SponsorBlock. Solange eine dieser Optionen aktiv ist, wird sponsor.ajay.app zu jedem Titel über einen kurzen Hash seiner ID abgefragt, nie über die ID selbst.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="380"/>
+        <location filename="../assets/SettingsSheet.qml" line="390"/>
         <source>Non-music parts of a video</source>
         <translation>Nicht-Musik-Abschnitte eines Videos</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="400"/>
+        <location filename="../assets/SettingsSheet.qml" line="410"/>
         <source>Sponsors</source>
         <translation>Sponsoren</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="420"/>
+        <location filename="../assets/SettingsSheet.qml" line="430"/>
         <source>Intros</source>
         <translation>Intros</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="440"/>
+        <location filename="../assets/SettingsSheet.qml" line="450"/>
         <source>Outros</source>
         <translation>Outros</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="456"/>
+        <location filename="../assets/SettingsSheet.qml" line="466"/>
+        <source>When the app closes</source>
+        <translation>Beim Schließen der App</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="474"/>
+        <source>Music that is playing goes on after the app is closed. A paused track can stay ready as well, to resume from the headset or the volume keys; off, it ends with the app.</source>
+        <translation>Laufende Musik spielt weiter, nachdem die App geschlossen wurde. Auch ein pausierter Titel kann bereit bleiben, um ihn über das Headset oder die Lautstärketasten fortzusetzen; ausgeschaltet endet er mit der App.</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="485"/>
+        <source>Keep a paused track ready</source>
+        <translation>Pausierten Titel bereithalten</translation>
+    </message>
+    <message>
+        <location filename="../assets/SettingsSheet.qml" line="505"/>
         <source>Storage</source>
         <translation>Speicher</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="464"/>
+        <location filename="../assets/SettingsSheet.qml" line="513"/>
         <source>Songs are kept on the phone after they play, so they play again without the network. The least recently played go first when the space is full.</source>
         <translation>Songs bleiben nach der Wiedergabe auf dem Telefon gespeichert und lassen sich ohne Netzwerk erneut abspielen. Ist der Speicher voll, werden zuerst die am längsten nicht gespielten entfernt.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="470"/>
+        <location filename="../assets/SettingsSheet.qml" line="519"/>
         <source>Favorites are downloaded and never removed to make room; they count toward this space.</source>
         <translation>Favoriten werden heruntergeladen und nie entfernt, um Platz zu schaffen; sie zählen zu diesem Speicherplatz.</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="482"/>
+        <location filename="../assets/SettingsSheet.qml" line="531"/>
         <source>Space for songs</source>
         <translation>Platz für Songs</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="515"/>
+        <location filename="../assets/SettingsSheet.qml" line="564"/>
         <source>Clear cache</source>
         <translation>Cache leeren</translation>
     </message>
     <message>
-        <location filename="../assets/SettingsSheet.qml" line="531"/>
+        <location filename="../assets/SettingsSheet.qml" line="580"/>
         <source>Sign out of YouTube on this phone? Your Favorites stay.</source>
         <translation>Auf diesem Telefon von YouTube abmelden? Deine Favoriten bleiben erhalten.</translation>
     </message>

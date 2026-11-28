@@ -1,6 +1,6 @@
 // bbmusicd, the engine: bbmusicd [--data DIR] [--wav FILE | --null] | --version
-// It listens on loopback (docs/protocol.md) until quit, a signal, the navigator's exit, or ten
-// minutes with nothing playing and no client.
+// It listens on loopback (docs/protocol.md) until quit, a signal, the navigator's exit, the last
+// client leaving with nothing playing, or ten minutes with nothing playing and no client.
 #include <pthread.h>
 #include <signal.h>
 #include <sys/stat.h>

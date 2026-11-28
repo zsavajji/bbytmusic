@@ -11,6 +11,7 @@ Sheet {
     property string listReq: ""
     property string regionReq: ""
     property string cacheReq: ""
+    property string keepReq: ""
     property string accountReq: ""
     // The last account answer or event, as plain strings: signed out until the engine has said.
     property string acctState: "out"
@@ -139,6 +140,14 @@ Sheet {
                 sheet.filling = false;
             }
         }
+        if (id != "" && id == sheet.keepReq) {
+            sheet.keepReq = "";
+            if (ok) {
+                sheet.filling = true;
+                keepPaused.checked = result.on;
+                sheet.filling = false;
+            }
+        }
         if (id != "" && id == sheet.cacheReq) {
             sheet.cacheReq = "";
             if (ok) {
@@ -187,6 +196,7 @@ Sheet {
         listReq = engine.request("skip", {});
         regionReq = engine.request("region", {});
         cacheReq = engine.request("cache", {});
+        keepReq = engine.request("keep_paused", {});
         sheet.open();
     }
 
@@ -448,6 +458,45 @@ Sheet {
                             verticalAlignment: VerticalAlignment.Center
                             onCheckedChanged: {
                                 sheet.send();
+                            }
+                        }
+                    }
+                }
+                Header {
+                    title: qsTr("When the app closes")
+                }
+                Container {
+                    leftPadding: ui.du(2)
+                    rightPadding: ui.du(2)
+                    topPadding: ui.du(1)
+                    bottomPadding: ui.du(2)
+                    Label {
+                        text: qsTr("Music that is playing goes on after the app is closed. A paused track can stay ready as well, to resume from the headset or the volume keys; off, it ends with the app.")
+                        multiline: true
+                        textStyle.base: SystemDefaults.TextStyles.SmallText
+                        textStyle.color: Color.create("#969696")
+                    }
+                    Container {
+                        topMargin: ui.du(2)
+                        layout: StackLayout {
+                            orientation: LayoutOrientation.LeftToRight
+                        }
+                        Label {
+                            text: qsTr("Keep a paused track ready")
+                            verticalAlignment: VerticalAlignment.Center
+                            layoutProperties: StackLayoutProperties {
+                                spaceQuota: 1
+                            }
+                        }
+                        ToggleButton {
+                            id: keepPaused
+                            verticalAlignment: VerticalAlignment.Center
+                            onCheckedChanged: {
+                                if (! sheet.filling) {
+                                    engine.request("keep_paused", {
+                                        "on": keepPaused.checked
+                                    });
+                                }
                             }
                         }
                     }

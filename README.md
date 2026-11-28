@@ -83,7 +83,8 @@ BBMusic ships as one `.bar` with two processes:
 - **`bbmusic`, the UI**, a native Cascades app (Qt 4.8, C++ and QML). It starts the engine and
   talks to it over a token-protected loopback socket as NDJSON ([docs/protocol.md](docs/protocol.md)).
 
-The engine stops by itself after ten minutes with nothing playing and no UI connected. It builds
+The engine stops with the app when nothing is playing (a paused track keeps it, unless Settings
+says otherwise), and otherwise after ten minutes with nothing playing and no UI connected. It builds
 and runs on the Mac too, where its tests run under ASan and UBSan, and its parsers of network
 bytes (UMP, WebM, protobuf) have fuzz targets.
 
