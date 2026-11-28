@@ -14,6 +14,9 @@ Page {
     property bool leaving: false
     property string artFile: ""
     property int artSize: 720       // the screen's longer side in pixels, capped at 1440
+    // A 720 px square screen (Q10, Classic): the fonts one size down and the buttons closer to the
+    // time and the bottom edge, so the lyrics have room (the user, 2026-11-28).
+    property bool compact: false
     property bool favorite: false
     property string favId: ""       // the track the flag is for
     property string favReq: ""
@@ -267,6 +270,7 @@ Page {
             LayoutUpdateHandler {
                 onLayoutFrameChanged: {
                     var side = Math.round(Math.min(1440, Math.max(layoutFrame.width, layoutFrame.height)));
+                    page.compact = side > 0 && side <= 720;
                     if (side > 0 && side != page.artSize) {
                         page.artSize = side;
                         page.refreshArt();
@@ -311,18 +315,18 @@ Page {
                     Label {
                         text: player.title
                         multiline: true
-                        textStyle.fontSize: FontSize.XXLarge
+                        textStyle.fontSize: page.compact ? FontSize.XLarge : FontSize.XXLarge
                         textStyle.fontWeight: FontWeight.Bold
                         textStyle.color: Color.White
                     }
                     Label {
                         text: player.state == "loading" ? qsTr("Loading...") : player.artist
-                        textStyle.fontSize: FontSize.Large
+                        textStyle.fontSize: page.compact ? FontSize.Medium : FontSize.Large
                         textStyle.color: Color.create("#c8c8c8")
                     }
                     Label {
                         text: player.album
-                        textStyle.fontSize: FontSize.Medium
+                        textStyle.fontSize: page.compact ? FontSize.Small : FontSize.Medium
                         textStyle.color: Color.create("#969696")
                     }
                 }
@@ -345,6 +349,7 @@ Page {
                         defaultImageSource: "asset:///images/ic_favorite_big.png"
                         accessibility.name: page.favorite ? qsTr("Remove from Favorites") : qsTr("Add to Favorites")
                         opacity: page.favorite ? 1.0 : 0.4
+                        enabled: page.favId != "" && page.favReq == ""
                         preferredWidth: ui.du(10)
                         preferredHeight: ui.du(10)
                         onClicked: {
@@ -358,8 +363,8 @@ Page {
             // from the artist and the time (the user, 2026-11-27).
             Container {
                 horizontalAlignment: HorizontalAlignment.Fill
-                topPadding: ui.du(3)
-                bottomPadding: ui.du(3)
+                topPadding: page.compact ? ui.du(1) : ui.du(3)
+                bottomPadding: page.compact ? 0 : ui.du(3)      // the time is drawn 3 du lower there
                 layout: DockLayout {
                 }
                 layoutProperties: StackLayoutProperties {
@@ -370,6 +375,7 @@ Page {
                     visible: page.showLyrics
                     bottomSpace: 0      // the lyrics have an area of their own here
                     big: true           // read from across a room (the user, 2026-11-27: "bigger")
+                    compact: page.compact
                     background: Color.Transparent       // the page's colour is the backdrop
                     onSeekTo: {
                         engine.request("seek", {
@@ -384,16 +390,19 @@ Page {
                 horizontalAlignment: HorizontalAlignment.Fill
                 leftPadding: ui.du(3)
                 rightPadding: ui.du(3)
-                bottomPadding: ui.du(3)
+                // The big pictures are a quarter empty above and below the glyph: on a compact
+                // screen that is margin enough under them, and the time is drawn into the one above.
+                bottomPadding: page.compact ? 0 : ui.du(3)
                 Label {
                     text: player.fmt(player.positionMs) + (player.durationMs > 0 ? " / " + player.fmt(player.durationMs) : "")
                     horizontalAlignment: HorizontalAlignment.Center
-                    textStyle.fontSize: FontSize.XLarge     // "bigger" (the user, 2026-11-27)
+                    translationY: page.compact ? ui.du(3) : 0
+                    textStyle.fontSize: page.compact ? FontSize.Large : FontSize.XLarge     // "bigger" (the user, 2026-11-27)
                     textStyle.color: Color.create("#c8c8c8")
                 }
                 Container {
                     horizontalAlignment: HorizontalAlignment.Center
-                    topPadding: ui.du(1)
+                    topPadding: page.compact ? 0 : ui.du(1)
                     layout: StackLayout {
                         orientation: LayoutOrientation.LeftToRight
                     }

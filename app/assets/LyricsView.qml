@@ -14,7 +14,14 @@ Container {
     property variant lines: []          // [{ms, text}] as the engine sent them
     property double downY: 0
     property double bottomSpace: 0     // the scrubber's height: the lines stop above it (the user, 2026-11-27)
-    property bool big: false            // docked mode's style (DockPage.qml), carried in each row: read as ListItem.view.big it left them smaller (1.0.3.94)
+    // Docked mode (DockPage.qml): three labels in place of the list, the sung line, the current one
+    // and the coming ones, so the current one stays in the middle whatever its height (the user,
+    // 2026-11-28: on the Classic the list left it cut).
+    property bool big: false
+    property bool compact: false        // a 720 px square screen (Q10, Classic): docked mode one size down
+    property string pastText: ""
+    property string nowText: ""
+    property string nextText: ""
     signal seekTo(int ms)
 
     horizontalAlignment: HorizontalAlignment.Fill
@@ -31,6 +38,19 @@ Container {
         view.synced = false;
         view.autoSync = true;
         view.phase = why;
+        showBig();
+    }
+
+    function showBig() {
+        var all = view.lines;       // a variant: each read of it copies the list
+        var i = view.line;
+        var next = [];
+        for (var j = i + 1; j < all.length && j <= i + 6; ++j) {
+            next.push(all[j].text);
+        }
+        view.pastText = i > 0 ? all[i - 1].text : "";
+        view.nowText = i >= 0 && i < all.length ? all[i].text : "";
+        view.nextText = next.join("\n");
     }
 
     // The engine's answer: the lines, then the credit.
@@ -41,14 +61,18 @@ Container {
             return;
         }
         clear("");
+        view.lines = result.lines;
+        view.synced = result.synced;
+        if (view.big) {
+            showBig();
+            return;
+        }
         var rows = [];
         for (var i = 0; i < result.lines.length; ++i) {
             rows.push({
                 "text": result.lines[i].text,
                 "kind": result.synced ? "line" : "plain",
-                "on": false,
-                "state": "next",
-                "big": view.big
+                "on": false
             });
         }
         if (result.credit) {
@@ -57,27 +81,20 @@ Container {
                 "kind": "credit"
             });
         }
-        view.lines = result.lines;
-        view.synced = result.synced;
         model.append(rows);
     }
 
-    // state: "past" (sung), "now" or "next".
-    function light(i, state) {
+    function light(i, on) {
         model.replace(i, {
             "text": view.lines[i].text,
             "kind": "line",
-            "on": state == "now",
-            "state": state,
-            "big": view.big
+            "on": on
         });
     }
 
     function follow() {
         if (view.line >= 0) {
-            // Docked mode's lines wrap on two or three rows: two of them above pushed the current
-            // one under the buttons (1.0.3.98), so one only.
-            list.scrollToItem([ Math.max(0, view.line - (view.big ? 1 : 2)) ], ScrollAnimation.Smooth);
+            list.scrollToItem([ Math.max(0, view.line - 2) ], ScrollAnimation.Smooth);
         }
     }
 
@@ -102,13 +119,17 @@ Container {
         if (lo == view.line) {
             return;
         }
-        // Every line between the old and the new one changes side: one or two rows as the song
-        // goes on, more after a seek.
-        var from = Math.max(0, Math.min(view.line, lo));
-        var to = Math.max(view.line, lo);
+        var old = view.line;
         view.line = lo;
-        for (var i = from; i <= to; ++i) {
-            light(i, i < lo ? "past" : (i == lo ? "now" : "next"));
+        if (view.big) {
+            showBig();
+            return;
+        }
+        if (old >= 0) {
+            light(old, false);
+        }
+        if (lo >= 0) {
+            light(lo, true);
         }
         if (view.autoSync) {
             follow();
@@ -144,6 +165,7 @@ Container {
         }
         ListView {
             id: list
+            visible: ! view.big
             horizontalAlignment: HorizontalAlignment.Fill
             layoutProperties: StackLayoutProperties {
                 spaceQuota: 1
@@ -162,7 +184,7 @@ Container {
                 if (event.touchType == TouchType.Down) {
                     view.downY = event.windowY;
                 } else if (event.touchType == TouchType.Move || event.touchType == TouchType.Cancel) {
-                    if (! view.big && Math.abs(event.windowY - view.downY) > ui.du(3)) {
+                    if (Math.abs(event.windowY - view.downY) > ui.du(3)) {
                         view.autoSync = false;
                     }
                 }
@@ -181,19 +203,16 @@ Container {
                     Container {
                         leftPadding: ui.du(3)
                         rightPadding: ui.du(3)
-                        topPadding: ListItemData.big ? 0 : ui.du(2)
-                        bottomPadding: ListItemData.big ? 0 : ui.du(2)
+                        topPadding: ui.du(2)
+                        bottomPadding: ui.du(2)
                         Label {
                             text: ListItemData.text
                             multiline: true
                             horizontalAlignment: HorizontalAlignment.Fill
                             textStyle.textAlign: TextAlign.Left
-                            // Docked mode, as the user's example (2026-11-27): one size, lines close
-                            // together, sung ones faded white, the current one white, the coming ones dark.
-                            textStyle.fontSize: ListItemData.big ? FontSize.XXLarge : (ListItemData.on ? FontSize.Large : FontSize.Medium)
+                            textStyle.fontSize: ListItemData.on ? FontSize.Large : FontSize.Medium
                             textStyle.fontWeight: FontWeight.Bold
-                            textStyle.color: ListItemData.on ? Color.White : (ListItemData.big ? (ListItemData.state == "past" ? Color.White : Color.Black) : Color.create("#969696"))
-                            opacity: ListItemData.big && ! ListItemData.on ? (ListItemData.state == "past" ? 0.55 : 0.7) : 1.0
+                            textStyle.color: ListItemData.on ? Color.White : Color.create("#969696")
                         }
                     }
                 },
@@ -209,7 +228,7 @@ Container {
                             multiline: true
                             horizontalAlignment: HorizontalAlignment.Fill
                             textStyle.textAlign: TextAlign.Left
-                            textStyle.fontSize: ListItemData.big ? FontSize.XLarge : FontSize.Medium
+                            textStyle.fontSize: FontSize.Medium
                             textStyle.fontWeight: FontWeight.Bold
                             textStyle.color: Color.White
                         }
@@ -233,6 +252,81 @@ Container {
                     }
                 }
             ]
+        }
+    }
+
+    // Docked mode, as the user's example (2026-11-27): one size, lines close together, the sung one
+    // faded white, the current one white, the coming ones dark. The equal shares above and below
+    // the current line are what centres it. A tap on the sung or the coming lines seeks one line.
+    Container {
+        visible: view.big && view.synced
+        horizontalAlignment: HorizontalAlignment.Fill
+        verticalAlignment: VerticalAlignment.Fill
+        leftPadding: ui.du(3)
+        rightPadding: ui.du(3)
+        Container {
+            horizontalAlignment: HorizontalAlignment.Fill
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 1
+            }
+            layout: DockLayout {
+            }
+            Label {
+                text: view.pastText
+                multiline: true
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Bottom
+                textStyle.fontSize: view.compact ? FontSize.XLarge : FontSize.XXLarge
+                textStyle.fontWeight: FontWeight.Bold
+                textStyle.color: Color.White
+                opacity: 0.55
+                gestureHandlers: [
+                    TapHandler {
+                        onTapped: {
+                            if (view.line > 0) {
+                                view.seekTo(view.lines[view.line - 1].ms);
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+        Label {
+            text: view.nowText
+            multiline: true
+            horizontalAlignment: HorizontalAlignment.Fill
+            topMargin: 0
+            bottomMargin: 0
+            textStyle.fontSize: view.compact ? FontSize.XLarge : FontSize.XXLarge
+            textStyle.fontWeight: FontWeight.Bold
+            textStyle.color: Color.White
+        }
+        Container {
+            horizontalAlignment: HorizontalAlignment.Fill
+            layoutProperties: StackLayoutProperties {
+                spaceQuota: 1
+            }
+            layout: DockLayout {
+            }
+            Label {
+                text: view.nextText
+                multiline: true
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Top
+                textStyle.fontSize: view.compact ? FontSize.XLarge : FontSize.XXLarge
+                textStyle.fontWeight: FontWeight.Bold
+                textStyle.color: Color.Black
+                opacity: 0.7
+                gestureHandlers: [
+                    TapHandler {
+                        onTapped: {
+                            if (view.line + 1 < view.lines.length) {
+                                view.seekTo(view.lines[view.line + 1].ms);
+                            }
+                        }
+                    }
+                ]
+            }
         }
     }
 

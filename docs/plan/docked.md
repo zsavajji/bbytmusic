@@ -98,3 +98,24 @@ on the Passport, 1.2 times elsewhere, its text 110 % / 100 % (percentages of Med
 were too big), its caret 5 / 3.6 du; Now Playing's Close 6 du; a track restored without a length
 (Home's items have none) gets it saved by the engine once it plays, and the UI no longer shows it
 at its end meanwhile. The user: "works fine" (1.0.3.107).
+
+## On the Classic (2026-11-28)
+
+The user's screenshot of 1.0.3.107 on the Classic (720 px, 8 px per du): the lyrics area was about
+200 px, the sung line took two rows of it and the current one was cut. "you should keep the current
+line centered, also lower fonts a bit on classic / Q10, on these devices also lower padding on
+bottom of buttons a bit to match top to title", "also buttons to elapsed". In 1.0.3.112:
+
+- **The current line in the middle**, on every phone: docked lyrics are no longer the list but
+  three labels in `LyricsView` (`big`): the sung line, the current one, the next six. The two
+  outer ones have equal shares of the height (`spaceQuota: 1`), which centres the current line
+  whatever its height. Lost with the list: the scroll animation between lines. A tap on the sung
+  or the coming lines seeks one line back or forward.
+- **Compact** (`DockPage.compact`: the screen's longer side is 720 px or less, so the Q10 and the
+  Classic): every font one size down (title X-large, artist Medium, album Small, lyrics X-large,
+  time Large); no padding under the buttons (the big pictures are 24 % empty under the glyph,
+  about what the title has above it); the time drawn 3 du lower (`translationY`) and no padding
+  over the buttons; the lyrics area takes the room (1 du above, none below).
+
+Not seen on a phone yet. Unchecked guesses: that two `spaceQuota: 1` containers split the height
+equally whatever their content, and how a label taller than its share is cut.
